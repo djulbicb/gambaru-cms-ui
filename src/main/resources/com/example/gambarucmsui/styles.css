@@ -1,0 +1,15 @@
+.toggle-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Helvetica", sans-serif;
+    -fx-font-size: 14px;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #505050;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #007AFF;
+}

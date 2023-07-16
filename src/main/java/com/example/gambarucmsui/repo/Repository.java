@@ -8,8 +8,8 @@ import jakarta.persistence.criteria.Root;
 import java.util.List;
 
 public class Repository<T> {
-    private final EntityManager entityManager;
-    private final Class<T> entityClass;
+    protected final EntityManager entityManager;
+    protected final Class<T> entityClass;
 
     public Repository(EntityManager entityManager, Class<T> entityClass) {
         this.entityManager = entityManager;

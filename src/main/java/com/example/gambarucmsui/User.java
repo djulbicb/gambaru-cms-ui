@@ -6,6 +6,7 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class User {
     private Long barcodeId;
@@ -13,14 +14,21 @@ public class User {
     private String lastName;
     private UserEntity.Gender gender;
     private TeamEntity team;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastAttendanceTimestamp;
-    private LocalDateTime lastMembershipPaymentTimestamp;
+    private String createdAt;
+    private String lastAttendanceTimestamp;
+    private String lastMembershipPaymentTimestamp;
 
-    public User(Long barcodeId, String firstName, String lastName) {
+    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
+
+    public User(Long barcodeId, String firstName, String lastName, UserEntity.Gender gender, TeamEntity team, LocalDateTime createdAt, LocalDateTime lastAttendanceTimestamp, LocalDateTime lastMembershipPaymentTimestamp) {
         this.barcodeId = barcodeId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.gender = gender;
+        this.team = team;
+        this.createdAt = formatter.format(createdAt);
+        this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
+        this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
     }
 
     public Long getBarcodeId() {
@@ -43,15 +51,15 @@ public class User {
         return team;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public LocalDateTime getLastAttendanceTimestamp() {
+    public String getLastAttendanceTimestamp() {
         return lastAttendanceTimestamp;
     }
 
-    public LocalDateTime getLastMembershipPaymentTimestamp() {
+    public String getLastMembershipPaymentTimestamp() {
         return lastMembershipPaymentTimestamp;
     }
 }
