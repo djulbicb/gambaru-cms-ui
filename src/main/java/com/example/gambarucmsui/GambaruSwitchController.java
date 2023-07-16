@@ -5,14 +5,19 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEnt
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserMembershipPaymentEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
+import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
+import com.example.gambarucmsui.adapter.out.persistence.repo.UserMembershipRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
@@ -33,25 +38,53 @@ public class GambaruSwitchController {
     @FXML ToggleButton headerBtnStatistics;
     @FXML ToggleButton headerBtnSettings;
 
-    // FIELDS
+    // PANELS AND CONTROLLERS
     ////////////////////////////////////////
     private AnchorPane currentSelected;
     private AnchorPane panelAttendance;
+    private PanelAttendanceController panelAttendanceController;
     private AnchorPane panelMembership;
+    private PanelMembershipController panelMembershipController;
+    private AnchorPane panelStatistics;
+    private PanelStatisticsController panelStatisticsController;
+    private AnchorPane panelSettings;
+    private PanelSettingsController panelSettingsController;
 
     @FXML
     private void initialize() throws IOException {
         HashMap<Class, Repository> repositoryMap = loadEntityManagementSystem();
 
         FXMLLoader attendanceLoader = new FXMLLoader(getClass().getResource("panel-attendance.fxml"));
-        attendanceLoader.setController(new PanelAttendanceController(repositoryMap));
+        panelAttendanceController = new PanelAttendanceController(repositoryMap);
+        attendanceLoader.setController(panelAttendanceController);
         panelAttendance = attendanceLoader.load();
 
         FXMLLoader membershipLoader = new FXMLLoader(getClass().getResource("panel-membership.fxml"));
-        membershipLoader.setController(new PanelMembershipController());
+        panelMembershipController = new PanelMembershipController(repositoryMap);
+        membershipLoader.setController(panelMembershipController);
         panelMembership = membershipLoader.load();
 
+        FXMLLoader statisticsLoader = new FXMLLoader(getClass().getResource("panel-statistics.fxml"));
+        panelStatisticsController = new PanelStatisticsController(repositoryMap);
+        statisticsLoader.setController(panelStatisticsController);
+        panelStatistics = statisticsLoader.load();
+
+        FXMLLoader settingsLoader = new FXMLLoader(getClass().getResource("panel-settings.fxml"));
+        panelSettingsController = new PanelSettingsController(repositoryMap);
+        settingsLoader.setController(panelSettingsController);
+        panelSettings = settingsLoader.load();
+
+        setHeaderToggleButtonToIgnoreAction();
         switchToAttendance();
+    }
+
+    private void setHeaderToggleButtonToIgnoreAction() {
+        for (Toggle toggle : headerToggleBtns.getToggles()) {
+            ToggleButton button = (ToggleButton) toggle;
+            button.setOnAction(actionEvent -> {
+                toggle.setSelected(true);
+            });
+        }
     }
 
     HashMap<Class, Repository> loadEntityManagementSystem() {
@@ -60,10 +93,13 @@ public class GambaruSwitchController {
 
         Repository<BarcodeEntity> repoBarcode = new Repository<>(entityManager, BarcodeEntity.class);
         Repository<UserEntity> repoUser = new UserRepository(entityManager);
-        Repository<UserAttendanceEntity> repoAttendance = new Repository<>(entityManager, UserAttendanceEntity.class);
-        Repository<UserMembershipPaymentEntity> repoMembership = new Repository<>(entityManager, UserMembershipPaymentEntity.class);
+        Repository<UserAttendanceEntity> repoAttendance = new UserAttendanceRepository(entityManager);
+        Repository<UserMembershipPaymentEntity> repoMembership = new UserMembershipRepository(entityManager);
         HashMap<Class, Repository> repos = new HashMap<>();
-        repos.put(UserEntity.class, repoUser);
+
+        repos.put(UserRepository.class, repoUser);
+        repos.put(UserAttendanceRepository.class, repoAttendance);
+        repos.put(UserMembershipRepository.class, repoMembership);
 
         return repos;
     };
@@ -78,47 +114,45 @@ public class GambaruSwitchController {
     private void switchToMembership() {
         panelContent.getChildren().clear();
         panelContent.getChildren().add(panelMembership);
-        currentSelected = panelAttendance;
-        stretchInsideAnchorPance(panelAttendance);
+        currentSelected = panelMembership;
+        stretchInsideAnchorPance(panelMembership);
+    }
+    private void switchToStatistic() {
+        panelContent.getChildren().clear();
+        panelContent.getChildren().add(panelStatistics);
+        currentSelected = panelStatistics;
+        stretchInsideAnchorPance(panelStatistics);
+    }
+    private void switchToSettings() {
+        panelContent.getChildren().clear();
+        panelContent.getChildren().add(panelSettings);
+        currentSelected = panelSettings;
+        stretchInsideAnchorPance(panelSettings);
     }
 
 
     @FXML
     private void switchView() throws IOException {
+        if (headerToggleBtns == null || headerToggleBtns.getSelectedToggle() == null) {
+            return;
+        }
         ToggleButton selectedButton = (ToggleButton) headerToggleBtns.getSelectedToggle();
         if (selectedButton.equals(headerBtnAttendance)) {
             switchToAttendance();
         } else if (selectedButton.equals(headerBtnMembership)) {
             switchToMembership();
+        } else if (selectedButton.equals(headerBtnStatistics)) {
+            switchToStatistic();
+        } else if (selectedButton.equals(headerBtnSettings)) {
+            switchToSettings();
         }
     }
 
-//    private final Repository<UserEntity> userRepo;
-//    private ObservableList<User> items;
-
-
-//    private final int PAGE_SIZE = 50;
-//    private int CURRENT_PAGE = 1;
-//
-//    @FXML
-//    protected void testMembership() {
-//    }
-//
-//    @FXML
-//    protected void testAttendance() {
-//    }
-//
-
-
-//    public void onBarcodeScanned(Long barcodeId) {
-//        System.out.println(barcodeId);
-//        UserEntity byId = userRepo.findById(barcodeId);
-//        System.out.println(byId.getFirstName());
-//        byId.setLastAttendanceTimestamp(LocalDateTime.now());
-//        userRepo.save(byId);
-//        listPage();
-//    }
-//
-
-
+    public void onBarcodeScanned(Long barcodeId) {
+        if (currentSelected == panelAttendance) {
+            panelAttendanceController.onBarcodeRead(barcodeId);
+        } else if (currentSelected == panelMembership) {
+            panelMembershipController.onBarcodeRead(barcodeId);
+        }
+    }
 }

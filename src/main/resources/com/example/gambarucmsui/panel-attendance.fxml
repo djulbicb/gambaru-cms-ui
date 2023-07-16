@@ -37,7 +37,7 @@
                               <Font size="10.0" />
                            </font>
                         </Button>
-                        <Label fx:id="paginationLabel" maxHeight="1.7976931348623157E308" text="1" textFill="#fcfcfc">
+                        <Label fx:id="paginationLabel" maxHeight="1.7976931348623157E308" text="01" textFill="#fcfcfc">
                            <font>
                               <Font size="10.0" />
                            </font>

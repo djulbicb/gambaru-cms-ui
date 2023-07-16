@@ -47,7 +47,7 @@ public class Repository<T> {
         return entityManager.createQuery(query).getResultList();
     }
 
-    public List<T> findAll(int page, int pageSize) {
+    public List<T> findAll(int page, int pageSize, String sortColumn) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> query = criteriaBuilder.createQuery(entityClass);
         Root<T> root = query.from(entityClass);

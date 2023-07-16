@@ -18,6 +18,14 @@ public class UserAttendanceEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
 
+    public UserAttendanceEntity() {
+    }
+
+    public UserAttendanceEntity(BarcodeEntity barcode) {
+        this.barcode = barcode;
+        this.timestamp = LocalDateTime.now();
+    }
+
     public Long getAttendanceId() {
         return attendanceId;
     }

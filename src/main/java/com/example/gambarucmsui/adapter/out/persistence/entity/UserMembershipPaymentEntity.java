@@ -22,6 +22,12 @@ public class UserMembershipPaymentEntity {
 
     private BigDecimal money;
 
+    public UserMembershipPaymentEntity(BarcodeEntity barcode) {
+        this.barcode = barcode;
+        this.timestamp = LocalDateTime.now();
+        this.money = BigDecimal.ONE;
+    }
+
     public Long getMembershipPaymentId() {
         return membershipPaymentId;
     }

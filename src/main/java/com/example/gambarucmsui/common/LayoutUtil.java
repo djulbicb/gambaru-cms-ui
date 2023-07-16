@@ -1,10 +1,11 @@
 package com.example.gambarucmsui.common;
 
+import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
 public class LayoutUtil {
-    public static void stretchInsideAnchorPance(Pane pane) {
+    public static void stretchInsideAnchorPance(Node pane) {
         AnchorPane.setTopAnchor(pane, 0.0);
         AnchorPane.setBottomAnchor(pane, 0.0);
         AnchorPane.setLeftAnchor(pane, 0.0);

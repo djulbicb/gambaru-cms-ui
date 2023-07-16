@@ -1,7 +1,10 @@
 package com.example.gambarucmsui;
 
+import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
+import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
+import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -9,19 +12,23 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
 
 public class PanelAttendanceController {
+    ;
     // PAGINATION
     private int currentPage = 1;
     private static final int PAGE_SIZE = 50;
     // FIELDS
     private final HashMap<Class, Repository> repositoryMap;
-    private final Repository<UserEntity> userRepo;
+    private final UserRepository userRepo;
+    private final UserAttendanceRepository attendanceRepo;
     // FXML TABLE
     @FXML
     TableView<User> table;
@@ -32,7 +39,8 @@ public class PanelAttendanceController {
 
     public PanelAttendanceController(HashMap<Class, Repository> repositoryMap) {
         this.repositoryMap = repositoryMap;
-        userRepo = repositoryMap.get(UserEntity.class);
+        this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
+        this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
     }
 
     @FXML
@@ -66,7 +74,7 @@ public class PanelAttendanceController {
     }
 
     private void listPage() {
-        List<User> collect = userRepo.findAll(currentPage, PAGE_SIZE).stream().map(o ->
+        List<User> collect = userRepo.findAll(currentPage, PAGE_SIZE, "lastAttendanceTimestamp").stream().map(o ->
                 new User(o.getBarcode().getBarcodeId(), o.getFirstName(), o.getLastName(), o.getGender(), o.getTeam(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp())).collect(Collectors.toList());
         tableItems.setAll(collect);
     }
@@ -88,4 +96,18 @@ public class PanelAttendanceController {
 
     }
 
+    public void onBarcodeRead(Long barcodeId) {
+        Optional<UserEntity> userByBarcodeId = userRepo.findUserByBarcodeId(barcodeId);
+        if (userByBarcodeId.isPresent()) {
+            System.out.println("Adding attendance " + barcodeId);
+
+            UserEntity byId = userByBarcodeId.get();
+            byId.setLastAttendanceTimestamp(LocalDateTime.now());
+
+            userRepo.save(byId);
+            attendanceRepo.save(new UserAttendanceEntity(byId.getBarcode()));
+
+            listPage();
+        }
+    }
 }

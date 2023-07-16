@@ -26,11 +26,11 @@ public class GambaruUIApplication extends Application {
         scene.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener() {
             @Override
             public void onFinish(String word) {
-//                if (word == null || word.isBlank() ) {
-//                    return;
-//                }
-//                System.out.println("Input " + word.trim());
-//                controller.onBarcodeScanned(Long.parseLong(word.trim()));
+                if (word == null || word.isBlank() ) {
+                    return;
+                }
+                System.out.println("Input " + word.trim());
+                controller.onBarcodeScanned(Long.parseLong(word.trim()));
             }
         });
 
