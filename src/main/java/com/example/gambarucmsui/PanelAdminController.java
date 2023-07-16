@@ -5,8 +5,8 @@ import javafx.fxml.FXML;
 
 import java.util.HashMap;
 
-public class PanelSettingsController {
-    public PanelSettingsController(HashMap<Class, Repository> repositoryMap) {
+public class PanelAdminController {
+    public PanelAdminController(HashMap<Class, Repository> repositoryMap) {
     }
 
     @FXML

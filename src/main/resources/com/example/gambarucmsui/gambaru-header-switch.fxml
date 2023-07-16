@@ -47,7 +47,7 @@
                               </ImageView>
                            </graphic>
                         </ToggleButton>
-                        <ToggleButton fx:id="headerBtnSettings" maxHeight="1.7976931348623157E308" minWidth="150.0" mnemonicParsing="false" onMouseClicked="#switchView" text="DODATNO" toggleGroup="$headerToggleBtns" HBox.hgrow="ALWAYS">
+                        <ToggleButton fx:id="headerBtnSettings" maxHeight="1.7976931348623157E308" minWidth="150.0" mnemonicParsing="false" onMouseClicked="#switchView" text="ADMIN" toggleGroup="$headerToggleBtns" HBox.hgrow="ALWAYS">
                            <graphic>
                               <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true" styleClass="headerBtns">
                                  <image>

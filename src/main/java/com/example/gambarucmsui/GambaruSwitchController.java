@@ -16,8 +16,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
@@ -48,7 +46,7 @@ public class GambaruSwitchController {
     private AnchorPane panelStatistics;
     private PanelStatisticsController panelStatisticsController;
     private AnchorPane panelSettings;
-    private PanelSettingsController panelSettingsController;
+    private PanelAdminController panelAdminController;
 
     @FXML
     private void initialize() throws IOException {
@@ -69,9 +67,9 @@ public class GambaruSwitchController {
         statisticsLoader.setController(panelStatisticsController);
         panelStatistics = statisticsLoader.load();
 
-        FXMLLoader settingsLoader = new FXMLLoader(getClass().getResource("panel-settings.fxml"));
-        panelSettingsController = new PanelSettingsController(repositoryMap);
-        settingsLoader.setController(panelSettingsController);
+        FXMLLoader settingsLoader = new FXMLLoader(getClass().getResource("panel-admin.fxml"));
+        panelAdminController = new PanelAdminController(repositoryMap);
+        settingsLoader.setController(panelAdminController);
         panelSettings = settingsLoader.load();
 
         setHeaderToggleButtonToIgnoreAction();
