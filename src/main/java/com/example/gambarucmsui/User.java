@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.example.gambarucmsui.common.LayoutUtil.getOrElse;
+
 public class User {
     private Long barcodeId;
     private String firstName;
@@ -26,10 +28,13 @@ public class User {
         this.lastName = lastName;
         this.gender = gender;
         this.team = team;
+        System.out.println(barcodeId);
+        System.out.println(createdAt);
         this.createdAt = formatter.format(createdAt);
         this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
         this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
     }
+
 
     public Long getBarcodeId() {
         return barcodeId;

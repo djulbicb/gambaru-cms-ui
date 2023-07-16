@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.repo;
+package com.example.gambarucmsui.adapter.out.persistence.repo;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
 import jakarta.persistence.EntityManager;
