@@ -19,6 +19,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +29,9 @@ import java.util.stream.Collectors;
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
 
 public class PanelAttendanceController {
-    ;
+
     // PAGINATION
-    private int currentPage = 1;
+    private LocalDate paginationDate = LocalDate.now();
     private static final int PAGE_SIZE = 50;
     // FIELDS
     private final HashMap<Class, Repository> repositoryMap;
@@ -77,31 +78,32 @@ public class PanelAttendanceController {
         table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, genderNameColumn, teamColumn, lastAttendanceColumn, lastMembershipPaymentColumn, createdAt);
         tableItems = table.getItems();
 
-        listPage();
+        updatePagination(LocalDate.now());
+        listPageForDate();
     }
 
-    private void listPage() {
-        List<User> collect = userRepo.findAll(currentPage, PAGE_SIZE, "lastAttendanceTimestamp").stream().map(o ->
+    private void listPageForDate() {
+        List<User> collect = userRepo.findAllForDate(paginationDate, "lastAttendanceTimestamp").stream().map(o ->
                 new User(o.getBarcode().getBarcodeId(), o.getFirstName(), o.getLastName(), o.getGender(), o.getTeam(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp())).collect(Collectors.toList());
         tableItems.setAll(collect);
     }
 
     @FXML
     protected void goNextPage() {
-        currentPage++;
-        paginationLabel.setText(formatPagination(currentPage));
-        listPage();
+        updatePagination(paginationDate.plusDays(1));
+        listPageForDate();
     }
     @FXML
     protected void goPrevPage() {
-        if (currentPage <= 1) {
-            return;
-        }
-        currentPage--;
-        paginationLabel.setText(formatPagination(currentPage));
-        listPage();
-
+        updatePagination(paginationDate.minusDays(1));
+        listPageForDate();
     }
+    private void updatePagination(LocalDate localDate) {
+        paginationDate = localDate;
+        paginationLabel.setText(formatPagination(paginationDate));
+    }
+
+
 
     public void onBarcodeRead(Long barcodeId) {
         Optional<UserEntity> userByBarcodeId = userRepo.findUserByBarcodeId(barcodeId);
@@ -114,7 +116,7 @@ public class PanelAttendanceController {
             userRepo.save(byId);
             attendanceRepo.save(new UserAttendanceEntity(byId.getBarcode()));
 
-            listPage();
+            listPageForDate();
 
             Label messageLabel = new Label("Attendance added for " + byId.getFirstName());
             messageLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");

@@ -4,6 +4,8 @@ import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
+import java.time.LocalDate;
+
 public class LayoutUtil {
     public static void stretchInsideAnchorPance(Node pane) {
         AnchorPane.setTopAnchor(pane, 0.0);
@@ -21,6 +23,9 @@ public class LayoutUtil {
 
     public static String formatPagination(int pageNumber) {
         return String.format("%02d", pageNumber);
+    }
+    public static String formatPagination(LocalDate date) {
+        return date.toString();
     }
 }
 

@@ -9,6 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 
 public class GambaruUIApplication extends Application {
@@ -29,6 +30,12 @@ public class GambaruUIApplication extends Application {
                 if (word == null || word.isBlank() ) {
                     return;
                 }
+                Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+                boolean matches = pattern.matcher(word).matches();
+                if (!matches) {
+                    return;
+                }
+
                 System.out.println("Input " + word.trim());
                 controller.onBarcodeScanned(Long.parseLong(word.trim()));
             }
