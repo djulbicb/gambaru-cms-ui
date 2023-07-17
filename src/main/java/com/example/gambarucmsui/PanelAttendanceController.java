@@ -5,12 +5,19 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
+
+import com.example.gambarucmsui.ui.ModalView;
+import com.example.gambarucmsui.ui.ToastView;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -108,6 +115,85 @@ public class PanelAttendanceController {
             attendanceRepo.save(new UserAttendanceEntity(byId.getBarcode()));
 
             listPage();
+
+            Label messageLabel = new Label("Attendance added for " + byId.getFirstName());
+            messageLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
+            ToastView.showModal(messageLabel, 500,500);
         }
     }
+
+    @FXML
+    public void test() {
+        TextField firstNameField = new TextField();
+        TextField lastNameField = new TextField();
+        Button saveButton = new Button("Save");
+        Button closeButton = new Button("Close");
+
+        ModalView<String> modalView = new ModalView<>(new AnchorPane(), result -> {
+            System.out.println("Result: " + result);
+        });
+
+        saveButton.setOnAction(saveEvent -> {
+            String fullName = firstNameField.getText() + " " + lastNameField.getText();
+            modalView.closeModal(fullName);
+        });
+        closeButton.setOnAction(saveEvent -> {
+            modalView.closeModal(null);
+        });
+
+        AnchorPane modalContent = new AnchorPane();
+        modalContent.setPadding(new Insets(10));
+        modalContent.getChildren().addAll(firstNameField, lastNameField, saveButton, closeButton);
+        AnchorPane.setTopAnchor(firstNameField, 10.0);
+        AnchorPane.setLeftAnchor(firstNameField, 10.0);
+        AnchorPane.setTopAnchor(lastNameField, 40.0);
+        AnchorPane.setLeftAnchor(lastNameField, 10.0);
+        AnchorPane.setTopAnchor(saveButton, 80.0);
+        AnchorPane.setLeftAnchor(saveButton, 10.0);
+
+        modalView.setContent(modalContent);
+        modalView.showAndWait();
+    }
+    @FXML
+    public void testWORKING() {
+        Stage modalStage = createModalStage();
+
+        TextField firstNameField = new TextField();
+        TextField lastNameField = new TextField();
+        Button saveButton = new Button("Save");
+        saveButton.setOnAction(saveEvent -> {
+            String fullName = firstNameField.getText() + " " + lastNameField.getText();
+            closeAndReturnResult(modalStage, fullName);
+        });
+
+        AnchorPane modalContent = new AnchorPane();
+        modalContent.setPadding(new Insets(10));
+        modalContent.getChildren().addAll(firstNameField, lastNameField, saveButton);
+
+        AnchorPane.setTopAnchor(firstNameField, 10.0);
+        AnchorPane.setLeftAnchor(firstNameField, 10.0);
+        AnchorPane.setTopAnchor(lastNameField, 40.0);
+        AnchorPane.setLeftAnchor(lastNameField, 10.0);
+        AnchorPane.setTopAnchor(saveButton, 80.0);
+        AnchorPane.setLeftAnchor(saveButton, 10.0);
+
+        modalStage.setScene(new Scene(modalContent));
+        modalStage.showAndWait();
+    }
+
+    private Stage createModalStage() {
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.initStyle(StageStyle.TRANSPARENT);
+        modalStage.setResizable(false);
+        modalStage.setAlwaysOnTop(true);
+        return modalStage;
+    }
+
+    private void closeAndReturnResult(Stage modalStage, String result) {
+        modalStage.close();
+        System.out.println("Result: " + result);
+    }
+
+
 }

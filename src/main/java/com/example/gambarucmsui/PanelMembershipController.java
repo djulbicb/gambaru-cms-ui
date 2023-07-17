@@ -5,6 +5,7 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserMembershipRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
+import com.example.gambarucmsui.ui.ToastView;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -103,6 +104,10 @@ public class PanelMembershipController {
 
             membershipRepo.save(new UserMembershipPaymentEntity(byId.getBarcode()));
             listPage();
+
+            Label messageLabel = new Label("Membership added for " + byId.getFirstName());
+            messageLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
+            ToastView.showModal(messageLabel, 500,500);
         }
     }
 }

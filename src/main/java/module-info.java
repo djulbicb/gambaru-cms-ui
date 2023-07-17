@@ -14,4 +14,6 @@ module com.example.gambarucmsui {
     opens com.example.gambarucmsui.adapter.out.persistence.entity.user to org.hibernate.orm.core;
     opens com.example.gambarucmsui.common to javafx.controls;
     exports com.example.gambarucmsui;
+    exports com.example.gambarucmsui.ui;
+    opens com.example.gambarucmsui.ui to javafx.fxml;
 }
