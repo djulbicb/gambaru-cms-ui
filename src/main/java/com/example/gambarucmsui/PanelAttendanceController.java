@@ -1,7 +1,10 @@
 package com.example.gambarucmsui;
 
+import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
+import com.example.gambarucmsui.adapter.out.persistence.entity.TestEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
+import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
@@ -15,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -30,6 +34,7 @@ import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
 
 public class PanelAttendanceController {
 
+    ;
     // PAGINATION
     private LocalDate paginationDate = LocalDate.now();
     private static final int PAGE_SIZE = 50;
@@ -37,6 +42,7 @@ public class PanelAttendanceController {
     private final HashMap<Class, Repository> repositoryMap;
     private final UserRepository userRepo;
     private final UserAttendanceRepository attendanceRepo;
+    private final BarcodeRepository barcodeRepository;
     // FXML TABLE
     @FXML
     TableView<User> table;
@@ -49,6 +55,8 @@ public class PanelAttendanceController {
         this.repositoryMap = repositoryMap;
         this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
         this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
+        this.barcodeRepository = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
+
     }
 
     @FXML
@@ -126,6 +134,91 @@ public class PanelAttendanceController {
 
     @FXML
     public void test() {
+        ModalView<UserEntity> modalView = new ModalView<>(new AnchorPane(), result -> {
+            LocalDateTime now = LocalDateTime.now();
+            BarcodeEntity barcodeEntity = barcodeRepository.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
+            result.setCreatedAt(now);
+            result.setBarcode(barcodeEntity);
+
+            barcodeEntity.setStatus(BarcodeEntity.Status.ASSIGNED);
+            barcodeRepository.save(barcodeEntity);
+            userRepo.save(result);
+        });
+
+        // Create the form controls
+        TextField firstNameField = new TextField();
+        TextField lastNameField = new TextField();
+        TextField barcodeIdField = new TextField();
+        ComboBox<UserEntity.Gender> genderComboBox = new ComboBox<>();
+
+        // Populate the gender combo box
+        genderComboBox.getItems().addAll(UserEntity.Gender.values());
+
+        // Restrict barcodeIdField to accept only numbers
+        barcodeIdField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                barcodeIdField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        Button submitButton = new Button("Submit");
+        submitButton.setOnAction(e -> {
+            // Get the values from the form
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+//            Long barcodeId = Long.parseLong(barcodeIdField.getText());
+            UserEntity.Gender gender = genderComboBox.getValue();
+
+            // Create a UserEntity object
+            UserEntity user = new UserEntity();
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+//            user.setBarcodeId(barcodeId);
+            user.setGender(gender);
+
+            // Perform any desired operations with the user object
+            System.out.println(user);
+
+            // Clear the form fields
+            firstNameField.clear();
+            lastNameField.clear();
+            barcodeIdField.clear();
+            genderComboBox.getSelectionModel().clearSelection();
+
+            String fullName = firstNameField.getText() + " " + lastNameField.getText();
+
+            modalView.closeModal(user);
+        });
+
+
+        // Create a grid pane for the form layout
+        GridPane gridPane = new GridPane();
+        gridPane.setPadding(new Insets(10));
+        gridPane.setHgap(10);
+        gridPane.setVgap(5);
+
+        // Add labels and controls to the grid pane
+        gridPane.addRow(0, new Label("First Name:"), firstNameField);
+        gridPane.addRow(1, new Label("Last Name:"), lastNameField);
+        gridPane.addRow(2, new Label("Barcode ID:"), barcodeIdField);
+        gridPane.addRow(3, new Label("Gender:"), genderComboBox);
+        gridPane.add(submitButton, 1, 4);
+
+
+        AnchorPane modalContent = new AnchorPane();
+        modalContent.setPadding(new Insets(10));
+        modalContent.getChildren().addAll(gridPane);
+        AnchorPane.setTopAnchor(firstNameField, 10.0);
+        AnchorPane.setLeftAnchor(firstNameField, 10.0);
+        AnchorPane.setTopAnchor(lastNameField, 40.0);
+        AnchorPane.setLeftAnchor(lastNameField, 10.0);
+
+        modalView.setContent(modalContent);
+        modalView.showAndWait();
+
+    }
+    @FXML
+    public void testqqqq() {
         TextField firstNameField = new TextField();
         TextField lastNameField = new TextField();
         Button saveButton = new Button("Save");

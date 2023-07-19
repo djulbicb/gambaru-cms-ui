@@ -30,14 +30,14 @@ public class GambaruUIApplication extends Application {
                 if (word == null || word.isBlank() ) {
                     return;
                 }
-                Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
-                boolean matches = pattern.matcher(word).matches();
-                if (!matches) {
-                    return;
-                }
+//                Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+//                boolean matches = pattern.matcher(word).matches();
+//                if (!matches) {
+//                    return;
+//                }
 
-                System.out.println("Input " + word.trim());
-                controller.onBarcodeScanned(Long.parseLong(word.trim()));
+//                System.out.println("Input " + word.trim());
+//                controller.onBarcodeScanned(Long.parseLong(word.trim()));
             }
         });
 

@@ -17,7 +17,7 @@
                <children>
                   <HBox spacing="5.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <ToggleButton fx:id="headerBtnAttendance" maxHeight="1.7976931348623157E308" minWidth="150.0" mnemonicParsing="false" onMouseClicked="#switchView" selected="true" text="DOLAZNOST" HBox.hgrow="ALWAYS">
+                        <ToggleButton fx:id="headerBtnBarcode" maxHeight="1.7976931348623157E308" minWidth="150.0" mnemonicParsing="false" onMouseClicked="#switchView" selected="true" text="DOLAZNOST" HBox.hgrow="ALWAYS">
                            <graphic>
                               <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -55,6 +55,18 @@
                                  </image>
                               </ImageView>
                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton fx:id="headerBtnSettings1" maxHeight="1.7976931348623157E308" minWidth="150.0" mnemonicParsing="false" onMouseClicked="#switchView" text="BARKOD">
+                           <graphic>
+                              <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true" styleClass="headerBtns">
+                                 <image>
+                                    <Image url="@images/icons8-settings-100.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <toggleGroup>
+                              <ToggleGroup fx:id="headerToggleBtns1" />
+                           </toggleGroup>
                         </ToggleButton>
                      </children>
                   </HBox>

@@ -51,6 +51,22 @@ public class UserEntity {
     @Column(name = "last_membership_payment_timestamp")
     private LocalDateTime lastMembershipPaymentTimestamp;
 
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "userId=" + userId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", gender=" + gender +
+                ", teamName='" + teamName + '\'' +
+                ", barcode=" + barcode +
+                ", team=" + team +
+                ", createdAt=" + createdAt +
+                ", lastAttendanceTimestamp=" + lastAttendanceTimestamp +
+                ", lastMembershipPaymentTimestamp=" + lastMembershipPaymentTimestamp +
+                '}';
+    }
+
     public Long getUserId() {
         return userId;
     }

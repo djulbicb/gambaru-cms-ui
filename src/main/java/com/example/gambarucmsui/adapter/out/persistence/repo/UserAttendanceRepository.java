@@ -4,6 +4,9 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEnt
 import com.example.gambarucmsui.model.AttendanceCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,5 +35,18 @@ public class UserAttendanceRepository extends Repository<UserAttendanceEntity> {
         return query.getResultList().stream()
                 .map(row -> new AttendanceCount(LocalDate.parse(row[0]+""), (long) row[1]))
                 .collect(Collectors.toList());
+    }
+
+    public List<UserAttendanceEntity> fetchLastNEntriesForUserAttendance(Long barcodeId, int count) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserAttendanceEntity> query = criteriaBuilder.createQuery(UserAttendanceEntity.class);
+        Root<UserAttendanceEntity> root = query.from(UserAttendanceEntity.class);
+        query.select(root)
+                .where(criteriaBuilder.equal(root.get("barcode").get("barcodeId"), barcodeId))
+                .orderBy(criteriaBuilder.desc(root.get("timestamp")));
+
+        return entityManager.createQuery(query)
+                .setMaxResults(count)
+                .getResultList();
     }
 }

@@ -16,10 +16,20 @@ public class Repository<T> {
         this.entityClass = entityClass;
     }
 
-    public void save(T entity) {
+    public T save(T entity) {
         entityManager.getTransaction().begin();
         entityManager.persist(entity);
         entityManager.getTransaction().commit();
+        return entity;
+    }
+
+    public List<T> saveAll(List<T> entities) {
+        entityManager.getTransaction().begin();
+        for (T entity : entities) {
+            entityManager.persist(entity);
+        }
+        entityManager.getTransaction().commit();
+        return entities;
     }
 
     public void update(T entity) {
@@ -36,6 +46,15 @@ public class Repository<T> {
 
     public T findById(Long id) {
         return entityManager.find(entityClass, id);
+    }
+
+    public List<T> findByIds(String fieldName, List<Long> ids) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> query = criteriaBuilder.createQuery(entityClass);
+        Root<T> root = query.from(entityClass);
+        query.select(root).where(root.get(fieldName).in(ids));
+
+        return entityManager.createQuery(query).getResultList();
     }
 
     public List<T> findAll() {

@@ -6,6 +6,9 @@ import com.example.gambarucmsui.model.AttendanceCount;
 import com.example.gambarucmsui.model.MembershipCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,5 +46,18 @@ public class UserMembershipRepository extends Repository<UserMembershipPaymentEn
             membershipCounts.add(new MembershipCount(LocalDate.of(year, month, 1), count));
         }
         return membershipCounts;
+    }
+
+    public List<UserMembershipPaymentEntity> fetchLastNEntriesForUserAttendance(Long barcodeId, int count) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserMembershipPaymentEntity> query = criteriaBuilder.createQuery(UserMembershipPaymentEntity.class);
+        Root<UserMembershipPaymentEntity> root = query.from(UserMembershipPaymentEntity.class);
+        query.select(root)
+                .where(criteriaBuilder.equal(root.get("barcode").get("barcodeId"), barcodeId))
+                .orderBy(criteriaBuilder.desc(root.get("timestamp")));
+
+        return entityManager.createQuery(query)
+                .setMaxResults(count)
+                .getResultList();
     }
 }

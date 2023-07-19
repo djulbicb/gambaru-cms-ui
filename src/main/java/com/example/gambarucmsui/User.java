@@ -30,9 +30,16 @@ public class User {
         this.team = team;
         System.out.println(barcodeId);
         System.out.println(createdAt);
-        this.createdAt = formatter.format(createdAt);
-        this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
-        this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
+
+        if (createdAt != null) {
+            this.createdAt = formatter.format(createdAt);
+        }
+        if (lastAttendanceTimestamp != null) {
+            this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
+        }
+        if (lastMembershipPaymentTimestamp != null) {
+            this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
+        }
     }
 
 

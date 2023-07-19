@@ -1,3 +1,35 @@
+// DARK MODE
+.root {
+    -fx-accent: #1e74c6;
+    -fx-focus-color: -fx-accent;
+    -fx-base: #373e43;
+    -fx-control-inner-background: derive(-fx-base, 35%);
+    -fx-control-inner-background-alt: -fx-control-inner-background ;
+}
+
+.label{
+    -fx-text-fill: #fff;
+}
+
+.text-field {
+    -fx-prompt-text-fill: gray;
+}
+
+.button{
+    -fx-focus-traversable: false;
+}
+
+.button:hover{
+    -fx-text-fill: white;
+}
+
+.separator *.line {
+    -fx-background-color: #3C3C3C;
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+}
+
+// HEADER BUTTONS
 .toggle-button, .button {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
@@ -20,7 +52,7 @@
 }
 
 
-
+// CHART
 .chart-content {
     -fx-background-color: #34495e;
 }
@@ -67,4 +99,8 @@
     -fx-tick-label-fill: white;
     -fx-tick-length: 0;
     -fx-minor-tick-length: 0;
+}
+
+.tab:selected {
+    -fx-background-color: #007AFF;
 }
