@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #34495e;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox prefWidth="400.0">
+         <children>
+            <Label maxHeight="1.7976931348623157E308" text="IME TIMA:" textFill="#fcfcfc">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtTeamName" onKeyTyped="#txtTeamNameReset" />
+            <HBox>
+               <children>
+                  <Label fx:id="lblErrTeamName" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox prefWidth="400.0">
+         <children>
+            <Label maxHeight="1.7976931348623157E308" text="CENA ČLANARINE:" textFill="#fcfcfc">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtMembershipFee" onKeyTyped="#txtMembershipFeeReset" />
+            <HBox>
+               <children>
+                  <Label fx:id="lblErrMembershipFee" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <HBox alignment="TOP_RIGHT" spacing="5.0">
+         <children>
+            <Button mnemonicParsing="false" onMouseClicked="#onSave" text="SAČUVAJ" />
+            <Button mnemonicParsing="false" onMouseClicked="#onClose" text="ZATVORI" />
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>

@@ -4,14 +4,23 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "team")
 public class TeamEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "team_id")
     private Long teamId;
+
+    @Column(name = "name", unique = true, columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
     private String name;
+
     @Column(name = "membership_payment")
     private BigDecimal membershipPayment;
 
@@ -45,5 +54,13 @@ public class TeamEntity {
 
     public void setMembershipPayment(BigDecimal membershipPayment) {
         this.membershipPayment = membershipPayment;
+    }
+
+    public void addBarcode(BarcodeEntity barcode) {
+        barcode.setTeam(this);
+    }
+
+    public void removeBarcode(BarcodeEntity barcode) {
+        barcode.setTeam(null);
     }
 }

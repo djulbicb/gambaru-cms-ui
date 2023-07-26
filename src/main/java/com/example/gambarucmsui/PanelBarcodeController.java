@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class PanelBarcodeController implements PanelHeader {
     private final BarcodeRepository barcodeRepository;
 
-    public PanelBarcodeController(HashMap<Class, Repository> repositoryMap) {
+    public PanelBarcodeController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
         this.barcodeRepository = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
     }
 

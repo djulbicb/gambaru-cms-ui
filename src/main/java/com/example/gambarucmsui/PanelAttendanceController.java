@@ -2,7 +2,7 @@ package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
+import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
@@ -51,7 +51,7 @@ public class PanelAttendanceController implements PanelHeader {
     ObservableList<User> tableItems;
 
 
-    public PanelAttendanceController(HashMap<Class, Repository> repositoryMap) {
+    public PanelAttendanceController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
         this.repositoryMap = repositoryMap;
         this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
         this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
@@ -69,8 +69,8 @@ public class PanelAttendanceController implements PanelHeader {
         TableColumn<User, Integer> lastNameColumn = new TableColumn<>("Prezime");
         TableColumn<User, Integer> genderNameColumn = new TableColumn<>("Pol");
         TableColumn<User, Integer> teamColumn = new TableColumn<>("Tim");
-        TableColumn<User, Integer> lastAttendanceColumn = new TableColumn<>("lastAttendanceTimestamp");
-        TableColumn<User, Integer> lastMembershipPaymentColumn = new TableColumn<>("lastMembershipPaymentTimestamp");
+//        TableColumn<User, Integer> lastAttendanceColumn = new TableColumn<>("lastAttendanceTimestamp");
+//        TableColumn<User, Integer> lastMembershipPaymentColumn = new TableColumn<>("lastMembershipPaymentTimestamp");
         TableColumn<User, Integer> createdAt = new TableColumn<>("createdAt");
 
         // Define how data should be displayed in columns
@@ -79,11 +79,11 @@ public class PanelAttendanceController implements PanelHeader {
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         genderNameColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
         teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-        lastAttendanceColumn.setCellValueFactory(new PropertyValueFactory<>("lastAttendanceTimestamp"));
-        lastMembershipPaymentColumn.setCellValueFactory(new PropertyValueFactory<>("lastMembershipPaymentTimestamp"));
+//        lastAttendanceColumn.setCellValueFactory(new PropertyValueFactory<>("lastAttendanceTimestamp"));
+//        lastMembershipPaymentColumn.setCellValueFactory(new PropertyValueFactory<>("lastMembershipPaymentTimestamp"));
         createdAt.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
 
-        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, genderNameColumn, teamColumn, lastAttendanceColumn, lastMembershipPaymentColumn, createdAt);
+        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, genderNameColumn, teamColumn, createdAt);
         tableItems = table.getItems();
 
         updatePagination(LocalDate.now());
@@ -96,8 +96,8 @@ public class PanelAttendanceController implements PanelHeader {
     }
 
     private void listPageForDate() {
-        List<User> collect = userRepo.findAllForDate(paginationDate, "lastAttendanceTimestamp").stream().map(o ->
-                new User(o.getBarcode().getBarcodeId(), o.getFirstName(), o.getLastName(), "phone", o.getGender(), o.getTeam(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp())).collect(Collectors.toList());
+        List<User> collect = userRepo.findAllForAttendanceDate(paginationDate, "lastAttendanceTimestamp")
+                .stream().map(o -> User.fromEntity(o)).collect(Collectors.toList());
         tableItems.setAll(collect);
     }
 
@@ -119,35 +119,36 @@ public class PanelAttendanceController implements PanelHeader {
 
 
     public void onBarcodeRead(Long barcodeId) {
-        Optional<UserEntity> userByBarcodeId = userRepo.findUserByBarcodeId(barcodeId);
-        if (userByBarcodeId.isPresent()) {
+        Optional<UserEntity> userOpt = userRepo.findUserByBarcodeId(barcodeId);
+        if (userOpt.isPresent()) {
+            BarcodeEntity barcode = barcodeRepository.findById(barcodeId);
+
             System.out.println("Adding attendance " + barcodeId);
 
-            UserEntity byId = userByBarcodeId.get();
-            byId.setLastAttendanceTimestamp(LocalDateTime.now());
 
-            userRepo.save(byId);
-            attendanceRepo.save(new UserAttendanceEntity(byId.getBarcode()));
+            UserEntity en = userOpt.get();
+//            en.setLastAttendanceTimestamp(LocalDateTime.now());
+
+            userRepo.save(en);
+            attendanceRepo.save(new UserAttendanceEntity(barcode));
 
             listPageForDate();
 
-            Label messageLabel = new Label("Attendance added for " + byId.getFirstName());
-            messageLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
-            ToastView.showModal(messageLabel, 500,500);
+            ToastView.showModal(String.format("Prisutnost registrovana za %s %s", en.getFirstName(), en.getLastName()));
         }
     }
 
     @FXML
     public void test() {
         ModalView<UserEntity> modalView = new ModalView<>(new AnchorPane(), result -> {
-            LocalDateTime now = LocalDateTime.now();
-            BarcodeEntity barcodeEntity = barcodeRepository.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
-            result.setCreatedAt(now);
-            result.setBarcode(barcodeEntity);
-
-            barcodeEntity.setStatus(BarcodeEntity.Status.ASSIGNED);
-            barcodeRepository.save(barcodeEntity);
-            userRepo.save(result);
+//            LocalDateTime now = LocalDateTime.now();
+//            BarcodeEntity barcodeEntity = barcodeRepository.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
+//            result.setCreatedAt(now);
+//            result.setBarcode(barcodeEntity);
+//
+//            barcodeEntity.setStatus(BarcodeEntity.Status.ASSIGNED);
+//            barcodeRepository.save(barcodeEntity);
+//            userRepo.save(result);
         });
 
         // Create the form controls

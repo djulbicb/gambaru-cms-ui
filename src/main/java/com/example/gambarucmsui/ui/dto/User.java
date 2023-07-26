@@ -2,28 +2,26 @@ package com.example.gambarucmsui.ui.dto;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
-import jakarta.persistence.*;
+import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static com.example.gambarucmsui.common.LayoutUtil.getOrElse;
+import java.util.StringJoiner;
 
 public class User {
-    private Long barcodeId;
+    private String barcodeId;
     private String firstName;
     private String lastName;
     private String phone;
-    private UserEntity.Gender gender;
-    private TeamEntity team;
+    private String gender;
+    private String team;
     private String createdAt;
-    private String lastAttendanceTimestamp;
-    private String lastMembershipPaymentTimestamp;
+//    private String lastAttendanceTimestamp;
+//    private String lastMembershipPaymentTimestamp;
 
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
 
-    public User(Long barcodeId, String firstName, String lastName, String phone, UserEntity.Gender gender, TeamEntity team, LocalDateTime createdAt, LocalDateTime lastAttendanceTimestamp, LocalDateTime lastMembershipPaymentTimestamp) {
+    public User(String barcodeId, String firstName, String lastName, String phone, String gender, String team, LocalDateTime createdAt) {
         this.barcodeId = barcodeId;
         this.firstName = firstName;
         this.phone = phone;
@@ -36,15 +34,28 @@ public class User {
         if (createdAt != null) {
             this.createdAt = formatter.format(createdAt);
         }
-        if (lastAttendanceTimestamp != null) {
-            this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
-        }
-        if (lastMembershipPaymentTimestamp != null) {
-            this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
-        }
+//        if (lastAttendanceTimestamp != null) {
+//            this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
+//        }
+//        if (lastMembershipPaymentTimestamp != null) {
+//            this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
+//        }
     }
 
-    public Long getBarcodeId() {
+    public static User fromEntity(UserEntity o) {
+        StringJoiner barcodeCsv = new StringJoiner(",");
+        for (BarcodeEntity barcode : o.getBarcodes()) {
+            barcodeCsv.add(barcode.getBarcodeId().toString());
+        }
+        StringJoiner teamCsv = new StringJoiner(",");
+        for (BarcodeEntity barcode : o.getBarcodes()) {
+            teamCsv.add(barcode.getTeam().getName());
+        }
+
+        return new User(barcodeCsv.toString(), o.getFirstName(), o.getLastName(), o.getPhone(), UserEntity.Gender.toSerbianLbl(o.getGender()), teamCsv.toString(), o.getCreatedAt());
+    }
+
+    public String getBarcodeId() {
         return barcodeId;
     }
 
@@ -60,11 +71,11 @@ public class User {
         return phone;
     }
 
-    public UserEntity.Gender getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public TeamEntity getTeam() {
+    public String getTeam() {
         return team;
     }
 
@@ -72,13 +83,13 @@ public class User {
         return createdAt;
     }
 
-    public String getLastAttendanceTimestamp() {
-        return lastAttendanceTimestamp;
-    }
-
-    public String getLastMembershipPaymentTimestamp() {
-        return lastMembershipPaymentTimestamp;
-    }
+//    public String getLastAttendanceTimestamp() {
+//        return lastAttendanceTimestamp;
+//    }
+//
+//    public String getLastMembershipPaymentTimestamp() {
+//        return lastMembershipPaymentTimestamp;
+//    }
 
     public DateTimeFormatter getFormatter() {
         return formatter;

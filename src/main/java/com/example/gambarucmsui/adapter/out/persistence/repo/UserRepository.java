@@ -1,6 +1,7 @@
 package com.example.gambarucmsui.adapter.out.persistence.repo;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
+import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
+import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -12,23 +13,43 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UserRepository extends Repository<UserEntity> {
     public UserRepository(EntityManager entityManager) {
         super(entityManager, UserEntity.class);
     }
     public Optional<UserEntity> findUserByBarcodeId(Long barcodeId) {
-        String queryString = "SELECT u FROM UserEntity u WHERE u.barcode.barcodeId = :barcodeId";
+        String queryString = "SELECT u FROM UserEntity u JOIN u.barcodes b WHERE b.barcodeId = :barcodeId";
         return entityManager.createQuery(queryString, UserEntity.class)
                 .setParameter("barcodeId", barcodeId)
                 .getResultStream()
                 .findFirst();
     }
 
-    public List<UserEntity> findAllForDate(LocalDate forDate, String sortByColumnName) {
-        String queryString = "SELECT u FROM UserEntity u WHERE DATE(u." + sortByColumnName + ") = :date ORDER BY u." + sortByColumnName;
-        TypedQuery<UserEntity> query = entityManager.createQuery(queryString, UserEntity.class);
-        query.setParameter("date", forDate);
+    public List<UserEntity> findAllForAttendanceDate(LocalDate forDate, String sortByColumnName) {
+        String fetchBarcodesFromAttendanceQuery = "SELECT ua.barcode FROM UserAttendanceEntity ua WHERE DATE(ua.timestamp) = :date";
+        TypedQuery<BarcodeEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, BarcodeEntity.class);
+        subquery.setParameter("date", forDate);
+        List<Long> barcodeEntities = subquery.getResultList().stream().map(en->en.getBarcodeId()).collect(Collectors.toList());
+
+        String fetchUsersBasedOnBarcodes = "SELECT b.user FROM BarcodeEntity b WHERE b.barcodeId IN :barcodeList";
+        TypedQuery<UserEntity> query = entityManager.createQuery(fetchUsersBasedOnBarcodes, UserEntity.class);
+        query.setParameter("barcodeList", barcodeEntities);
+
+        return query.getResultList();
+    }
+
+    public List<UserEntity> findAllForMembershipDate(LocalDate forDate, String sortByColumnName) {
+        String fetchBarcodesFromAttendanceQuery = "SELECT um.barcode FROM UserMembershipPaymentEntity um WHERE DATE(um.timestamp) = :date";
+        TypedQuery<BarcodeEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, BarcodeEntity.class);
+        subquery.setParameter("date", forDate);
+        List<Long> barcodeEntities = subquery.getResultList().stream().map(en->en.getBarcodeId()).collect(Collectors.toList());
+
+        String fetchUsersBasedOnBarcodes = "SELECT b.user FROM BarcodeEntity b WHERE b.barcodeId IN :barcodeList";
+        TypedQuery<UserEntity> query = entityManager.createQuery(fetchUsersBasedOnBarcodes, UserEntity.class);
+        query.setParameter("barcodeList", barcodeEntities);
+
         return query.getResultList();
     }
     @Override

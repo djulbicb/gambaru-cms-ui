@@ -12,6 +12,7 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import static com.example.gambarucmsui.common.LayoutUtil.stretchInsideAnchorPance;
 
 public class GambaruSwitchController {
+    private final Stage primaryStage;
 
     // FXML
     ////////////////////////////////////////
@@ -47,31 +49,35 @@ public class GambaruSwitchController {
     private AnchorPane panelBarcode;
     private PanelBarcodeController panelBarcodeController;
 
+    public GambaruSwitchController(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
     @FXML
     private void initialize() throws IOException {
         HashMap<Class, Repository> repositoryMap = loadEntityManagementSystem();
 
-        panelAttendanceController = new PanelAttendanceController(repositoryMap);
+        panelAttendanceController = new PanelAttendanceController(primaryStage, repositoryMap);
         FXMLLoader attendanceLoader = new FXMLLoader(getClass().getResource("panel-attendance.fxml"));
         attendanceLoader.setController(panelAttendanceController);
         panelAttendance = attendanceLoader.load();
 
-        panelMembershipController = new PanelMembershipController(repositoryMap);
+        panelMembershipController = new PanelMembershipController(primaryStage, repositoryMap);
         FXMLLoader membershipLoader = new FXMLLoader(getClass().getResource("panel-membership.fxml"));
         membershipLoader.setController(panelMembershipController);
         panelMembership = membershipLoader.load();
 
-        panelStatisticsController = new PanelStatisticsController(repositoryMap);
+        panelStatisticsController = new PanelStatisticsController(primaryStage, repositoryMap);
         FXMLLoader statisticsLoader = new FXMLLoader(getClass().getResource("panel-statistics.fxml"));
         statisticsLoader.setController(panelStatisticsController);
         panelStatistics = statisticsLoader.load();
 
-        panelAdminController = new PanelAdminController(repositoryMap);
+        panelAdminController = new PanelAdminController(primaryStage, repositoryMap);
         FXMLLoader settingsLoader = new FXMLLoader(getClass().getResource("panel-admin.fxml"));
         settingsLoader.setController(panelAdminController);
         panelSettings = settingsLoader.load();
 
-        panelBarcodeController = new PanelBarcodeController(repositoryMap);
+        panelBarcodeController = new PanelBarcodeController(primaryStage, repositoryMap);
         FXMLLoader barcodeLoader = new FXMLLoader(getClass().getResource("panel-barcode.fxml"));
         barcodeLoader.setController(panelBarcodeController);
         panelBarcode = barcodeLoader.load();

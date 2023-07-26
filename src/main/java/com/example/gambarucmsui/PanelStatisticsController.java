@@ -11,6 +11,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class PanelStatisticsController implements PanelHeader{
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
 
-    public PanelStatisticsController(HashMap<Class, Repository> repositoryMap) {
+    public PanelStatisticsController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
         attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
         membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
     }

@@ -109,3 +109,42 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+#root {
+    -fx-background-color: #373e43;
+    -fx-padding: 10;
+}
+
+/* Apply dark mode style to the TextField */
+#membershipPaymentField {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+}
+
+/* Apply dark mode style to the Label (errorLabel) */
+#errorLabel {
+    -fx-text-fill: red;
+}
+
+/* Apply dark mode style to the buttons */
+.dialog-pane .button-bar .button {
+    -fx-background-color: #373e43;
+    -fx-text-fill: #ffffff;
+}
+
+/* Apply dark mode style to the header */
+.dialog-pane .header-panel {
+    -fx-background-color: #1e74c6;
+    -fx-text-fill: #ffffff;
+}
+
+

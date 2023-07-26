@@ -1,7 +1,10 @@
 package com.example.gambarucmsui;
 
+import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
+import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserMembershipPaymentEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
+import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
+import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserMembershipRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
@@ -13,9 +16,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +30,7 @@ public class PanelMembershipController implements PanelHeader {
     private final UserMembershipRepository repository;
     private final UserRepository userRepo;
     private final UserMembershipRepository membershipRepo;
+    private final BarcodeRepository barcodeRepo;
     // PAGINATION
     private LocalDate paginationDate = LocalDate.now();
     private static final int PAGE_SIZE = 50;
@@ -37,10 +41,11 @@ public class PanelMembershipController implements PanelHeader {
     Label paginationLabel;
     ObservableList<User> tableItems;
 
-    public PanelMembershipController(HashMap<Class, Repository> repositoryMap) {
+    public PanelMembershipController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
         repository = (UserMembershipRepository) repositoryMap.get(UserMembershipPaymentEntity.class);
         userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
         membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
+        barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
     }
 
     @FXML
@@ -53,8 +58,8 @@ public class PanelMembershipController implements PanelHeader {
         TableColumn<User, Integer> lastNameColumn = new TableColumn<>("Prezime");
         TableColumn<User, Integer> genderNameColumn = new TableColumn<>("Pol");
         TableColumn<User, Integer> teamColumn = new TableColumn<>("Tim");
-        TableColumn<User, Integer> lastAttendanceColumn = new TableColumn<>("lastAttendanceTimestamp");
-        TableColumn<User, Integer> lastMembershipPaymentColumn = new TableColumn<>("lastMembershipPaymentTimestamp");
+//        TableColumn<User, Integer> lastAttendanceColumn = new TableColumn<>("lastAttendanceTimestamp");
+//        TableColumn<User, Integer> lastMembershipPaymentColumn = new TableColumn<>("lastMembershipPaymentTimestamp");
         TableColumn<User, Integer> createdAt = new TableColumn<>("createdAt");
 
         // Define how data should be displayed in columns
@@ -63,25 +68,25 @@ public class PanelMembershipController implements PanelHeader {
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         genderNameColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
         teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-        lastAttendanceColumn.setCellValueFactory(new PropertyValueFactory<>("lastAttendanceTimestamp"));
-        lastMembershipPaymentColumn.setCellValueFactory(new PropertyValueFactory<>("lastMembershipPaymentTimestamp"));
+//        lastAttendanceColumn.setCellValueFactory(new PropertyValueFactory<>("lastAttendanceTimestamp"));
+//        lastMembershipPaymentColumn.setCellValueFactory(new PropertyValueFactory<>("lastMembershipPaymentTimestamp"));
         createdAt.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
 
-        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, genderNameColumn, teamColumn, lastAttendanceColumn, lastMembershipPaymentColumn, createdAt);
+        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, genderNameColumn, teamColumn, createdAt);
         tableItems = table.getItems();
 
         updatePagination(LocalDate.now());
-        listPageForDate();
     }
 
     @Override
     public void viewStitched() {
+        listPageForDate();
         System.out.println("Panel membership");
     }
 
     private void listPageForDate() {
-        List<User> collect = userRepo.findAllForDate(paginationDate, "lastMembershipPaymentTimestamp").stream().map(o ->
-                new User(o.getBarcode().getBarcodeId(), o.getFirstName(), o.getLastName(), "phone", o.getGender(), o.getTeam(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp())).collect(Collectors.toList());
+        List<User> collect = userRepo.findAllForMembershipDate(paginationDate, "lastMembershipPaymentTimestamp")
+                .stream().map(o -> User.fromEntity(o)).collect(Collectors.toList());
         tableItems.setAll(collect);
     }
 
@@ -100,19 +105,22 @@ public class PanelMembershipController implements PanelHeader {
         paginationLabel.setText(formatPagination(paginationDate));
     }
     public void onBarcodeRead(Long barcodeId) {
-        Optional<UserEntity> userByBarcodeId = userRepo.findUserByBarcodeId(barcodeId);
-        if (userByBarcodeId.isPresent()) {
-            System.out.println("Adding membership " + barcodeId);
-            UserEntity byId = userByBarcodeId.get();
-            byId.setLastMembershipPaymentTimestamp(LocalDateTime.now());
-            userRepo.save(byId);
+        Optional<UserEntity> userOpt = userRepo.findUserByBarcodeId(barcodeId);
+        if (userOpt.isPresent()) {
+            BarcodeEntity barcode = barcodeRepo.findById(barcodeId);
 
-            membershipRepo.save(new UserMembershipPaymentEntity(byId.getBarcode()));
+            System.out.println("Adding attendance " + barcodeId);
+
+
+            UserEntity en = userOpt.get();
+//            en.setLastAttendanceTimestamp(LocalDateTime.now());
+
+            userRepo.save(en);
+            membershipRepo.save(new UserMembershipPaymentEntity(barcode, barcode.getTeam().getMembershipPayment()));
+
             listPageForDate();
 
-            Label messageLabel = new Label("Membership added for " + byId.getFirstName());
-            messageLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
-            ToastView.showModal(messageLabel, 500,500);
+            ToastView.showModal(String.format("Prisutnost registrovana za %s %s", en.getFirstName(), en.getLastName()));
         }
     }
 }

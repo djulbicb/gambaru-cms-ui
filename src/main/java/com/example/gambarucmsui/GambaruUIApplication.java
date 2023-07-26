@@ -18,7 +18,7 @@ public class GambaruUIApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gambaru-header-switch.fxml"));
-        GambaruSwitchController controller = new GambaruSwitchController();
+        GambaruSwitchController controller = new GambaruSwitchController(stage);
         loader.setController(controller);
 
         AnchorPane root = loader.load();
@@ -37,6 +37,9 @@ public class GambaruUIApplication extends Application {
 //                }
 
                 String numberOnly= word.trim().replaceAll("[^0-9]", "");
+                if (numberOnly.length() < 10) {
+                    return;
+                }
                 System.out.println("Input " + numberOnly);
                 controller.onBarcodeScanned(Long.parseLong(numberOnly));
             }

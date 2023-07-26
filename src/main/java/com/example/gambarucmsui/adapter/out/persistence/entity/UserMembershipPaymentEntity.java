@@ -25,10 +25,10 @@ public class UserMembershipPaymentEntity {
     public UserMembershipPaymentEntity() {
     }
 
-    public UserMembershipPaymentEntity(BarcodeEntity barcode) {
+    public UserMembershipPaymentEntity(BarcodeEntity barcode, BigDecimal fee) {
         this.barcode = barcode;
         this.timestamp = LocalDateTime.now();
-        this.money = BigDecimal.ONE;
+        this.money = fee;
     }
 
     public Long getMembershipPaymentId() {
