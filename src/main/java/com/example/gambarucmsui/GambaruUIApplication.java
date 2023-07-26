@@ -36,8 +36,9 @@ public class GambaruUIApplication extends Application {
 //                    return;
 //                }
 
-//                System.out.println("Input " + word.trim());
-//                controller.onBarcodeScanned(Long.parseLong(word.trim()));
+                String numberOnly= word.trim().replaceAll("[^0-9]", "");
+                System.out.println("Input " + numberOnly);
+                controller.onBarcodeScanned(Long.parseLong(numberOnly));
             }
         });
 

@@ -1,4 +1,4 @@
-package com.example.gambarucmsui;
+package com.example.gambarucmsui.ui.dto;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
@@ -14,6 +14,7 @@ public class User {
     private Long barcodeId;
     private String firstName;
     private String lastName;
+    private String phone;
     private UserEntity.Gender gender;
     private TeamEntity team;
     private String createdAt;
@@ -22,9 +23,10 @@ public class User {
 
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
 
-    public User(Long barcodeId, String firstName, String lastName, UserEntity.Gender gender, TeamEntity team, LocalDateTime createdAt, LocalDateTime lastAttendanceTimestamp, LocalDateTime lastMembershipPaymentTimestamp) {
+    public User(Long barcodeId, String firstName, String lastName, String phone, UserEntity.Gender gender, TeamEntity team, LocalDateTime createdAt, LocalDateTime lastAttendanceTimestamp, LocalDateTime lastMembershipPaymentTimestamp) {
         this.barcodeId = barcodeId;
         this.firstName = firstName;
+        this.phone = phone;
         this.lastName = lastName;
         this.gender = gender;
         this.team = team;
@@ -42,7 +44,6 @@ public class User {
         }
     }
 
-
     public Long getBarcodeId() {
         return barcodeId;
     }
@@ -53,6 +54,10 @@ public class User {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public UserEntity.Gender getGender() {
@@ -73,5 +78,9 @@ public class User {
 
     public String getLastMembershipPaymentTimestamp() {
         return lastMembershipPaymentTimestamp;
+    }
+
+    public DateTimeFormatter getFormatter() {
+        return formatter;
     }
 }

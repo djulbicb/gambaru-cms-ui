@@ -20,4 +20,6 @@ module com.example.gambarucmsui {
     exports com.example.gambarucmsui;
     exports com.example.gambarucmsui.ui;
     opens com.example.gambarucmsui.ui to javafx.fxml;
+    opens com.example.gambarucmsui.ui.dto to javafx.base, javafx.fxml;
+    exports com.example.gambarucmsui.ui.dto;
 }

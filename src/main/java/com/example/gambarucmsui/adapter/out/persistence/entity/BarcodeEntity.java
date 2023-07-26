@@ -8,6 +8,14 @@ public class BarcodeEntity {
     public static enum Status {
         NOT_USED, ASSIGNED, DEACTIVATED
     }
+
+    public BarcodeEntity() {
+    }
+
+    public BarcodeEntity(Status status) {
+        this.status = status;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "barcode_id")
@@ -30,5 +38,7 @@ public class BarcodeEntity {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+
 }
 

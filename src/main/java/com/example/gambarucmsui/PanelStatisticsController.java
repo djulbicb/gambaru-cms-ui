@@ -18,7 +18,7 @@ import java.util.List;
 
 import static com.example.gambarucmsui.common.LayoutUtil.stretchInsideAnchorPance;
 
-public class PanelStatisticsController {
+public class PanelStatisticsController implements PanelHeader{
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
 
@@ -31,8 +31,14 @@ public class PanelStatisticsController {
     @FXML private AnchorPane graphMembershipPane;
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         System.out.println("PanelStatisticsController");
+    }
+
+    @Override
+    public void viewStitched() {
+        System.out.println("Panel statistic");
+
         List<AttendanceCount> attendanceData = attendanceRepo.getAttendanceDataLast60Days();
         List<MembershipCount> membershipData = membershipRepo.getMembershipCountByMonthLastYear();
 

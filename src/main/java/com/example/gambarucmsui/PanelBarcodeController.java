@@ -21,7 +21,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PanelBarcodeController {
+public class PanelBarcodeController implements PanelHeader {
     private final BarcodeRepository barcodeRepository;
 
     public PanelBarcodeController(HashMap<Class, Repository> repositoryMap) {
@@ -38,12 +38,17 @@ public class PanelBarcodeController {
     private Button btnFetchNewBarcodes;
 
     @FXML
-    private void initialize() {
+    public void initialize() {
+        System.out.println("Panel barcode");
+    }
+
+    @Override
+    public void viewStitched() {
 
     }
 
     @FXML
-    private void fetchBarcodes() {
+    public void fetchBarcodes() {
         List<BarcodeEntity> barcodeEntities = barcodeRepository.fetchOrGenerateBarcodes(100, BarcodeEntity.Status.NOT_USED);
         List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
         String csv = listToCsv(ids);

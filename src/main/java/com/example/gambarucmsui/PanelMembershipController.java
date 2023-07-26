@@ -6,6 +6,7 @@ import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserMembershipRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
 import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.ui.dto.User;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
 
-public class PanelMembershipController {
+public class PanelMembershipController implements PanelHeader {
     private final UserMembershipRepository repository;
     private final UserRepository userRepo;
     private final UserMembershipRepository membershipRepo;
@@ -43,7 +44,7 @@ public class PanelMembershipController {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         System.out.println("Membership loaded");
 
         // Create columns
@@ -73,9 +74,14 @@ public class PanelMembershipController {
         listPageForDate();
     }
 
+    @Override
+    public void viewStitched() {
+        System.out.println("Panel membership");
+    }
+
     private void listPageForDate() {
         List<User> collect = userRepo.findAllForDate(paginationDate, "lastMembershipPaymentTimestamp").stream().map(o ->
-                new User(o.getBarcode().getBarcodeId(), o.getFirstName(), o.getLastName(), o.getGender(), o.getTeam(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp())).collect(Collectors.toList());
+                new User(o.getBarcode().getBarcodeId(), o.getFirstName(), o.getLastName(), "phone", o.getGender(), o.getTeam(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp())).collect(Collectors.toList());
         tableItems.setAll(collect);
     }
 

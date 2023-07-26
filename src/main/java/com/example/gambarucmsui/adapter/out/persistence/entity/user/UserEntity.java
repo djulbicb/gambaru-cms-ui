@@ -28,8 +28,8 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "team_name")
-    private String teamName;
+    @Column(name = "phone")
+    private String phone;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "barcode_id")
@@ -50,22 +50,6 @@ public class UserEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_membership_payment_timestamp")
     private LocalDateTime lastMembershipPaymentTimestamp;
-
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "userId=" + userId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", gender=" + gender +
-                ", teamName='" + teamName + '\'' +
-                ", barcode=" + barcode +
-                ", team=" + team +
-                ", createdAt=" + createdAt +
-                ", lastAttendanceTimestamp=" + lastAttendanceTimestamp +
-                ", lastMembershipPaymentTimestamp=" + lastMembershipPaymentTimestamp +
-                '}';
-    }
 
     public Long getUserId() {
         return userId;
@@ -98,15 +82,6 @@ public class UserEntity {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
-
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
-    }
-
     public BarcodeEntity getBarcode() {
         return barcode;
     }
@@ -145,5 +120,29 @@ public class UserEntity {
 
     public void setLastMembershipPaymentTimestamp(LocalDateTime lastMembershipPaymentTimestamp) {
         this.lastMembershipPaymentTimestamp = lastMembershipPaymentTimestamp;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "userId=" + userId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", gender=" + gender +
+                ", phone='" + phone + '\'' +
+                ", barcode=" + barcode +
+                ", team=" + team +
+                ", createdAt=" + createdAt +
+                ", lastAttendanceTimestamp=" + lastAttendanceTimestamp +
+                ", lastMembershipPaymentTimestamp=" + lastMembershipPaymentTimestamp +
+                '}';
     }
 }

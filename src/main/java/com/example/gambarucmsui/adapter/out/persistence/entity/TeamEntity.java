@@ -15,6 +15,14 @@ public class TeamEntity {
     @Column(name = "membership_payment")
     private BigDecimal membershipPayment;
 
+    public TeamEntity() {
+    }
+
+    public TeamEntity(String name, BigDecimal membershipPayment) {
+        this.name = name;
+        this.membershipPayment = membershipPayment;
+    }
+
     public Long getTeamId() {
         return teamId;
     }

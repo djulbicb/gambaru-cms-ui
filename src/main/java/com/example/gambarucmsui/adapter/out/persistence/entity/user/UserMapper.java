@@ -1,7 +1,7 @@
 //package com.example.gambarucmsui.adapter.out.persistence.entity.user;
 //
 //
-//import com.example.gambarucmsui.User;
+//import com.example.gambarucmsui.ui.dto.User;
 //
 //public class UserMapper {
 //    public User toModel(UserEntity entity) {

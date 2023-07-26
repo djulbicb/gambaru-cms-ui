@@ -1,7 +1,6 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.TestEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.user.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
@@ -11,6 +10,7 @@ import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
 
 import com.example.gambarucmsui.ui.ModalView;
 import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.ui.dto.User;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
 
-public class PanelAttendanceController {
+public class PanelAttendanceController implements PanelHeader {
 
     ;
     // PAGINATION
@@ -60,7 +60,7 @@ public class PanelAttendanceController {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         System.out.println("Attendance loaded");
 
         // Create columns
@@ -90,9 +90,14 @@ public class PanelAttendanceController {
         listPageForDate();
     }
 
+    @Override
+    public void viewStitched() {
+        System.out.println("Panel attendance");
+    }
+
     private void listPageForDate() {
         List<User> collect = userRepo.findAllForDate(paginationDate, "lastAttendanceTimestamp").stream().map(o ->
-                new User(o.getBarcode().getBarcodeId(), o.getFirstName(), o.getLastName(), o.getGender(), o.getTeam(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp())).collect(Collectors.toList());
+                new User(o.getBarcode().getBarcodeId(), o.getFirstName(), o.getLastName(), "phone", o.getGender(), o.getTeam(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp())).collect(Collectors.toList());
         tableItems.setAll(collect);
     }
 
