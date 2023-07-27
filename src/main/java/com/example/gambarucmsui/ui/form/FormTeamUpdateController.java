@@ -30,7 +30,7 @@ public class FormTeamUpdateController implements Initializable {
     @FXML private TextField txtMembershipFee;
     @FXML private TextField txtTeamName;
 
-    // FORM DATA
+    // OUTPUT DATA
     /////////////////////////////////////////
     private boolean isFormReady = false;
     private Long teamId;

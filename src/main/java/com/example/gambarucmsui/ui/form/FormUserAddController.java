@@ -42,7 +42,7 @@ public class FormUserAddController implements Initializable {
         this.teamRepo = teamRepo;
     }
 
-    // FORM DATA
+    // OUTPUT DATA
     /////////////////////////////////////////
     private boolean isFormReady;
     private Long barcodeId;

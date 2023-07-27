@@ -1,7 +1,6 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.adapter.out.persistence.repo.*;
-import com.example.gambarucmsui.ui.ToastView;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -14,7 +13,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -126,7 +124,7 @@ public class GambaruSwitchController {
         panelContent.getChildren().add(panelAttendance);
         currentSelected = panelAttendance;
         stretchInsideAnchorPance(panelAttendance);
-        panelAttendanceController.viewStitched();
+        panelAttendanceController.viewSwitched();
     }
 
     private void switchToMembership() {
@@ -134,28 +132,28 @@ public class GambaruSwitchController {
         panelContent.getChildren().add(panelMembership);
         currentSelected = panelMembership;
         stretchInsideAnchorPance(panelMembership);
-        panelMembershipController.viewStitched();
+        panelMembershipController.viewSwitched();
     }
     private void switchToStatistic() {
         panelContent.getChildren().clear();
         panelContent.getChildren().add(panelStatistics);
         currentSelected = panelStatistics;
         stretchInsideAnchorPance(panelStatistics);
-        panelStatisticsController.viewStitched();
+        panelStatisticsController.viewSwitched();
     }
     private void switchToAdmin() {
         panelContent.getChildren().clear();
         panelContent.getChildren().add(panelSettings);
         currentSelected = panelSettings;
         stretchInsideAnchorPance(panelSettings);
-        panelAdminController.viewStitched();
+        panelAdminController.viewSwitched();
     }
     private void switchToBarcode() {
         panelContent.getChildren().clear();
         panelContent.getChildren().add(panelBarcode);
         currentSelected = panelBarcode;
         stretchInsideAnchorPance(panelBarcode);
-        panelBarcodeController.viewStitched();
+        panelBarcodeController.viewSwitched();
     }
 
     @FXML
@@ -177,7 +175,7 @@ public class GambaruSwitchController {
         }
     }
 
-    public void onBarcodeScanned(Long barcodeId) {
+    public void onBarcodeScanned(String barcodeId) {
         if (currentSelected == panelAttendance) {
             panelAttendanceController.onBarcodeRead(barcodeId);
         } else if (currentSelected == panelMembership) {

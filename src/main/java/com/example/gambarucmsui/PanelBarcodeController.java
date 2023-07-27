@@ -43,7 +43,7 @@ public class PanelBarcodeController implements PanelHeader {
     }
 
     @Override
-    public void viewStitched() {
+    public void viewSwitched() {
 
     }
 

@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.StringJoiner;
 
 public class User {
+    private Long userId;
     private String barcodeId;
     private String firstName;
     private String lastName;
@@ -21,7 +22,8 @@ public class User {
 
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
 
-    public User(String barcodeId, String firstName, String lastName, String phone, String gender, String team, LocalDateTime createdAt) {
+    public User(Long userId, String barcodeId, String firstName, String lastName, String phone, String gender, String team, LocalDateTime createdAt) {
+        this.userId = userId;
         this.barcodeId = barcodeId;
         this.firstName = firstName;
         this.phone = phone;
@@ -49,10 +51,17 @@ public class User {
         }
         StringJoiner teamCsv = new StringJoiner(",");
         for (BarcodeEntity barcode : o.getBarcodes()) {
-            teamCsv.add(barcode.getTeam().getName());
+            TeamEntity team = barcode.getTeam();
+            if (team != null) {
+                teamCsv.add(team.getName());
+            }
         }
 
-        return new User(barcodeCsv.toString(), o.getFirstName(), o.getLastName(), o.getPhone(), UserEntity.Gender.toSerbianLbl(o.getGender()), teamCsv.toString(), o.getCreatedAt());
+        return new User(o.getUserId(), barcodeCsv.toString(), o.getFirstName(), o.getLastName(), o.getPhone(), UserEntity.Gender.toSerbianLbl(o.getGender()), teamCsv.toString(), o.getCreatedAt());
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     public String getBarcodeId() {

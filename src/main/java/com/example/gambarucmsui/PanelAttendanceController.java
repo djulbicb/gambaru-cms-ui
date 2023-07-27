@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class PanelAttendanceController implements PanelHeader {
 
@@ -91,7 +92,7 @@ public class PanelAttendanceController implements PanelHeader {
     }
 
     @Override
-    public void viewStitched() {
+    public void viewSwitched() {
         System.out.println("Panel attendance");
     }
 
@@ -118,7 +119,8 @@ public class PanelAttendanceController implements PanelHeader {
 
 
 
-    public void onBarcodeRead(Long barcodeId) {
+    public void onBarcodeRead(String barcodeIdStr) {
+        Long barcodeId = parseBarcodeStr(barcodeIdStr);
         Optional<UserEntity> userOpt = userRepo.findUserByBarcodeId(barcodeId);
         if (userOpt.isPresent()) {
             BarcodeEntity barcode = barcodeRepository.findById(barcodeId);

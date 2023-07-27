@@ -4,6 +4,8 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+import java.util.List;
+
 public class TeamRepository extends Repository<TeamEntity> {
     public TeamRepository(EntityManager entityManager) {
         super(entityManager, TeamEntity.class);
@@ -24,5 +26,13 @@ public class TeamRepository extends Repository<TeamEntity> {
         query.setParameter("teamName", teamName);
 
         return query.getSingleResult();
+    }
+
+    public List<TeamEntity> findAllByUserId(Long userId) {
+        String jpql = "SELECT b.team FROM BarcodeEntity b WHERE b.user.userId = :userId";
+        TypedQuery<TeamEntity> query = entityManager.createQuery(jpql, TeamEntity.class);
+        query.setParameter("userId", userId);
+
+        return query.getResultList();
     }
 }

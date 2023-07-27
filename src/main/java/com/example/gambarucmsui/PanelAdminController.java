@@ -10,10 +10,7 @@ import com.example.gambarucmsui.ui.dto.Attendance;
 import com.example.gambarucmsui.ui.dto.Membership;
 import com.example.gambarucmsui.ui.dto.TeamDetail;
 import com.example.gambarucmsui.ui.dto.User;
-import com.example.gambarucmsui.ui.form.FormTeamAddController;
-import com.example.gambarucmsui.ui.form.FormTeamUpdateController;
-import com.example.gambarucmsui.ui.form.FormUserAddController;
-import com.example.gambarucmsui.ui.form.FormUserAddUserToTeamController;
+import com.example.gambarucmsui.ui.form.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -35,6 +32,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.util.FormatUtil.*;
 
 public class PanelAdminController implements PanelHeader{
     private final Stage primaryStage;
@@ -129,10 +127,8 @@ public class PanelAdminController implements PanelHeader{
     }
 
     @Override
-    public void viewStitched() {
+    public void viewSwitched() {
         System.out.println("Panel admin");
-        loadTableUser();
-        loadTableTeam();
     }
 
     private String getOr(TextField txt, String opt) {
@@ -232,39 +228,92 @@ public class PanelAdminController implements PanelHeader{
 
     @FXML
     void formUserAddUserToTeam(MouseEvent event) throws IOException {
+        User selectedItem = tableUsers.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
+            return;
+        }
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-user-add-user-to-team.fxml"));
-        FormUserAddUserToTeamController controller = new FormUserAddUserToTeamController(teamRepo);
+        FormUserAddUserToTeamController controller = new FormUserAddUserToTeamController(teamRepo, new FormUserAddUserToTeamController.Data(selectedItem.getFirstName(), selectedItem.getLastName(), "", ""));
 
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();
 
         // Create the modal dialog
         Stage dialogStage = createStage("Dodaj korisnika u tim", root, primaryStage);
-        dialogStage.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener() {
+        dialogStage.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener()
+        {
             @Override
             public void onFinish(String word) {
-                if (word == null || word.isBlank() ) {
-                    return;
+                if (isBarcode(word)) {
+                    controller.onBarcodeScanned(cleanBarcodeStr(word));
                 }
-                String numberOnly= word.trim().replaceAll("[^0-9]", "");
-                if (numberOnly.length() < 10) {
-                    return;
-                }
-                System.out.println("Input " + numberOnly);
-                controller.onBarcodeScanned(numberOnly);
             }
         });
 
         dialogStage.showAndWait();
+
+        if (controller.isFormReady()) {
+            FormUserAddUserToTeamController.Data data = controller.getData();
+
+            BarcodeEntity barcode = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
+            TeamEntity team = teamRepo.findByName(data.getTeamName());
+            UserEntity user = userRepo.findById(selectedItem.getUserId());
+
+            barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
+            barcode.setTeam(team);
+            barcode.setUser(user);
+
+            barcodeRepo.save(barcode);
+        }
+        loadTableUser();
+    }
+
+    @FXML
+    void formUserRemoveUserFromTeam(MouseEvent event) throws IOException {
+        User selectedItem = tableUsers.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
+            return;
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-user-remove-user-from-team.fxml"));
+        FormUserRemoveUserFromTeamController controller = new FormUserRemoveUserFromTeamController(teamRepo, new FormUserRemoveUserFromTeamController.Data(selectedItem.getUserId(), selectedItem.getFirstName(), selectedItem.getLastName(), selectedItem.getBarcodeId(), ""));
+
+        fxmlLoader.setController(controller);
+        VBox root = fxmlLoader.load();
+
+        // Create the modal dialog
+        Stage dialogStage = createStage("Ukloni korisnika iz tima", root, primaryStage);
+        dialogStage.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener()
+        {
+            @Override
+            public void onFinish(String word) {
+                if (isBarcode(word)) {
+                    controller.onBarcodeScanned(cleanBarcodeStr(word));
+                }
+            }
+        });
+
+        dialogStage.showAndWait();
+
+        if (controller.isFormReady()) {
+            FormUserRemoveUserFromTeamController.Data data = controller.getData();
+
+            BarcodeEntity barcode = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
+            UserEntity user = userRepo.findById(selectedItem.getUserId());
+
+            barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
+            barcode.setTeam(null);
+
+            barcodeRepo.save(barcode);
+        }
+        loadTableUser();
     }
 
     @FXML
     void formUserDelete(MouseEvent event) {
-
-    }
-
-    @FXML
-    void formUserRemoveUserFromTeam(MouseEvent event) {
 
     }
 
@@ -382,6 +431,15 @@ public class PanelAdminController implements PanelHeader{
 
             ToastView.showModal("Team je izmenjen");
         }
+    }
+
+    @FXML
+    private void onUserTabSwitch() {
+        loadTableUser();
+    }
+    @FXML
+    private void onTeamTabSwitch() {
+        loadTableTeam();
     }
 
     private Stage createStage(String title, Pane root, Stage primaryStage) {

@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import static com.example.gambarucmsui.util.FormatUtil.*;
+
 
 public class GambaruUIApplication extends Application {
 
@@ -27,21 +29,11 @@ public class GambaruUIApplication extends Application {
         scene.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener() {
             @Override
             public void onFinish(String word) {
-                if (word == null || word.isBlank() ) {
-                    return;
+                if (isBarcode(word)) {
+                    String barcodeId = cleanBarcodeStr(word);
+                    System.out.println("Barcode scanned: " + barcodeId);
+                    controller.onBarcodeScanned(barcodeId);
                 }
-//                Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
-//                boolean matches = pattern.matcher(word).matches();
-//                if (!matches) {
-//                    return;
-//                }
-
-                String numberOnly= word.trim().replaceAll("[^0-9]", "");
-                if (numberOnly.length() < 10) {
-                    return;
-                }
-                System.out.println("Input " + numberOnly);
-                controller.onBarcodeScanned(Long.parseLong(numberOnly));
             }
         });
 

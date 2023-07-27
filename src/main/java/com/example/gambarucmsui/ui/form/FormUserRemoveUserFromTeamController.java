@@ -2,7 +2,6 @@ package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.TeamRepository;
-import com.example.gambarucmsui.ui.ToastView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,7 +19,7 @@ import java.util.ResourceBundle;
 import static com.example.gambarucmsui.util.FormatUtil.isBarcode;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
-public class FormUserAddUserToTeamController implements Initializable {
+public class FormUserRemoveUserFromTeamController implements Initializable {
     private final TeamRepository teamRepository;
     @FXML private VBox root;
     @FXML private Label lblErrUserBarcodeId;
@@ -38,21 +37,21 @@ public class FormUserAddUserToTeamController implements Initializable {
     private String outBarcodeId;
     private String outTeamName;
 
-    public FormUserAddUserToTeamController(TeamRepository teamRepository, Data prop) {
+    public FormUserRemoveUserFromTeamController(TeamRepository teamRepository, Data prop) {
         this.teamRepository = teamRepository;
         this.prop = prop;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        List<TeamEntity> allTeams = teamRepository.findAll();
+        List<TeamEntity> allTeams = teamRepository.findAllByUserId(prop.getUserId());
         for (TeamEntity team : allTeams) {
             cmbUserTeamName.getItems().add(team.getName());
         }
     }
 
     @FXML
-    void onAddUserToTeam(MouseEvent event) {
+    void onRemoveUserFromTeam(MouseEvent event) {
         boolean isFormCorrect = true;
 
         String barcodeIdStr = txtUserBarcodeId.getText().trim();
@@ -77,8 +76,8 @@ public class FormUserAddUserToTeamController implements Initializable {
         close();
     }
 
-    public FormUserAddUserToTeamController.Data getData() {
-        return new FormUserAddUserToTeamController.Data( prop.getFirstName(), prop.getLastName(), outBarcodeId, outTeamName);
+    public FormUserRemoveUserFromTeamController.Data getData() {
+        return new FormUserRemoveUserFromTeamController.Data( prop.getUserId(), prop.getFirstName(), prop.getLastName(), outBarcodeId, outTeamName);
     }
 
     @FXML
@@ -115,11 +114,14 @@ public class FormUserAddUserToTeamController implements Initializable {
         private String barcode;
         private String teamName;
 
-        public Data(String firstName, String lastName, String barcode, String teamName) {
+        private Long userId;
+
+        public Data(Long userId, String firstName, String lastName, String barcode, String teamName) {
             this.firstName = firstName;
             this.lastName = lastName;
             this.barcode = barcode;
             this.teamName = teamName;
+            this.userId = userId;
         }
 
         public String getFirstName() {
@@ -136,6 +138,10 @@ public class FormUserAddUserToTeamController implements Initializable {
 
         public String getTeamName() {
             return teamName;
+        }
+
+        public Long getUserId() {
+            return userId;
         }
     }
 }

@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class PanelMembershipController implements PanelHeader {
     private final UserMembershipRepository repository;
@@ -79,7 +80,7 @@ public class PanelMembershipController implements PanelHeader {
     }
 
     @Override
-    public void viewStitched() {
+    public void viewSwitched() {
         listPageForDate();
         System.out.println("Panel membership");
     }
@@ -104,7 +105,8 @@ public class PanelMembershipController implements PanelHeader {
         paginationDate = localDate;
         paginationLabel.setText(formatPagination(paginationDate));
     }
-    public void onBarcodeRead(Long barcodeId) {
+    public void onBarcodeRead(String barcodeIdStr) {
+        Long barcodeId = parseBarcodeStr(barcodeIdStr);
         Optional<UserEntity> userOpt = userRepo.findUserByBarcodeId(barcodeId);
         if (userOpt.isPresent()) {
             BarcodeEntity barcode = barcodeRepo.findById(barcodeId);

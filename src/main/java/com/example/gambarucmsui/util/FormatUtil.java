@@ -21,6 +21,23 @@ public class FormatUtil {
         }
     }
 
+    public final static boolean isBarcode(String barcodeStr) {
+        if (barcodeStr == null || barcodeStr.isBlank()) {
+            return false;
+        }
+
+        String numberOnly= barcodeStr.trim().replaceAll("[^0-9]", "");
+        return numberOnly.length() == 10;
+    }
+
+    public final static Long parseBarcodeStr (String barcodeStr) {
+        String numberOnly= barcodeStr.trim().replaceAll("[^0-9]", "");
+        return Long.valueOf(numberOnly);
+    }
+
+    public final static String cleanBarcodeStr (String barcodeStr) {
+        return barcodeStr.trim().replaceAll("[^0-9]", "");
+    }
 
     final static DateTimeFormatter fullTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
     public static String toFullDateTime(LocalDateTime time) {
