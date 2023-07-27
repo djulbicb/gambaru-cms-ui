@@ -1,4 +1,4 @@
-package com.example.gambarucmsui;
+package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
@@ -6,10 +6,10 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.*;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ui.ToastView;
-import com.example.gambarucmsui.ui.dto.Attendance;
-import com.example.gambarucmsui.ui.dto.Membership;
+import com.example.gambarucmsui.ui.dto.AttendanceDetail;
+import com.example.gambarucmsui.ui.dto.MembershipDetail;
 import com.example.gambarucmsui.ui.dto.TeamDetail;
-import com.example.gambarucmsui.ui.dto.User;
+import com.example.gambarucmsui.ui.dto.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
@@ -49,7 +48,7 @@ public class PanelAdminController implements PanelHeader{
 
     // TAB USER
     /////////////////////////////
-    @FXML TableView<User> tableUsers;
+    @FXML TableView<UserDetail> tableUsers;
     @FXML Label paginationLabel;
     @FXML TextField txtSearchBarcodeId;
     @FXML TextField txtSearchFirstName;
@@ -57,8 +56,8 @@ public class PanelAdminController implements PanelHeader{
 
     // USER DETAILS
     @FXML
-    private TableView<Attendance> tableUserAttendance;
-    @FXML private TableView<Membership> tableUserMembership;
+    private TableView<AttendanceDetail> tableUserAttendance;
+    @FXML private TableView<MembershipDetail> tableUserMembership;
 
     // TEAM TAB
     /////////////////////////////
@@ -80,12 +79,12 @@ public class PanelAdminController implements PanelHeader{
         configureTabTeam();
 
         // user details
-        TableColumn<Attendance, String> attendanceColumn = new TableColumn<>("Dolaznost (prethodnih 100)");
+        TableColumn<AttendanceDetail, String> attendanceColumn = new TableColumn<>("Dolaznost (prethodnih 100)");
         attendanceColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
         tableUserAttendance.getColumns().add(attendanceColumn);
         tableUserAttendance.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        TableColumn<Membership, String> membershipColumn = new TableColumn<>("Placanje (prethodnih 100)");
+        TableColumn<MembershipDetail, String> membershipColumn = new TableColumn<>("Placanje (prethodnih 100)");
         membershipColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
         tableUserMembership.getColumns().add(membershipColumn);
         tableUserMembership.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -93,10 +92,10 @@ public class PanelAdminController implements PanelHeader{
 
     private void configureTabUsers() {
         tableUsers.setRowFactory(tv -> {
-            TableRow<User> row = new TableRow<>();
+            TableRow<UserDetail> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
-                    User rowData = row.getItem();
+                    UserDetail rowData = row.getItem();
                     // Perform actions with the clicked row data
                     System.out.println("Clicked row: " + rowData);
 
@@ -145,10 +144,10 @@ public class PanelAdminController implements PanelHeader{
         loadTableUser();
     }
     private void loadTableUser() {
-        List<User> collect = userRepo.findAll(currentPage, PAGE_SIZE, "createdAt",
+        List<UserDetail> collect = userRepo.findAll(currentPage, PAGE_SIZE, "createdAt",
                 getOr(txtSearchBarcodeId, ""),
                 getOr(txtSearchFirstName, ""), getOr(txtSearchLastName, ""))
-                .stream().map(o -> User.fromEntity(o)
+                .stream().map(o -> UserDetail.fromEntity(o)
                 ).collect(Collectors.toList());
 
         tableUsers.getItems().setAll(collect);
@@ -228,7 +227,7 @@ public class PanelAdminController implements PanelHeader{
 
     @FXML
     void formUserAddUserToTeam(MouseEvent event) throws IOException {
-        User selectedItem = tableUsers.getSelectionModel().getSelectedItem();
+        UserDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
             return;
@@ -272,7 +271,7 @@ public class PanelAdminController implements PanelHeader{
 
     @FXML
     void formUserRemoveUserFromTeam(MouseEvent event) throws IOException {
-        User selectedItem = tableUsers.getSelectionModel().getSelectedItem();
+        UserDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
             return;

@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 
 import static com.example.gambarucmsui.util.FormatUtil.toFullDateTime;
 
-public class Attendance {
+public class AttendanceDetail {
     private String timestamp;
 
-    public Attendance(LocalDateTime timestamp) {
+    public AttendanceDetail(LocalDateTime timestamp) {
         this.timestamp = toFullDateTime(timestamp);
     }
 
