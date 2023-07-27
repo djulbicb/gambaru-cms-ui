@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ui.panel;
+package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;

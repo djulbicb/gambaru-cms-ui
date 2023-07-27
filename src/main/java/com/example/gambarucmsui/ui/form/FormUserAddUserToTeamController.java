@@ -2,7 +2,6 @@ package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.TeamRepository;
-import com.example.gambarucmsui.ui.ToastView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.FormatUtil.isBarcode;
-import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class FormUserAddUserToTeamController implements Initializable {
     private final TeamRepository teamRepository;

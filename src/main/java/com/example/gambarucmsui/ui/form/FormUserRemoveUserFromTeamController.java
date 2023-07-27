@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.FormatUtil.isBarcode;
-import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class FormUserRemoveUserFromTeamController implements Initializable {
     private final TeamRepository teamRepository;

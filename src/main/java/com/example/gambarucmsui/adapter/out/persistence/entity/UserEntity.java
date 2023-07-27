@@ -66,13 +66,13 @@ public class UserEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-//    @Temporal(TemporalType.TIMESTAMP)
-//    @Column(name = "last_attendance_timestamp")
-//    private LocalDateTime lastAttendanceTimestamp;
-//
-//    @Temporal(TemporalType.TIMESTAMP)
-//    @Column(name = "last_membership_payment_timestamp")
-//    private LocalDateTime lastMembershipPaymentTimestamp;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_attendance_timestamp")
+    private LocalDateTime lastAttendanceTimestamp;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_membership_payment_timestamp")
+    private LocalDateTime lastMembershipPaymentTimestamp;
 
 
     // Constructors, getters, setters, and other fields/methods ...
@@ -133,21 +133,21 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
-//    public LocalDateTime getLastAttendanceTimestamp() {
-//        return lastAttendanceTimestamp;
-//    }
-//
-//    public void setLastAttendanceTimestamp(LocalDateTime lastAttendanceTimestamp) {
-//        this.lastAttendanceTimestamp = lastAttendanceTimestamp;
-//    }
-//
-//    public LocalDateTime getLastMembershipPaymentTimestamp() {
-//        return lastMembershipPaymentTimestamp;
-//    }
-//
-//    public void setLastMembershipPaymentTimestamp(LocalDateTime lastMembershipPaymentTimestamp) {
-//        this.lastMembershipPaymentTimestamp = lastMembershipPaymentTimestamp;
-//    }
+    public LocalDateTime getLastAttendanceTimestamp() {
+        return lastAttendanceTimestamp;
+    }
+
+    public void setLastAttendanceTimestamp(LocalDateTime lastAttendanceTimestamp) {
+        this.lastAttendanceTimestamp = lastAttendanceTimestamp;
+    }
+
+    public LocalDateTime getLastMembershipPaymentTimestamp() {
+        return lastMembershipPaymentTimestamp;
+    }
+
+    public void setLastMembershipPaymentTimestamp(LocalDateTime lastMembershipPaymentTimestamp) {
+        this.lastMembershipPaymentTimestamp = lastMembershipPaymentTimestamp;
+    }
 
     public void addBarcode(BarcodeEntity barcode) {
         barcode.setUser(this);

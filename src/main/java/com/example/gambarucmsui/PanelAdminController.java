@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ui.panel;
+package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
@@ -13,15 +13,12 @@ import com.example.gambarucmsui.ui.dto.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -411,7 +408,6 @@ public class PanelAdminController implements PanelHeader{
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-team-update.fxml"));
         FormTeamUpdateController controller = new FormTeamUpdateController(dto, teamRepo);
-
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();
 
@@ -441,15 +437,4 @@ public class PanelAdminController implements PanelHeader{
         loadTableTeam();
     }
 
-    private Stage createStage(String title, Pane root, Stage primaryStage) {
-        Stage dialogStage = new Stage();
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.initOwner(primaryStage);
-        Scene scene = new Scene(root);
-        dialogStage.setScene(scene);
-        dialogStage.setTitle(title);
-        dialogStage.setResizable(false);
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-        return dialogStage;
-    }
 }

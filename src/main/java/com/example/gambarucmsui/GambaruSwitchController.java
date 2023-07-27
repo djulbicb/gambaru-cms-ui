@@ -1,7 +1,6 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.adapter.out.persistence.repo.*;
-import com.example.gambarucmsui.ui.panel.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;

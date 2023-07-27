@@ -22,6 +22,5 @@ module com.example.gambarucmsui {
     opens com.example.gambarucmsui.ui to javafx.fxml;
     opens com.example.gambarucmsui.ui.dto to javafx.base, javafx.fxml;
     exports com.example.gambarucmsui.ui.dto;
-    exports com.example.gambarucmsui.ui.panel;
-    opens com.example.gambarucmsui.ui.panel to javafx.fxml;
+    exports com.example.gambarucmsui.ui.form;
 }

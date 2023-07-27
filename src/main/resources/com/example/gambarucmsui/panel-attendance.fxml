@@ -19,7 +19,7 @@
                         <Font size="10.0" />
                      </font>
                   </Label>
-                  <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#test" text="DODAJ RUCNO" textFill="#fcfcfc" VBox.vgrow="ALWAYS" />
+                  <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addAttendanceManually" text="DODAJ RUCNO" textFill="#fcfcfc" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
             <VBox>

@@ -17,12 +17,12 @@ public class UserDetail {
     private String gender;
     private String team;
     private String createdAt;
-//    private String lastAttendanceTimestamp;
-//    private String lastMembershipPaymentTimestamp;
+    private String lastAttendanceTimestamp;
+    private String lastMembershipPaymentTimestamp;
 
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
 
-    public UserDetail(Long userId, String barcodeId, String firstName, String lastName, String phone, String gender, String team, LocalDateTime createdAt) {
+    public UserDetail(Long userId, String barcodeId, String firstName, String lastName, String phone, String gender, String team, LocalDateTime createdAt, LocalDateTime lastAttendanceTimestamp, LocalDateTime lastMembershipPaymentTimestamp) {
         this.userId = userId;
         this.barcodeId = barcodeId;
         this.firstName = firstName;
@@ -36,12 +36,12 @@ public class UserDetail {
         if (createdAt != null) {
             this.createdAt = formatter.format(createdAt);
         }
-//        if (lastAttendanceTimestamp != null) {
-//            this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
-//        }
-//        if (lastMembershipPaymentTimestamp != null) {
-//            this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
-//        }
+        if (lastAttendanceTimestamp != null) {
+            this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
+        }
+        if (lastMembershipPaymentTimestamp != null) {
+            this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
+        }
     }
 
     public static UserDetail fromEntity(UserEntity o) {
@@ -57,7 +57,7 @@ public class UserDetail {
             }
         }
 
-        return new UserDetail(o.getUserId(), barcodeCsv.toString(), o.getFirstName(), o.getLastName(), o.getPhone(), UserEntity.Gender.toSerbianLbl(o.getGender()), teamCsv.toString(), o.getCreatedAt());
+        return new UserDetail(o.getUserId(), barcodeCsv.toString(), o.getFirstName(), o.getLastName(), o.getPhone(), UserEntity.Gender.toSerbianLbl(o.getGender()), teamCsv.toString(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp());
     }
 
     public Long getUserId() {
@@ -92,13 +92,13 @@ public class UserDetail {
         return createdAt;
     }
 
-//    public String getLastAttendanceTimestamp() {
-//        return lastAttendanceTimestamp;
-//    }
-//
-//    public String getLastMembershipPaymentTimestamp() {
-//        return lastMembershipPaymentTimestamp;
-//    }
+    public String getLastAttendanceTimestamp() {
+        return lastAttendanceTimestamp;
+    }
+
+    public String getLastMembershipPaymentTimestamp() {
+        return lastMembershipPaymentTimestamp;
+    }
 
     public DateTimeFormatter getFormatter() {
         return formatter;
