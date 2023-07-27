@@ -13,6 +13,7 @@ import com.example.gambarucmsui.ui.dto.User;
 import com.example.gambarucmsui.ui.form.FormTeamAddController;
 import com.example.gambarucmsui.ui.form.FormTeamUpdateController;
 import com.example.gambarucmsui.ui.form.FormUserAddController;
+import com.example.gambarucmsui.ui.form.FormUserAddUserToTeamController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -20,6 +21,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -225,6 +227,44 @@ public class PanelAdminController implements PanelHeader{
     }
     @FXML
     public void formUserDelete() {
+
+    }
+
+    @FXML
+    void formUserAddUserToTeam(MouseEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-user-add-user-to-team.fxml"));
+        FormUserAddUserToTeamController controller = new FormUserAddUserToTeamController(teamRepo);
+
+        fxmlLoader.setController(controller);
+        VBox root = fxmlLoader.load();
+
+        // Create the modal dialog
+        Stage dialogStage = createStage("Dodaj korisnika u tim", root, primaryStage);
+        dialogStage.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener() {
+            @Override
+            public void onFinish(String word) {
+                if (word == null || word.isBlank() ) {
+                    return;
+                }
+                String numberOnly= word.trim().replaceAll("[^0-9]", "");
+                if (numberOnly.length() < 10) {
+                    return;
+                }
+                System.out.println("Input " + numberOnly);
+                controller.onBarcodeScanned(numberOnly);
+            }
+        });
+
+        dialogStage.showAndWait();
+    }
+
+    @FXML
+    void formUserDelete(MouseEvent event) {
+
+    }
+
+    @FXML
+    void formUserRemoveUserFromTeam(MouseEvent event) {
 
     }
 

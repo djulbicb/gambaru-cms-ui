@@ -137,6 +137,12 @@
                                           <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAdd" text="KREIRAJ NOVOG KORISNIKA" textFill="#fcfcfc" />
                                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserUpdate" text="IZMENI KORISNIKA" textFill="#fcfcfc" />
                                           <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserDelete" text="OBRISI KORISNIKA" textFill="#fcfcfc" />
+                                          <HBox spacing="5.0">
+                                             <children>
+                                                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAddUserToTeam" text="DODAJ TIM" textFill="#fcfcfc" HBox.hgrow="ALWAYS" />
+                                                <Button layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserRemoveUserFromTeam" text="UKLONI TIM" textFill="#fcfcfc" HBox.hgrow="ALWAYS" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                     </VBox>
                                     <Label maxHeight="1.7976931348623157E308" text="DETALJI:" textFill="#fcfcfc">
