@@ -10,6 +10,15 @@
 
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #34495e;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
+      <HBox alignment="CENTER">
+         <children>
+            <Label fx:id="lblResult" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
       <VBox prefWidth="400.0">
          <children>
             <Label maxHeight="1.7976931348623157E308" text="BARKOD:" textFill="#fcfcfc">

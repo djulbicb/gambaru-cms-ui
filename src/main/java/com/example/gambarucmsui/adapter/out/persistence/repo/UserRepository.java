@@ -10,6 +10,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,31 +28,6 @@ public class UserRepository extends Repository<UserEntity> {
                 .findFirst();
     }
 
-    public List<UserEntity> findAllForAttendanceDate(LocalDate forDate, String sortByColumnName) {
-        String fetchBarcodesFromAttendanceQuery = "SELECT ua.barcode FROM UserAttendanceEntity ua WHERE DATE(ua.timestamp) = :date";
-        TypedQuery<BarcodeEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, BarcodeEntity.class);
-        subquery.setParameter("date", forDate);
-        List<Long> barcodeEntities = subquery.getResultList().stream().map(en->en.getBarcodeId()).collect(Collectors.toList());
-
-        String fetchUsersBasedOnBarcodes = "SELECT b.user FROM BarcodeEntity b WHERE b.barcodeId IN :barcodeList";
-        TypedQuery<UserEntity> query = entityManager.createQuery(fetchUsersBasedOnBarcodes, UserEntity.class);
-        query.setParameter("barcodeList", barcodeEntities);
-
-        return query.getResultList();
-    }
-
-    public List<UserEntity> findAllForMembershipDate(LocalDate forDate, String sortByColumnName) {
-        String fetchBarcodesFromAttendanceQuery = "SELECT um.barcode FROM UserMembershipPaymentEntity um WHERE DATE(um.timestamp) = :date";
-        TypedQuery<BarcodeEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, BarcodeEntity.class);
-        subquery.setParameter("date", forDate);
-        List<Long> barcodeEntities = subquery.getResultList().stream().map(en->en.getBarcodeId()).collect(Collectors.toList());
-
-        String fetchUsersBasedOnBarcodes = "SELECT b.user FROM BarcodeEntity b WHERE b.barcodeId IN :barcodeList";
-        TypedQuery<UserEntity> query = entityManager.createQuery(fetchUsersBasedOnBarcodes, UserEntity.class);
-        query.setParameter("barcodeList", barcodeEntities);
-
-        return query.getResultList();
-    }
     @Override
     public List<UserEntity> findAll(int page, int pageSize, String sortColumn) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -83,9 +59,9 @@ public class UserRepository extends Repository<UserEntity> {
         if (lastName != null && !lastName.isBlank()) {
             predicates.add(criteriaBuilder.like(root.get("lastName"), lastName + "%"));
         }
-        if (barcodeId != null && !barcodeId.isBlank()) {
-            predicates.add(criteriaBuilder.equal(root.get("barcode").get("barcodeId"), Long.parseLong(barcodeId)));
-        }
+//        if (barcodeId != null && !barcodeId.isBlank()) {
+//            predicates.add(criteriaBuilder.equal(root.get("barcode").get("barcodeId"), Long.parseLong(barcodeId)));
+//        }
 
         Predicate finalPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         query.where(finalPredicate);

@@ -9,6 +9,7 @@ import com.example.gambarucmsui.adapter.out.persistence.repo.UserMembershipRepos
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.UserDetail;
+import com.example.gambarucmsui.util.FormatUtil;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -18,12 +19,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.common.LayoutUtil.formatPaginationMonth;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class PanelMembershipController implements PanelHeader {
@@ -39,7 +42,6 @@ public class PanelMembershipController implements PanelHeader {
     TableView<UserDetail> table;
     @FXML
     Label paginationLabel;
-    ObservableList<UserDetail> tableItems;
 
     public PanelMembershipController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
         repository = (UserMembershipRepository) repositoryMap.get(UserMembershipPaymentEntity.class);
@@ -51,30 +53,6 @@ public class PanelMembershipController implements PanelHeader {
     @FXML
     public void initialize() {
         System.out.println("Membership loaded");
-
-        // Create columns
-        TableColumn<UserDetail, String> idColumn = new TableColumn<>("Id");
-        TableColumn<UserDetail, String> firstNameColumn = new TableColumn<>("Ime");
-        TableColumn<UserDetail, Integer> lastNameColumn = new TableColumn<>("Prezime");
-        TableColumn<UserDetail, Integer> genderNameColumn = new TableColumn<>("Pol");
-        TableColumn<UserDetail, Integer> teamColumn = new TableColumn<>("Tim");
-//        TableColumn<User, Integer> lastAttendanceColumn = new TableColumn<>("lastAttendanceTimestamp");
-//        TableColumn<User, Integer> lastMembershipPaymentColumn = new TableColumn<>("lastMembershipPaymentTimestamp");
-        TableColumn<UserDetail, Integer> createdAt = new TableColumn<>("createdAt");
-
-        // Define how data should be displayed in columns
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("barcodeId"));
-        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        genderNameColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
-        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-//        lastAttendanceColumn.setCellValueFactory(new PropertyValueFactory<>("lastAttendanceTimestamp"));
-//        lastMembershipPaymentColumn.setCellValueFactory(new PropertyValueFactory<>("lastMembershipPaymentTimestamp"));
-        createdAt.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
-
-        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, genderNameColumn, teamColumn, createdAt);
-        tableItems = table.getItems();
-
         updatePagination(LocalDate.now());
     }
 
@@ -85,43 +63,53 @@ public class PanelMembershipController implements PanelHeader {
     }
 
     private void listPageForDate() {
-        List<UserDetail> collect = userRepo.findAllForMembershipDate(paginationDate, "lastMembershipPaymentTimestamp")
-                .stream().map(o -> UserDetail.fromEntity(o)).collect(Collectors.toList());
-        tableItems.setAll(collect);
+        List<UserDetail> collect = barcodeRepo.findAllMembershipsForMonthAndYear(paginationDate.getMonthValue(), paginationDate.getYear())
+                .stream().map(o -> UserDetail.fromEntity(o.getBarcode(), FormatUtil.toMonthYeah(o.getTimestamp()))).collect(Collectors.toList());
+        table.getItems().setAll(collect);
     }
 
     @FXML
     protected void goNextPage() {
-        updatePagination(paginationDate.plusDays(1));
+        updatePagination(paginationDate.plusMonths(1));
         listPageForDate();
     }
     @FXML
     protected void goPrevPage() {
-        updatePagination(paginationDate.minusDays(1));
+        updatePagination(paginationDate.minusMonths(1));
         listPageForDate();
     }
     private void updatePagination(LocalDate localDate) {
         paginationDate = localDate;
-        paginationLabel.setText(formatPagination(paginationDate));
+        paginationLabel.setText(formatPaginationMonth(paginationDate));
     }
     public void onBarcodeRead(String barcodeIdStr) {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        Optional<UserEntity> userOpt = userRepo.findUserByBarcodeId(barcodeId);
-        if (userOpt.isPresent()) {
-            BarcodeEntity barcode = barcodeRepo.findById(barcodeId);
+        Optional<BarcodeEntity> optBarcode = barcodeRepo.findById(barcodeId);
+        if (optBarcode.isPresent()) {
+            BarcodeEntity barcode = optBarcode.get();
+            int month = paginationDate.getMonthValue();
+            int year = paginationDate.getYear();
+            LocalDateTime timestamp = LocalDateTime.now();
 
+            if (barcode.getStatus() != BarcodeEntity.Status.ASSIGNED) {
+                ToastView.showModal("Barkod se trenutno ne koristi.");
+                return;
+            }
+            if (barcodeRepo.isMembershipAlreadyPayedByBarcodeAndMonthAndYear(barcodeId, month, year)) {
+                ToastView.showModal("Članarina za ovaj mesec je već plaćena.");
+                return;
+            }
+
+            UserEntity user = barcode.getUser();
             System.out.println("Adding attendance " + barcodeId);
 
+            barcode.setLastMembershipPaymentTimestamp(LocalDateTime.now());
 
-            UserEntity en = userOpt.get();
-//            en.setLastAttendanceTimestamp(LocalDateTime.now());
-
-            userRepo.save(en);
-            membershipRepo.save(new UserMembershipPaymentEntity(barcode, barcode.getTeam().getMembershipPayment()));
+            membershipRepo.save(new UserMembershipPaymentEntity(barcode, month, year, timestamp, barcode.getTeam().getMembershipPayment()));
 
             listPageForDate();
 
-            ToastView.showModal(String.format("Prisutnost registrovana za %s %s", en.getFirstName(), en.getLastName()));
+            ToastView.showModal(String.format("Članarina plaćena za %s %s.", user.getFirstName(), user.getLastName()));
         }
     }
 }

@@ -11,6 +11,7 @@ import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.UserDetail;
 import com.example.gambarucmsui.ui.form.FormBarcodeGet;
+import com.example.gambarucmsui.util.FormatUtil;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -46,8 +48,6 @@ public class PanelAttendanceController implements PanelHeader {
     TableView<UserDetail> table;
     @FXML
     Label paginationLabel;
-    ObservableList<UserDetail> tableItems;
-
 
     public PanelAttendanceController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
         this.primaryStage = primaryStage;
@@ -62,29 +62,6 @@ public class PanelAttendanceController implements PanelHeader {
     public void initialize() {
         System.out.println("Attendance loaded");
 
-        // Create columns
-        TableColumn<UserDetail, String> idColumn = new TableColumn<>("Id");
-        TableColumn<UserDetail, String> firstNameColumn = new TableColumn<>("Ime");
-        TableColumn<UserDetail, Integer> lastNameColumn = new TableColumn<>("Prezime");
-        TableColumn<UserDetail, Integer> genderNameColumn = new TableColumn<>("Pol");
-        TableColumn<UserDetail, Integer> teamColumn = new TableColumn<>("Tim");
-//        TableColumn<User, Integer> lastAttendanceColumn = new TableColumn<>("lastAttendanceTimestamp");
-//        TableColumn<User, Integer> lastMembershipPaymentColumn = new TableColumn<>("lastMembershipPaymentTimestamp");
-        TableColumn<UserDetail, Integer> createdAt = new TableColumn<>("createdAt");
-
-        // Define how data should be displayed in columns
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("barcodeId"));
-        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        genderNameColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
-        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-//        lastAttendanceColumn.setCellValueFactory(new PropertyValueFactory<>("lastAttendanceTimestamp"));
-//        lastMembershipPaymentColumn.setCellValueFactory(new PropertyValueFactory<>("lastMembershipPaymentTimestamp"));
-        createdAt.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
-
-        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, genderNameColumn, teamColumn, createdAt);
-        tableItems = table.getItems();
-
         updatePagination(LocalDate.now());
         listPageForDate();
     }
@@ -95,9 +72,9 @@ public class PanelAttendanceController implements PanelHeader {
     }
 
     private void listPageForDate() {
-        List<UserDetail> collect = userRepo.findAllForAttendanceDate(paginationDate, "lastAttendanceTimestamp")
-                .stream().map(o -> UserDetail.fromEntity(o)).collect(Collectors.toList());
-        tableItems.setAll(collect);
+        List<UserDetail> collect = barcodeRepository.findAllForAttendanceDate(paginationDate)
+                .stream().map(o -> UserDetail.fromEntity(o.getBarcode(), FormatUtil.toDateTimeFormat(o.getTimestamp()))).collect(Collectors.toList());
+        table.getItems().setAll(collect);
     }
 
     @FXML
@@ -113,13 +90,16 @@ public class PanelAttendanceController implements PanelHeader {
     @FXML
     protected void addAttendanceManually() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-barcode-get.fxml"));
-        FormBarcodeGet controller = new FormBarcodeGet();
+        FormBarcodeGet controller = new FormBarcodeGet(barcodeRepository);
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();
 
         Stage dialogStage = createStage("Dodaj korisnika u tim", root, primaryStage);
         dialogStage.showAndWait();
 
+        if (controller.isFormReady()) {
+            addAttendanceForBarcodeId(paginationDate, controller.getBarcodeId());
+        }
 
     }
     private void updatePagination(LocalDate localDate) {
@@ -130,26 +110,36 @@ public class PanelAttendanceController implements PanelHeader {
 
     public void onBarcodeRead(String barcodeIdStr) {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        addAttendanceForBarcodeId(paginationDate, barcodeId);
+        addAttendanceForBarcodeId(barcodeId);
+    }
+    private void addAttendanceForBarcodeId(Long barcodeId) {
+        addAttendanceForBarcodeId(LocalDateTime.now(), barcodeId);
     }
 
     private void addAttendanceForBarcodeId(LocalDate paginationDate, Long barcodeId) {
-        Optional<UserEntity> userOpt = userRepo.findUserByBarcodeId(barcodeId);
-        if (userOpt.isPresent()) {
-            BarcodeEntity barcode = barcodeRepository.findById(barcodeId);
+        addAttendanceForBarcodeId(paginationDate.atStartOfDay(), barcodeId);
+    }
 
+    private void addAttendanceForBarcodeId(LocalDateTime paginationDate, Long barcodeId) {
+        Optional<BarcodeEntity> optBarcode = barcodeRepository.findById(barcodeId);
+        if (optBarcode.isPresent()) {
+            BarcodeEntity barcode = optBarcode.get();
+
+            if (barcode.getStatus() != BarcodeEntity.Status.ASSIGNED) {
+                ToastView.showModal("Barkod se trenutno ne koristi.");
+                return;
+            }
+
+            UserEntity user = barcode.getUser();
             System.out.println("Adding attendance " + barcodeId);
 
+            barcode.setLastMembershipPaymentTimestamp(LocalDateTime.now());
 
-            UserEntity en = userOpt.get();
-            en.setLastAttendanceTimestamp(paginationDate.atStartOfDay());
-
-            userRepo.save(en);
-            attendanceRepo.save(new UserAttendanceEntity(barcode));
+            attendanceRepo.save(new UserAttendanceEntity(barcode, LocalDateTime.now()));
 
             listPageForDate();
 
-            ToastView.showModal(String.format("Prisutnost registrovana za %s %s", en.getFirstName(), en.getLastName()));
+            ToastView.showModal(String.format("Prisutnost registrovana za %s %s", user.getFirstName(), user.getLastName()));
         }
     }
 }

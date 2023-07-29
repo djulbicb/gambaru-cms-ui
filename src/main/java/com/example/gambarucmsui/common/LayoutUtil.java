@@ -1,5 +1,6 @@
 package com.example.gambarucmsui.common;
 
+import com.example.gambarucmsui.util.FormatUtil;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -26,6 +27,9 @@ public class LayoutUtil {
     }
     public static String formatPagination(LocalDate date) {
         return date.toString();
+    }
+    public static String formatPaginationMonth(LocalDate date) {
+        return FormatUtil.toMonthYeah(date.atStartOfDay());
     }
 }
 

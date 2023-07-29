@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "barcode")
 public class BarcodeEntity {
@@ -29,6 +31,19 @@ public class BarcodeEntity {
     @ManyToOne
     @JoinColumn(name = "team_id")
     private TeamEntity team;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "assigned_timestamp")
+    private LocalDateTime assignedTimestamp;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_attendance_timestamp")
+    private LocalDateTime lastAttendanceTimestamp;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_membership_payment_timestamp")
+    private LocalDateTime lastMembershipPaymentTimestamp;
+
+
 
     // Constructors, getters, setters, and other fields/methods ...
 
@@ -66,6 +81,30 @@ public class BarcodeEntity {
 
     public boolean isAssigned() {
         return status.equals(Status.ASSIGNED);
+    }
+
+    public LocalDateTime getLastAttendanceTimestamp() {
+        return lastAttendanceTimestamp;
+    }
+
+    public void setLastAttendanceTimestamp(LocalDateTime lastAttendanceTimestamp) {
+        this.lastAttendanceTimestamp = lastAttendanceTimestamp;
+    }
+
+    public LocalDateTime getLastMembershipPaymentTimestamp() {
+        return lastMembershipPaymentTimestamp;
+    }
+
+    public void setLastMembershipPaymentTimestamp(LocalDateTime lastMembershipPaymentTimestamp) {
+        this.lastMembershipPaymentTimestamp = lastMembershipPaymentTimestamp;
+    }
+
+    public LocalDateTime getAssignedTimestamp() {
+        return assignedTimestamp;
+    }
+
+    public void setAssignedTimestamp(LocalDateTime assignedTimestamp) {
+        this.assignedTimestamp = assignedTimestamp;
     }
 }
 

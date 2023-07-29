@@ -18,9 +18,7 @@ public class PDFGenerator {
             PdfWriter.getInstance(document, outputStream);
             document.open();
 
-
-
-            int numColumns = 3;
+            int numColumns = 4;
 
             PdfPTable mainTable = new PdfPTable(numColumns);
             mainTable.setWidthPercentage(100);

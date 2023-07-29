@@ -15,10 +15,11 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class FormUserAddController implements Initializable {
+public class FormUserUpdateController implements Initializable {
     // Input
     //////////////////////////////////////////
     private final TeamRepository teamRepo;
+    private final Data input;
 
     // FXML
     //////////////////////////////////////////
@@ -32,8 +33,9 @@ public class FormUserAddController implements Initializable {
     @FXML private TextField txtUserLastName;
     @FXML private TextField txtUserPhone;
 
-    public FormUserAddController(TeamRepository teamRepo) {
+    public FormUserUpdateController(TeamRepository teamRepo, Data input) {
         this.teamRepo = teamRepo;
+        this.input = input;
     }
 
     // OUTPUT DATA
@@ -46,7 +48,10 @@ public class FormUserAddController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        txtUserFirstName.setText(input.getFirstName());
+        txtUserLastName.setText(input.getLastName());
+        txtUserPhone.setText(input.getPhone());
+        cmbUserGender.getSelectionModel().selectFirst();
     }
 
     @FXML
@@ -101,7 +106,7 @@ public class FormUserAddController implements Initializable {
         return isFormReady;
     }
 
-    public FormUserAddController.Data getData() {
+    public FormUserUpdateController.Data getData() {
         return new Data(outFirstName, outLastName, outPhone, outGender);
     }
 

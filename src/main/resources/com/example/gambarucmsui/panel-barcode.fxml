@@ -3,7 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -27,6 +29,22 @@
                   <Button fx:id="btnFetchNewBarcodes" mnemonicParsing="false" onMouseClicked="#fetchNewBarcodes" text="UCITAJ NOVE" />
                   <Button fx:id="btnFetchBarcodes" mnemonicParsing="false" onMouseClicked="#fetchBarcodes" text="UCITAJ NEISKORISTENE" />
                   <Button fx:id="savePdf" mnemonicParsing="false" onMouseClicked="#printBarcodesToPdf" text="SACUVAJ PDF" />
+               </children>
+            </HBox>
+            <VBox maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
+            <Separator prefWidth="200.0" />
+            <Label maxHeight="1.7976931348623157E308" text="SAMO ZA TESTIRANJE - GENERIŠE NASUMIČNE LJUDE" textFill="#fcfcfc">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+               <children>
+                  <TextField fx:id="txtCount" maxHeight="-Infinity" maxWidth="100.0" onKeyTyped="#txtTeamNameReset" text="10" />
+                  <Button layoutX="115.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddTeams" text="DODAJ TIMOVE" HBox.hgrow="ALWAYS" />
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddUsers" text="DODAJ KORISNIKE" HBox.hgrow="ALWAYS" />
+                  <Button layoutX="115.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddAttendance" text="DODAJ DOLAZNOST" HBox.hgrow="ALWAYS" />
+                  <Button layoutX="256.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddPayment" text="DODAJ PLAĆANJE" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>

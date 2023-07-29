@@ -22,29 +22,31 @@ public class UserMembershipRepository extends Repository<UserMembershipPaymentEn
     }
 
     public List<MembershipCount> getMembershipCountByMonthLastYear() {
-        LocalDateTime startDate = LocalDateTime.now().minusYears(1);
-        LocalDateTime endDate = LocalDateTime.now();
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusYears(1);
 
         String queryString = """
-            SELECT FUNCTION('YEAR', a.timestamp), FUNCTION('MONTH', a.timestamp), COUNT(a)
-            FROM UserMembershipPaymentEntity a
-            WHERE a.timestamp >= :startDate AND a.timestamp <= :endDate
-            GROUP BY FUNCTION('YEAR', a.timestamp), FUNCTION('MONTH', a.timestamp)
-            ORDER BY FUNCTION('YEAR', a.timestamp), FUNCTION('MONTH', a.timestamp)
+        SELECT m.year, m.month, COUNT(m)
+        FROM UserMembershipPaymentEntity m 
+        WHERE   m.year >= :startYear AND m.year <= :endYear
+        GROUP BY m.year, m.month
+        ORDER BY m.year, m.month
         """;
         TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
+        query.setParameter("startYear", startDate.getYear());
+        query.setParameter("endYear", endDate.getYear());
 
         List<Object[]> results = query.getResultList();
 
-        List<MembershipCount> membershipCounts = new ArrayList<>();
-        for (Object[] row : results) {
-            int year = (int) row[0];
-            int month = (int) row[1];
-            long count = (long) row[2];
-            membershipCounts.add(new MembershipCount(LocalDate.of(year, month, 1), count));
-        }
+        List<MembershipCount> membershipCounts = results.stream()
+                .map(row -> {
+                    int resultYear = (int) row[0];
+                    int resultMonth = (int) row[1];
+                    long count = (long) row[2];
+                    return new MembershipCount(LocalDate.of(resultYear, resultMonth, 1), count);
+                })
+                .collect(Collectors.toList());
+
         return membershipCounts;
     }
 

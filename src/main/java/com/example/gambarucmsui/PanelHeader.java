@@ -1,9 +1,13 @@
 package com.example.gambarucmsui;
 
+import com.example.gambarucmsui.ui.form.FormUserAddController;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public interface PanelHeader {
     void initialize();
@@ -19,5 +23,11 @@ public interface PanelHeader {
         dialogStage.setResizable(false);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         return dialogStage;
+    }
+
+    default Pane loadFxml(String fxmlPath, Object controller) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
+        fxmlLoader.setController(controller);
+        return fxmlLoader.load();
     }
 }

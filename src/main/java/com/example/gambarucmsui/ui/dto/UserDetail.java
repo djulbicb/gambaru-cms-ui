@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.StringJoiner;
 
+import static com.example.gambarucmsui.util.FormatUtil.*;
+
 public class UserDetail {
     private Long userId;
     private String barcodeId;
@@ -17,12 +19,8 @@ public class UserDetail {
     private String gender;
     private String team;
     private String createdAt;
-    private String lastAttendanceTimestamp;
-    private String lastMembershipPaymentTimestamp;
-
-    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
-
-    public UserDetail(Long userId, String barcodeId, String firstName, String lastName, String phone, String gender, String team, LocalDateTime createdAt, LocalDateTime lastAttendanceTimestamp, LocalDateTime lastMembershipPaymentTimestamp) {
+    private String timestamp;
+    public UserDetail(Long userId, String barcodeId, String firstName, String lastName, String phone, String gender, String team, String createdAt, String timestamp) {
         this.userId = userId;
         this.barcodeId = barcodeId;
         this.firstName = firstName;
@@ -30,34 +28,60 @@ public class UserDetail {
         this.lastName = lastName;
         this.gender = gender;
         this.team = team;
-        System.out.println(barcodeId);
-        System.out.println(createdAt);
-
-        if (createdAt != null) {
-            this.createdAt = formatter.format(createdAt);
-        }
-        if (lastAttendanceTimestamp != null) {
-            this.lastAttendanceTimestamp = formatter.format(lastAttendanceTimestamp);
-        }
-        if (lastMembershipPaymentTimestamp != null) {
-            this.lastMembershipPaymentTimestamp = formatter.format(lastMembershipPaymentTimestamp);
-        }
+        this.createdAt = createdAt;
+        this.timestamp = timestamp;
     }
 
-    public static UserDetail fromEntity(UserEntity o) {
-        StringJoiner barcodeCsv = new StringJoiner(",");
-        for (BarcodeEntity barcode : o.getBarcodes()) {
-            barcodeCsv.add(barcode.getBarcodeId().toString());
-        }
-        StringJoiner teamCsv = new StringJoiner(",");
-        for (BarcodeEntity barcode : o.getBarcodes()) {
-            TeamEntity team = barcode.getTeam();
-            if (team != null) {
-                teamCsv.add(team.getName());
-            }
-        }
+    public static UserDetail fromEntity(BarcodeEntity b, String timestamp) {
+        UserEntity user = b.getUser();
+        TeamEntity team = b.getTeam();
+//        for (BarcodeEntity barcode : o.getBarcodes()) {
+//            barcodeCsv.add(barcode.getBarcodeId().toString());
+//        }
+//        StringJoiner teamCsv = new StringJoiner(",");
+//        for (BarcodeEntity barcode : o.getBarcodes()) {
+//            TeamEntity team = barcode.getTeam();
+//            if (team != null) {
+//                teamCsv.add(team.getName());
+//            }
+//        }
 
-        return new UserDetail(o.getUserId(), barcodeCsv.toString(), o.getFirstName(), o.getLastName(), o.getPhone(), UserEntity.Gender.toSerbianLbl(o.getGender()), teamCsv.toString(), o.getCreatedAt(), o.getLastAttendanceTimestamp(), o.getLastMembershipPaymentTimestamp());
+        return new UserDetail(
+                user.getUserId(),
+                formatBarcode(b.getBarcodeId()),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                genderToSerbianAbbr(user.getGender()),
+                team.getName(),
+                toDateFormat(user.getCreatedAt()),
+                timestamp);
+    }
+
+    public static UserDetail fromEntity(UserEntity user, String timestamp) {
+        StringJoiner barcodeCsv = new StringJoiner(",");
+        StringJoiner teamCsv = new StringJoiner(",");
+//        for (BarcodeEntity barcode : o.getBarcodes()) {
+//            barcodeCsv.add(barcode.getBarcodeId().toString());
+//        }
+//        StringJoiner teamCsv = new StringJoiner(",");
+//        for (BarcodeEntity barcode : o.getBarcodes()) {
+//            TeamEntity team = barcode.getTeam();
+//            if (team != null) {
+//                teamCsv.add(team.getName());
+//            }
+//        }
+
+        return new UserDetail(
+                user.getUserId(),
+                barcodeCsv.toString(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                genderToSerbianAbbr(user.getGender()),
+                teamCsv.toString(),
+                toDateFormat(user.getCreatedAt()),
+                timestamp);
     }
 
     public Long getUserId() {
@@ -92,15 +116,8 @@ public class UserDetail {
         return createdAt;
     }
 
-    public String getLastAttendanceTimestamp() {
-        return lastAttendanceTimestamp;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public String getLastMembershipPaymentTimestamp() {
-        return lastMembershipPaymentTimestamp;
-    }
-
-    public DateTimeFormatter getFormatter() {
-        return formatter;
-    }
 }

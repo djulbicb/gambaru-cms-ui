@@ -6,6 +6,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Repository<T> {
     protected final EntityManager entityManager;
@@ -44,8 +45,9 @@ public class Repository<T> {
         entityManager.getTransaction().commit();
     }
 
-    public T findById(Long id) {
-        return entityManager.find(entityClass, id);
+    public Optional<T> findById(Long id) {
+        T entity = entityManager.find(entityClass, id);
+        return Optional.ofNullable(entity);
     }
 
     public List<T> findByIds(String fieldName, List<Long> ids) {

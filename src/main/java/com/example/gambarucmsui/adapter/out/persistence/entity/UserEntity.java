@@ -12,33 +12,16 @@ public class UserEntity {
 
     public static enum Gender {
         MALE, FEMALE;
-
-        public static String toSerbianLbl(Gender gender) {
-            if (gender.equals(Gender.MALE)) {
-                return "M";
-            } else {
-                return "Ž";
-            }
-        }
-
-        public static String toSerbian(Gender gender) {
-            if (gender.equals(Gender.MALE)) {
-                return "Muški";
-            } else {
-                return "Ženski";
-            }
-        }
     }
 
     public UserEntity() {
     }
 
-    public UserEntity(String firstName, String lastName, Gender gender, String phone, List<BarcodeEntity> barcodes, LocalDateTime createdAt) {
+    public UserEntity(String firstName, String lastName, Gender gender, String phone,LocalDateTime createdAt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.phone = phone;
-        this.barcodes = barcodes;
         this.createdAt = createdAt;
     }
 
@@ -59,21 +42,9 @@ public class UserEntity {
     @Column(name = "phone")
     private String phone;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BarcodeEntity> barcodes = new ArrayList<>();
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_attendance_timestamp")
-    private LocalDateTime lastAttendanceTimestamp;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_membership_payment_timestamp")
-    private LocalDateTime lastMembershipPaymentTimestamp;
-
 
     // Constructors, getters, setters, and other fields/methods ...
 
@@ -117,14 +88,6 @@ public class UserEntity {
         this.phone = phone;
     }
 
-    public List<BarcodeEntity> getBarcodes() {
-        return barcodes;
-    }
-
-    public void setBarcodes(List<BarcodeEntity> barcodes) {
-        this.barcodes = barcodes;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -133,29 +96,4 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getLastAttendanceTimestamp() {
-        return lastAttendanceTimestamp;
-    }
-
-    public void setLastAttendanceTimestamp(LocalDateTime lastAttendanceTimestamp) {
-        this.lastAttendanceTimestamp = lastAttendanceTimestamp;
-    }
-
-    public LocalDateTime getLastMembershipPaymentTimestamp() {
-        return lastMembershipPaymentTimestamp;
-    }
-
-    public void setLastMembershipPaymentTimestamp(LocalDateTime lastMembershipPaymentTimestamp) {
-        this.lastMembershipPaymentTimestamp = lastMembershipPaymentTimestamp;
-    }
-
-    public void addBarcode(BarcodeEntity barcode) {
-        barcode.setUser(this);
-        barcodes.add(barcode);
-    }
-
-    public void removeBarcode(BarcodeEntity barcode) {
-        barcodes.remove(barcode);
-        barcode.setUser(null);
-    }
 }

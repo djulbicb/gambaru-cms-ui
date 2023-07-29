@@ -10,6 +10,8 @@ import com.google.zxing.WriterException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -94,5 +96,40 @@ public class PanelBarcodeController implements PanelHeader {
 
         byte[] bytes = PDFGenerator.generatePDF(views);
         Files.write(Path.of(file.getAbsolutePath()), bytes, StandardOpenOption.CREATE);
+    }
+    //  GENERATE RANDOM
+    ////////////////////////////////////////////////////////
+    @FXML
+    private TextField txtCount;
+    private int getCount() {
+        int defaultVal = 10;
+        if (txtCount.getText().isBlank()) {
+            return defaultVal;
+        }
+
+        try {
+            return Integer.parseInt(txtCount.getText().trim());
+        } catch (Exception e) {
+            return defaultVal;
+        }
+    }
+    @FXML
+    void onAddAttendance(MouseEvent event) {
+
+    }
+
+    @FXML
+    void onAddPayment(MouseEvent event) {
+
+    }
+
+    @FXML
+    void onAddTeams(MouseEvent event) {
+
+    }
+
+    @FXML
+    void onAddUsers(MouseEvent event) {
+
     }
 }

@@ -11,6 +11,7 @@ import com.example.gambarucmsui.ui.dto.MembershipDetail;
 import com.example.gambarucmsui.ui.dto.TeamDetail;
 import com.example.gambarucmsui.ui.dto.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
+import com.example.gambarucmsui.util.FormatUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -18,6 +19,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
@@ -144,7 +147,7 @@ public class PanelAdminController implements PanelHeader{
         List<UserDetail> collect = userRepo.findAll(currentPage, PAGE_SIZE, "createdAt",
                 getOr(txtSearchBarcodeId, ""),
                 getOr(txtSearchFirstName, ""), getOr(txtSearchLastName, ""))
-                .stream().map(o -> UserDetail.fromEntity(o)
+                .stream().map(o -> UserDetail.fromEntity(o, FormatUtil.toDateTimeFormat(LocalDateTime.now()))
                 ).collect(Collectors.toList());
 
         tableUsers.getItems().setAll(collect);
@@ -169,53 +172,55 @@ public class PanelAdminController implements PanelHeader{
 
     @FXML
     public void formUserAdd() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-user-add.fxml"));
         FormUserAddController controller = new FormUserAddController(teamRepo);
 
-        fxmlLoader.setController(controller);
-        VBox root = fxmlLoader.load();
-
-        // Create the modal dialog
+        Pane root = loadFxml("form-user-add.fxml", controller);
         Stage dialogStage = createStage("Kreiraj novog korisnika", root, primaryStage);
-        dialogStage.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener() {
-            @Override
-            public void onFinish(String word) {
-                if (word == null || word.isBlank() ) {
-                    return;
-                }
-                String numberOnly= word.trim().replaceAll("[^0-9]", "");
-                if (numberOnly.length() < 10) {
-                    return;
-                }
-                System.out.println("Input " + numberOnly);
-                controller.onBarcodeScanned(numberOnly);
-            }
-        });
-
         dialogStage.showAndWait();
 
         if (controller.isFormReady()) {
             FormUserAddController.Data data = controller.getData();
 
-            BarcodeEntity barcode = barcodeRepo.findById(data.getBarcodeId());
-            TeamEntity team = teamRepo.findByName(data.getTeamName());
-
-            UserEntity en = new UserEntity(data.getFirstName(), data.getLastName(), data.getGender(), data.getPhone(), List.of(barcode), LocalDateTime.now());
+            UserEntity en = new UserEntity(data.getFirstName(), data.getLastName(), data.getGender(), data.getPhone(), LocalDateTime.now());
             UserEntity saved = userRepo.save(en);
 
-            barcode.setUser(saved);
-            barcode.setTeam(team);
-            barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
-            barcodeRepo.save(barcode);
-
             ToastView.showModal(String.format("Korisnik %s %s je dodat.", en.getFirstName(), en.getLastName()));
-
             loadTableUser();
         }
     }
-    @FXML
-    public void formUserUpdate() {
 
+
+
+    @FXML
+    public void formUserUpdate() throws IOException {
+        UserDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
+            return;
+        }
+
+        Optional<UserEntity> userOpt = userRepo.findById(selectedItem.getUserId());
+        if (userOpt.isEmpty()) {
+            return;
+        }
+
+        UserEntity user = userOpt.get();
+        FormUserUpdateController controller = new FormUserUpdateController(teamRepo, new FormUserUpdateController.Data(user.getFirstName(), user.getLastName(), user.getPhone(), user.getGender()));
+        Pane root = loadFxml("form-user-add.fxml", controller);
+        Stage window = createStage("Izmeni korisnika", root, primaryStage);
+
+        window.showAndWait();
+
+        if (controller.isFormReady()) {
+            FormUserUpdateController.Data data = controller.getData();
+            user.setFirstName(data.getFirstName());
+            user.setLastName(data.getLastName());
+            user.setGender(data.getGender());
+            user.setPhone(data.getPhone());
+            userRepo.save(user);
+        }
+
+        loadTableUser();
     }
     @FXML
     public void formUserDelete() {
@@ -230,11 +235,8 @@ public class PanelAdminController implements PanelHeader{
             return;
         }
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-user-add-user-to-team.fxml"));
         FormUserAddUserToTeamController controller = new FormUserAddUserToTeamController(teamRepo, new FormUserAddUserToTeamController.Data(selectedItem.getFirstName(), selectedItem.getLastName(), "", ""));
-
-        fxmlLoader.setController(controller);
-        VBox root = fxmlLoader.load();
+        Pane root = loadFxml("form-user-add-user-to-team.fxml", controller);
 
         // Create the modal dialog
         Stage dialogStage = createStage("Dodaj korisnika u tim", root, primaryStage);
@@ -253,9 +255,16 @@ public class PanelAdminController implements PanelHeader{
         if (controller.isFormReady()) {
             FormUserAddUserToTeamController.Data data = controller.getData();
 
-            BarcodeEntity barcode = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
+            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
+            Optional<UserEntity> userOpt = userRepo.findById(selectedItem.getUserId());
+
+            if (barcodeOpt.isEmpty() || userOpt.isEmpty()) {
+                return;
+            }
+
+            BarcodeEntity barcode = barcodeOpt.get();
+            UserEntity user = userOpt.get();
             TeamEntity team = teamRepo.findByName(data.getTeamName());
-            UserEntity user = userRepo.findById(selectedItem.getUserId());
 
             barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
             barcode.setTeam(team);
@@ -297,8 +306,13 @@ public class PanelAdminController implements PanelHeader{
         if (controller.isFormReady()) {
             FormUserRemoveUserFromTeamController.Data data = controller.getData();
 
-            BarcodeEntity barcode = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
-            UserEntity user = userRepo.findById(selectedItem.getUserId());
+            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
+
+            if (barcodeOpt.isEmpty()) {
+                return;
+            }
+
+            BarcodeEntity barcode = barcodeOpt.get();
 
             barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
             barcode.setTeam(null);
@@ -351,7 +365,12 @@ public class PanelAdminController implements PanelHeader{
             return;
         }
 
-        TeamEntity byId = teamRepo.findById(selectedItem.getTeamId());
+        Optional<TeamEntity> teamOpt = teamRepo.findById(selectedItem.getTeamId());
+        if (teamOpt.isEmpty()) {
+            return;
+        }
+
+        TeamEntity team = teamOpt.get();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
@@ -365,7 +384,7 @@ public class PanelAdminController implements PanelHeader{
         alert.getDialogPane().getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         alert.showAndWait().ifPresent(response -> {
             if (response == yesButton) {
-                teamRepo.delete(byId);
+                teamRepo.delete(team);
                 ToastView.showModal("Tim je obrisan");
             }
         });
@@ -418,10 +437,14 @@ public class PanelAdminController implements PanelHeader{
 
         if (controller.isFormReady()) {
             FormTeamUpdateController.Data data = controller.getData();
-            TeamEntity en = teamRepo.findById(data.getTeamId());
-            en.setName(data.getTeamName());
-            en.setMembershipPayment(data.getMembershipPaymentFee());
-            teamRepo.save(en);
+            Optional<TeamEntity> en = teamRepo.findById(data.getTeamId());
+            if (en.isEmpty()) {
+                return;
+            }
+            TeamEntity team = en.get();
+            team.setName(data.getTeamName());
+            team.setMembershipPayment(data.getMembershipPaymentFee());
+            teamRepo.save(team);
             loadTableTeam();
 
             ToastView.showModal("Team je izmenjen");

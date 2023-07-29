@@ -14,10 +14,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.gambarucmsui.util.FormatUtil.formatBarcode;
+
 public class BarcodeGenerator {
 
     public static BarcodeView generateBarcodeImage (Long barcodeId, int width, int height) throws WriterException {
-        return generateBarcodeImage(String.format("%010d", barcodeId), width, height);
+        return generateBarcodeImage(formatBarcode(barcodeId), width, height);
     }
     public static BarcodeView generateBarcodeImage(String barcodeText, int width, int height) throws WriterException {
         Code128Writer barcodeWriter = new Code128Writer();

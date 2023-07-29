@@ -21,9 +21,9 @@ public class UserAttendanceEntity {
     public UserAttendanceEntity() {
     }
 
-    public UserAttendanceEntity(BarcodeEntity barcode) {
+    public UserAttendanceEntity(BarcodeEntity barcode, LocalDateTime timestamp) {
         this.barcode = barcode;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = timestamp;
     }
 
     public Long getAttendanceId() {

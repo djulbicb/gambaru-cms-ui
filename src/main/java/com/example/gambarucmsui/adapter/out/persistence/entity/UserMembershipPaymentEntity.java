@@ -20,15 +20,19 @@ public class UserMembershipPaymentEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
 
+    private int month;
+    private int year;
     private BigDecimal money;
 
     public UserMembershipPaymentEntity() {
     }
 
-    public UserMembershipPaymentEntity(BarcodeEntity barcode, BigDecimal fee) {
+    public UserMembershipPaymentEntity(BarcodeEntity barcode, int month, int year, LocalDateTime timestamp, BigDecimal fee) {
         this.barcode = barcode;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = timestamp;
         this.money = fee;
+        this.month = month;
+        this.year = year;
     }
 
     public Long getMembershipPaymentId() {
@@ -61,5 +65,21 @@ public class UserMembershipPaymentEntity {
 
     public void setMoney(BigDecimal money) {
         this.money = money;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }
