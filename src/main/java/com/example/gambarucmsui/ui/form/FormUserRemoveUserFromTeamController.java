@@ -112,7 +112,6 @@ public class FormUserRemoveUserFromTeamController implements Initializable {
         private String lastName;
         private String barcode;
         private String teamName;
-
         private Long userId;
 
         public Data(Long userId, String firstName, String lastName, String barcode, String teamName) {

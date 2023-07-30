@@ -1,8 +1,8 @@
 package com.example.gambarucmsui.adapter.out.persistence.repo;
 
+import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserMembershipPaymentEntity;
-import com.example.gambarucmsui.model.AttendanceCount;
 import com.example.gambarucmsui.model.MembershipCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -10,9 +10,9 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,16 +50,22 @@ public class UserMembershipRepository extends Repository<UserMembershipPaymentEn
         return membershipCounts;
     }
 
-    public List<UserMembershipPaymentEntity> fetchLastNEntriesForUserAttendance(Long barcodeId, int count) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserMembershipPaymentEntity> query = criteriaBuilder.createQuery(UserMembershipPaymentEntity.class);
-        Root<UserMembershipPaymentEntity> root = query.from(UserMembershipPaymentEntity.class);
-        query.select(root)
-                .where(criteriaBuilder.equal(root.get("barcode").get("barcodeId"), barcodeId))
-                .orderBy(criteriaBuilder.desc(root.get("timestamp")));
+    public List<UserMembershipPaymentEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count) {
+        String jpql = "SELECT um FROM UserMembershipPaymentEntity um " +
+                "WHERE um.barcode IN :barcodeIds " +
+                "ORDER BY um.timestamp DESC";
 
-        return entityManager.createQuery(query)
+        return entityManager.createQuery(jpql, UserMembershipPaymentEntity.class)
+                .setParameter("barcodeIds", barcodeIds)
                 .setMaxResults(count)
                 .getResultList();
+    }
+
+
+
+    public UserMembershipPaymentEntity saveNew(BarcodeEntity barcode, int month, int year, LocalDateTime timestamp, BigDecimal membershipPayment) {
+        UserMembershipPaymentEntity entity = new UserMembershipPaymentEntity(barcode, month, year, timestamp, membershipPayment);
+        barcode.setLastAttendanceTimestamp(timestamp);
+        return save(entity);
     }
 }

@@ -38,13 +38,15 @@
                   <Font size="10.0" />
                </font>
             </Label>
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+            <HBox spacing="5.0">
                <children>
-                  <TextField fx:id="txtCount" maxHeight="-Infinity" maxWidth="100.0" onKeyTyped="#txtTeamNameReset" text="10" />
-                  <Button layoutX="115.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddTeams" text="DODAJ TIMOVE" HBox.hgrow="ALWAYS" />
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddUsers" text="DODAJ KORISNIKE" HBox.hgrow="ALWAYS" />
-                  <Button layoutX="115.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddAttendance" text="DODAJ DOLAZNOST" HBox.hgrow="ALWAYS" />
-                  <Button layoutX="256.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddPayment" text="DODAJ PLAĆANJE" HBox.hgrow="ALWAYS" />
+                  <Button layoutX="115.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddTeams" text="DODAJ 1 TIM" HBox.hgrow="ALWAYS" />
+                  <Separator orientation="VERTICAL" />
+                  <TextField fx:id="txtCount" maxHeight="1.7976931348623157E308" maxWidth="100.0" text="10" />
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddUsers" text="DODAJ n KORISNIKE" HBox.hgrow="ALWAYS" />
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddUserToTeam" text="DODAJ KORISNIKE U TIM" />
+                  <Button layoutX="115.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddAttendance" text="DODAJ n DOLAZNOST" HBox.hgrow="ALWAYS" />
+                  <Button layoutX="256.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddPayment" text="DODAJ n PLAĆANJE" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>

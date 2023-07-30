@@ -6,16 +6,12 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.*;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ui.ToastView;
-import com.example.gambarucmsui.ui.dto.AttendanceDetail;
-import com.example.gambarucmsui.ui.dto.MembershipDetail;
-import com.example.gambarucmsui.ui.dto.TeamDetail;
-import com.example.gambarucmsui.ui.dto.UserDetail;
+import com.example.gambarucmsui.ui.dto.*;
 import com.example.gambarucmsui.ui.form.*;
 import com.example.gambarucmsui.util.FormatUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -48,9 +44,9 @@ public class PanelAdminController implements PanelHeader{
 
     // TAB USER
     /////////////////////////////
-    @FXML TableView<UserDetail> tableUsers;
+    @FXML TableView<UserAdminDetail> tableUsers;
     @FXML Label paginationLabel;
-    @FXML TextField txtSearchBarcodeId;
+    @FXML TextField txtSearchTeamName;
     @FXML TextField txtSearchFirstName;
     @FXML TextField txtSearchLastName;
 
@@ -79,55 +75,62 @@ public class PanelAdminController implements PanelHeader{
         configureTabTeam();
 
         // user details
-        TableColumn<AttendanceDetail, String> attendanceColumn = new TableColumn<>("Dolaznost (prethodnih 100)");
-        attendanceColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
-        tableUserAttendance.getColumns().add(attendanceColumn);
-        tableUserAttendance.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        TableColumn<MembershipDetail, String> membershipColumn = new TableColumn<>("Placanje (prethodnih 100)");
-        membershipColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
-        tableUserMembership.getColumns().add(membershipColumn);
-        tableUserMembership.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+//        TableColumn<AttendanceDetail, String> attendanceColumn = new TableColumn<>("Dolaznost (prethodnih 100)");
+//        attendanceColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
+//        tableUserAttendance.getColumns().add(attendanceColumn);
+//        tableUserAttendance.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+//
+//        TableColumn<MembershipDetail, String> membershipColumn = new TableColumn<>("Placanje (prethodnih 100)");
+//        membershipColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
+//        tableUserMembership.getColumns().add(membershipColumn);
+//        tableUserMembership.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void configureTabUsers() {
         tableUsers.setRowFactory(tv -> {
-            TableRow<UserDetail> row = new TableRow<>();
+            TableRow<UserAdminDetail> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
-                    UserDetail rowData = row.getItem();
-                    // Perform actions with the clicked row data
-                    System.out.println("Clicked row: " + rowData);
+                    UserAdminDetail rowData = row.getItem();
+                    Optional<UserEntity> userOpt = userRepo.findById(rowData.getUserId());
+                    if (userOpt.isEmpty()) {
+                        return;
+                    }
 
-//                    txtUserBarcodeId.setDisable(true);
-//                    txtUserBarcodeId.setText(rowData.getBarcodeId().toString());
-//                    txtUserFirstName.setText(rowData.getFirstName());
-//                    txtUserLastName.setText(rowData.getLastName());
-//                    txtUserPhone.setText(rowData.getPhone());
-
-//                    List<Attendance> userAttendanceEntities = attendanceRepo.fetchLastNEntriesForUserAttendance(rowData.getBarcodeId(), 100).stream().map(e->new Attendance(e.getTimestamp())).collect(Collectors.toList());
-//                    List<Membership> userMembershipPaymentEntities = membershipRepo.fetchLastNEntriesForUserAttendance(rowData.getBarcodeId(), 100).stream().map(e->new Membership(e.getTimestamp())).collect(Collectors.toList());;
-
-//                    tableUserAttendance.getItems().clear();
-//                    tableUserMembership.getItems().clear();
-//                    tableUserAttendance.getItems().addAll(userAttendanceEntities);
-//                    tableUserMembership.getItems().addAll(userMembershipPaymentEntities);
+                    List<AttendanceDetail> userAttendanceEntities = attendanceRepo.fetchLastNEntriesForUserAttendance(userOpt.get().getBarcodes(), 100).stream().map(e->new AttendanceDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
+                    List<MembershipDetail> userMembershipPaymentEntities = membershipRepo.fetchLastNEntriesForUserAttendance(userOpt.get().getBarcodes(), 100).stream().map(e->new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());;
+                    tableUserAttendance.getItems().setAll(userAttendanceEntities);
+                    tableUserMembership.getItems().setAll(userMembershipPaymentEntities);
                 }
             });
             return row;
         });
-    }
 
-    private String getOr(Object fee, String opt) {
-        if (fee == null) {
-            return opt;
+        for (TableColumn<UserAdminDetail, ?> column : tableUsers.getColumns()) {
+            if (column.getId().equals("userIdColumn")) {
+                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() * 2));
+            } else if ( column.getId().equals("genderColumn")) {
+                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() * 4));
+            } else if ( column.getId().equals("barcodeTeamColumn")) {
+                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() / 2));
+            } else {
+                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size()));
+            }
         }
-        return fee.toString();
+        for (TableColumn<AttendanceDetail, ?> column : tableUserAttendance.getColumns()) {
+            column.prefWidthProperty().bind(tableUserAttendance.widthProperty().divide(tableUserAttendance.getColumns().size()));
+        }
+        for (TableColumn<MembershipDetail, ?> column : tableUserMembership.getColumns()) {
+            column.prefWidthProperty().bind(tableUserMembership.widthProperty().divide(tableUserMembership.getColumns().size()));
+        }
+
     }
 
     @Override
     public void viewSwitched() {
         System.out.println("Panel admin");
+        loadTableUser();
+        loadTableTeam();
     }
 
     private String getOr(TextField txt, String opt) {
@@ -144,10 +147,10 @@ public class PanelAdminController implements PanelHeader{
         loadTableUser();
     }
     private void loadTableUser() {
-        List<UserDetail> collect = userRepo.findAll(currentPage, PAGE_SIZE, "createdAt",
-                getOr(txtSearchBarcodeId, ""),
+        List<UserAdminDetail> collect = userRepo.findAll(currentPage, PAGE_SIZE, "createdAt",
+                getOr(txtSearchTeamName, ""),
                 getOr(txtSearchFirstName, ""), getOr(txtSearchLastName, ""))
-                .stream().map(o -> UserDetail.fromEntity(o, FormatUtil.toDateTimeFormat(LocalDateTime.now()))
+                .stream().map(o -> UserAdminDetail.fromEntityToFull(o)
                 ).collect(Collectors.toList());
 
         tableUsers.getItems().setAll(collect);
@@ -181,10 +184,9 @@ public class PanelAdminController implements PanelHeader{
         if (controller.isFormReady()) {
             FormUserAddController.Data data = controller.getData();
 
-            UserEntity en = new UserEntity(data.getFirstName(), data.getLastName(), data.getGender(), data.getPhone(), LocalDateTime.now());
-            UserEntity saved = userRepo.save(en);
+            UserEntity saved = userRepo.saveOne(data.getFirstName(), data.getLastName(), data.getGender(), data.getPhone(), LocalDateTime.now());
 
-            ToastView.showModal(String.format("Korisnik %s %s je dodat.", en.getFirstName(), en.getLastName()));
+            ToastView.showModal(String.format("Korisnik %s %s je dodat.", saved.getFirstName(), saved.getLastName()));
             loadTableUser();
         }
     }
@@ -193,7 +195,7 @@ public class PanelAdminController implements PanelHeader{
 
     @FXML
     public void formUserUpdate() throws IOException {
-        UserDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
+        UserAdminDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
             return;
@@ -217,7 +219,7 @@ public class PanelAdminController implements PanelHeader{
             user.setLastName(data.getLastName());
             user.setGender(data.getGender());
             user.setPhone(data.getPhone());
-            userRepo.save(user);
+            userRepo.updateOne(user);
         }
 
         loadTableUser();
@@ -229,7 +231,7 @@ public class PanelAdminController implements PanelHeader{
 
     @FXML
     void formUserAddUserToTeam(MouseEvent event) throws IOException {
-        UserDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
+        UserAdminDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
             return;
@@ -257,34 +259,26 @@ public class PanelAdminController implements PanelHeader{
 
             Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
             Optional<UserEntity> userOpt = userRepo.findById(selectedItem.getUserId());
+            TeamEntity team = teamRepo.findByName(data.getTeamName());
 
             if (barcodeOpt.isEmpty() || userOpt.isEmpty()) {
                 return;
             }
-
-            BarcodeEntity barcode = barcodeOpt.get();
-            UserEntity user = userOpt.get();
-            TeamEntity team = teamRepo.findByName(data.getTeamName());
-
-            barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
-            barcode.setTeam(team);
-            barcode.setUser(user);
-
-            barcodeRepo.save(barcode);
+            barcodeRepo.updateBarcodeWithUserAndTeam(barcodeOpt.get(), userOpt.get(), team);
         }
         loadTableUser();
     }
 
     @FXML
     void formUserRemoveUserFromTeam(MouseEvent event) throws IOException {
-        UserDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
+        UserAdminDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
             return;
         }
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-user-remove-user-from-team.fxml"));
-        FormUserRemoveUserFromTeamController controller = new FormUserRemoveUserFromTeamController(teamRepo, new FormUserRemoveUserFromTeamController.Data(selectedItem.getUserId(), selectedItem.getFirstName(), selectedItem.getLastName(), selectedItem.getBarcodeId(), ""));
+        FormUserRemoveUserFromTeamController controller = new FormUserRemoveUserFromTeamController(teamRepo, new FormUserRemoveUserFromTeamController.Data(selectedItem.getUserId(), selectedItem.getFirstName(), selectedItem.getLastName(), "", ""));
 
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();
@@ -304,20 +298,20 @@ public class PanelAdminController implements PanelHeader{
         dialogStage.showAndWait();
 
         if (controller.isFormReady()) {
-            FormUserRemoveUserFromTeamController.Data data = controller.getData();
-
-            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
-
-            if (barcodeOpt.isEmpty()) {
-                return;
-            }
-
-            BarcodeEntity barcode = barcodeOpt.get();
-
-            barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
-            barcode.setTeam(null);
-
-            barcodeRepo.save(barcode);
+//            FormUserRemoveUserFromTeamController.Data data = controller.getData();
+//
+//            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
+//
+//            if (barcodeOpt.isEmpty()) {
+//                return;
+//            }
+//
+//            BarcodeEntity barcode = barcodeOpt.get();
+//
+//            barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
+//            barcode.setTeam(null);
+//
+//            barcodeRepo.updateOne(barcode);
         }
         loadTableUser();
     }
@@ -407,11 +401,12 @@ public class PanelAdminController implements PanelHeader{
 
         if (controller.isFormReady()) {
             FormTeamAddController.Data data = controller.getData();
-            TeamEntity en = new TeamEntity(data.getTeamName(), data.getMembershipPaymentFee());
-            teamRepo.save(en);
+
+
+            TeamEntity team = teamRepo.saveNewTeam(data.getTeamName(), data.getMembershipPaymentFee());
             loadTableTeam();
 
-            ToastView.showModal(String.format("Tim %s je dodat.", en.getName()));
+            ToastView.showModal(String.format("Tim %s je dodat.", team.getName()));
         }
     }
 
@@ -444,7 +439,7 @@ public class PanelAdminController implements PanelHeader{
             TeamEntity team = en.get();
             team.setName(data.getTeamName());
             team.setMembershipPayment(data.getMembershipPaymentFee());
-            teamRepo.save(team);
+            teamRepo.updateOne(team);
             loadTableTeam();
 
             ToastView.showModal("Team je izmenjen");

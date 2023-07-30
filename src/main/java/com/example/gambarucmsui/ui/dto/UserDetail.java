@@ -4,8 +4,6 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.StringJoiner;
 
 import static com.example.gambarucmsui.util.FormatUtil.*;
@@ -32,7 +30,7 @@ public class UserDetail {
         this.timestamp = timestamp;
     }
 
-    public static UserDetail fromEntity(BarcodeEntity b, String timestamp) {
+    public static UserDetail fromEntityToFull(BarcodeEntity b, String timestamp) {
         UserEntity user = b.getUser();
         TeamEntity team = b.getTeam();
 //        for (BarcodeEntity barcode : o.getBarcodes()) {
@@ -58,30 +56,25 @@ public class UserDetail {
                 timestamp);
     }
 
-    public static UserDetail fromEntity(UserEntity user, String timestamp) {
+    public static UserDetail fromEntityToFull(UserEntity user) {
         StringJoiner barcodeCsv = new StringJoiner(",");
         StringJoiner teamCsv = new StringJoiner(",");
-//        for (BarcodeEntity barcode : o.getBarcodes()) {
-//            barcodeCsv.add(barcode.getBarcodeId().toString());
-//        }
-//        StringJoiner teamCsv = new StringJoiner(",");
-//        for (BarcodeEntity barcode : o.getBarcodes()) {
-//            TeamEntity team = barcode.getTeam();
-//            if (team != null) {
-//                teamCsv.add(team.getName());
-//            }
-//        }
+
+        for (BarcodeEntity barcode : user.getBarcodes()) {
+            barcodeCsv.add(barcode.getBarcodeId().toString());
+        }
+
 
         return new UserDetail(
                 user.getUserId(),
-                barcodeCsv.toString(),
+                "barcode",
                 user.getFirstName(),
                 user.getLastName(),
                 user.getPhone(),
                 genderToSerbianAbbr(user.getGender()),
                 teamCsv.toString(),
                 toDateFormat(user.getCreatedAt()),
-                timestamp);
+                "");
     }
 
     public Long getUserId() {

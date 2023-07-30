@@ -10,12 +10,9 @@ import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.UserDetail;
 import com.example.gambarucmsui.util.FormatUtil;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
@@ -64,7 +61,7 @@ public class PanelMembershipController implements PanelHeader {
 
     private void listPageForDate() {
         List<UserDetail> collect = barcodeRepo.findAllMembershipsForMonthAndYear(paginationDate.getMonthValue(), paginationDate.getYear())
-                .stream().map(o -> UserDetail.fromEntity(o.getBarcode(), FormatUtil.toMonthYeah(o.getTimestamp()))).collect(Collectors.toList());
+                .stream().map(o -> UserDetail.fromEntityToFull(o.getBarcode(), FormatUtil.toMonthYeah(o.getTimestamp()))).collect(Collectors.toList());
         table.getItems().setAll(collect);
     }
 
@@ -105,7 +102,7 @@ public class PanelMembershipController implements PanelHeader {
 
             barcode.setLastMembershipPaymentTimestamp(LocalDateTime.now());
 
-            membershipRepo.save(new UserMembershipPaymentEntity(barcode, month, year, timestamp, barcode.getTeam().getMembershipPayment()));
+            membershipRepo.saveNew(barcode, month, year, timestamp, barcode.getTeam().getMembershipPayment());
 
             listPageForDate();
 

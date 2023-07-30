@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -26,7 +27,7 @@
                            <children>
                               <VBox prefWidth="600.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <HBox maxHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                    <HBox maxHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0" VBox.vgrow="ALWAYS">
                                        <children>
                                           <VBox>
                                              <children>
@@ -37,50 +38,54 @@
                                                 </Label>
                                                 <HBox spacing="5.0" VBox.vgrow="ALWAYS">
                                                    <children>
-                                                      <TextField fx:id="txtSearchBarcodeId" maxHeight="1.7976931348623157E308" onKeyTyped="#textSearchFieldChanged" promptText="BARCODE" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="txtSearchTeamName" maxHeight="1.7976931348623157E308" onKeyTyped="#textSearchFieldChanged" promptText="IME TIMA" HBox.hgrow="ALWAYS" />
                                                       <TextField fx:id="txtSearchFirstName" maxHeight="1.7976931348623157E308" onKeyTyped="#textSearchFieldChanged" promptText="IME" HBox.hgrow="ALWAYS" />
                                                       <TextField fx:id="txtSearchLastName" maxHeight="1.7976931348623157E308" onKeyTyped="#textSearchFieldChanged" promptText="PREZIME" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                 </HBox>
                                              </children>
                                           </VBox>
-                                          <VBox>
+                                          <HBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                                              <children>
-                                                <Label maxHeight="1.7976931348623157E308" text="PAGINACIJA" textFill="#fcfcfc">
-                                                   <font>
-                                                      <Font size="10.0" />
-                                                   </font>
-                                                </Label>
-                                                <HBox prefHeight="30.0" prefWidth="200.0" spacing="5.0">
+                                                <VBox>
                                                    <children>
-                                                      <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goPrevPage" text="&lt;&lt;&lt;" textFill="#fcfcfc" HBox.hgrow="ALWAYS">
-                                                         <font>
-                                                            <Font size="10.0" />
-                                                         </font>
-                                                      </Button>
-                                                      <Label fx:id="paginationLabel" maxHeight="1.7976931348623157E308" text="01" textFill="#fcfcfc">
+                                                      <Label maxHeight="1.7976931348623157E308" text="PAGINACIJA" textFill="#fcfcfc">
                                                          <font>
                                                             <Font size="10.0" />
                                                          </font>
                                                       </Label>
-                                                      <Button layoutX="77.0" layoutY="10.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goNextPage" text="&gt;&gt;&gt;" textFill="#fcfcfc">
-                                                         <font>
-                                                            <Font size="10.0" />
-                                                         </font>
-                                                      </Button>
+                                                      <HBox prefHeight="30.0" spacing="5.0">
+                                                         <children>
+                                                            <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goPrevPage" text="&lt;&lt;&lt;" textFill="#fcfcfc" HBox.hgrow="ALWAYS">
+                                                               <font>
+                                                                  <Font size="10.0" />
+                                                               </font>
+                                                            </Button>
+                                                            <Label fx:id="paginationLabel" maxHeight="1.7976931348623157E308" text="01" textFill="#fcfcfc">
+                                                               <font>
+                                                                  <Font size="10.0" />
+                                                               </font>
+                                                            </Label>
+                                                            <Button layoutX="77.0" layoutY="10.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goNextPage" text="&gt;&gt;&gt;" textFill="#fcfcfc">
+                                                               <font>
+                                                                  <Font size="10.0" />
+                                                               </font>
+                                                            </Button>
+                                                         </children>
+                                                      </HBox>
                                                    </children>
-                                                </HBox>
+                                                </VBox>
                                              </children>
-                                          </VBox>
+                                          </HBox>
                                        </children>
                                     </HBox>
                                     <TableView fx:id="tableUsers" VBox.vgrow="ALWAYS">
                                        <columns>
-                                          <TableColumn fx:id="idColumn" text="Id">
-                                             <cellValueFactory>
-                                                <PropertyValueFactory property="barcodeId" />
-                                             </cellValueFactory>
-                                          </TableColumn>
+<!--                                          <TableColumn fx:id="userIdColumn" text="ID">-->
+<!--                                             <cellValueFactory>-->
+<!--                                                <PropertyValueFactory property="userId" />-->
+<!--                                             </cellValueFactory>-->
+<!--                                          </TableColumn>-->
                                           <TableColumn fx:id="firstNameColumn" text="Ime">
                                              <cellValueFactory>
                                                 <PropertyValueFactory property="firstName" />
@@ -96,26 +101,16 @@
                                                 <PropertyValueFactory property="phone" />
                                              </cellValueFactory>
                                           </TableColumn>
-                                          <TableColumn fx:id="genderNameColumn" text="Pol">
+                                          <TableColumn fx:id="genderColumn" text="Pol">
                                              <cellValueFactory>
                                                 <PropertyValueFactory property="gender" />
                                              </cellValueFactory>
                                           </TableColumn>
-                                          <TableColumn fx:id="teamColumn" text="Tim">
+                                          <TableColumn fx:id="barcodeTeamColumn" text="Barkod (team)">
                                              <cellValueFactory>
-                                                <PropertyValueFactory property="team" />
+                                                <PropertyValueFactory property="barcodeTeam" />
                                              </cellValueFactory>
                                           </TableColumn>
-<!--                                          <TableColumn fx:id="lastAttendanceColumn" text="Prethodni dolazak">-->
-<!--                                             <cellValueFactory>-->
-<!--                                                <PropertyValueFactory property="lastAttendanceTimestamp" />-->
-<!--                                             </cellValueFactory>-->
-<!--                                          </TableColumn>-->
-<!--                                          <TableColumn fx:id="lastMembershipPaymentColumn" text="Prethodna uplata">-->
-<!--                                             <cellValueFactory>-->
-<!--                                                <PropertyValueFactory property="lastMembershipPaymentTimestamp" />-->
-<!--                                             </cellValueFactory>-->
-<!--                                          </TableColumn>-->
                                           <TableColumn fx:id="createdAt" text="Kreiran">
                                              <cellValueFactory>
                                                 <PropertyValueFactory property="createdAt" />
@@ -134,7 +129,17 @@
                                                 <Font size="10.0" />
                                              </font>
                                           </Label>
-                                          <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAdd" text="KREIRAJ NOVOG KORISNIKA" textFill="#fcfcfc" />
+                                          <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAdd" text="KREIRAJ NOVOG POLAZNIKA" textFill="#fcfcfc" />
+                                          <Separator prefWidth="200.0">
+                                             <VBox.margin>
+                                                <Insets bottom="-2.0" top="5.0" />
+                                             </VBox.margin>
+                                          </Separator>
+                                          <Label maxHeight="1.7976931348623157E308" text="DETALJI SELEKTOVANOG POLAZNIKA:" textFill="#fcfcfc">
+                                             <font>
+                                                <Font size="10.0" />
+                                             </font>
+                                          </Label>
                                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserUpdate" text="IZMENI KORISNIKA" textFill="#fcfcfc" />
                                           <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserDelete" text="OBRISI KORISNIKA" textFill="#fcfcfc" />
                                           <HBox spacing="5.0">
@@ -145,34 +150,63 @@
                                           </HBox>
                                        </children>
                                     </VBox>
-                                    <Label maxHeight="1.7976931348623157E308" text="DETALJI:" textFill="#fcfcfc">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Label>
                                     <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-                                      <tabs>
-                                        <Tab closable="false" text="DOLAZNOST">
-                                          <content>
-                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                                   <children>
-                                                      <TableView fx:id="tableUserAttendance" layoutY="-2.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
-                                                      </TableView>
-                                                   </children>
-                                                </AnchorPane>
-                                          </content>
-                                        </Tab>
-                                          <Tab closable="false" text="PLACANJE">
+                                       <tabs>
+                                          <Tab closable="false" text="DOLAZNOST">
                                              <content>
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                    <children>
-                                                      <TableView fx:id="tableUserMembership" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                      <TableView fx:id="tableUserAttendance" layoutY="-2.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
+                                                         <columns>
+                                                            <TableColumn fx:id="tblAttendanceBarcodeId" text="Barcode ID">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="barcodeId" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn fx:id="tblAttendanceTimestamp" text="Dolazak">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="timestamp" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn fx:id="tblAttendanceTeamName" text="Tim">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="teamName" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                         </columns>
                                                       </TableView>
                                                    </children>
                                                 </AnchorPane>
                                              </content>
                                           </Tab>
-                                      </tabs>
+                                          <Tab closable="false" text="PLACANJE">
+                                             <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                   <children>
+                                                      <TableView fx:id="tableUserMembership" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <columns>
+                                                            <TableColumn fx:id="membershipBarcodeId" text="Barkod">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="barcodeId" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn fx:id="membershipTeam" text="Tim">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="teamName" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn fx:id="membershipTimestamp" text="Vreme">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="timestamp" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                         </columns>
+                                                      </TableView>
+                                                   </children>
+                                                </AnchorPane>
+                                             </content>
+                                          </Tab>
+                                       </tabs>
                                        <VBox.margin>
                                           <Insets bottom="-5.0" />
                                        </VBox.margin>

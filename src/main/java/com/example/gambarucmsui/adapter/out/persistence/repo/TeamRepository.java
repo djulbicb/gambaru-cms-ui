@@ -4,6 +4,7 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class TeamRepository extends Repository<TeamEntity> {
@@ -34,5 +35,14 @@ public class TeamRepository extends Repository<TeamEntity> {
         query.setParameter("userId", userId);
 
         return query.getResultList();
+    }
+
+    public TeamEntity saveNewTeam(String teamName, BigDecimal membershipPaymentFee) {
+        TeamEntity en = new TeamEntity(teamName, membershipPaymentFee);
+        return save(en);
+    }
+
+    public TeamEntity updateOne(TeamEntity team) {
+        return save(team);
     }
 }

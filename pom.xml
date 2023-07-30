@@ -14,7 +14,21 @@
         <junit.version>5.9.2</junit.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+
     <dependencies>
+        <!--DATA LIBRARY-->
+        <dependency>
+            <groupId>com.github.djulbicb</groupId>
+            <artifactId>DataLibrary</artifactId>
+            <version>v9.0</version>
+        </dependency>
         <!--DATABASE-->
         <dependency>
             <groupId>com.mysql</groupId>

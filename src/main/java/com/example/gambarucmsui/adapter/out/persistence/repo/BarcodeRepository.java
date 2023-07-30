@@ -1,8 +1,6 @@
 package com.example.gambarucmsui.adapter.out.persistence.repo;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserMembershipPaymentEntity;
+import com.example.gambarucmsui.adapter.out.persistence.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -91,4 +89,15 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         return typedQuery.getResultList();
     }
 
+    public void updateOne(BarcodeEntity barcode) {
+        save(barcode);
+    }
+
+    public void updateBarcodeWithUserAndTeam(BarcodeEntity barcode, UserEntity user, TeamEntity team) {
+        barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
+        barcode.setTeam(team);
+        barcode.setUser(user);
+
+        save(barcode);
+    }
 }

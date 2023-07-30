@@ -46,7 +46,19 @@ public class UserEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "user") // , fetch = FetchType.LAZY
+    private List<BarcodeEntity> barcodes = new ArrayList<>();
+
     // Constructors, getters, setters, and other fields/methods ...
+
+
+    public List<BarcodeEntity> getBarcodes() {
+        return barcodes;
+    }
+
+    public void setBarcodes(List<BarcodeEntity> barcodes) {
+        this.barcodes = barcodes;
+    }
 
     public Long getUserId() {
         return userId;

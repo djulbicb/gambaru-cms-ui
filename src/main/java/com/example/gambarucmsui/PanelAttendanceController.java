@@ -1,7 +1,6 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
@@ -12,11 +11,9 @@ import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.UserDetail;
 import com.example.gambarucmsui.ui.form.FormBarcodeGet;
 import com.example.gambarucmsui.util.FormatUtil;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -73,7 +70,7 @@ public class PanelAttendanceController implements PanelHeader {
 
     private void listPageForDate() {
         List<UserDetail> collect = barcodeRepository.findAllForAttendanceDate(paginationDate)
-                .stream().map(o -> UserDetail.fromEntity(o.getBarcode(), FormatUtil.toDateTimeFormat(o.getTimestamp()))).collect(Collectors.toList());
+                .stream().map(o -> UserDetail.fromEntityToFull(o.getBarcode(), FormatUtil.toDateTimeFormat(o.getTimestamp()))).collect(Collectors.toList());
         table.getItems().setAll(collect);
     }
 
@@ -135,7 +132,7 @@ public class PanelAttendanceController implements PanelHeader {
 
             barcode.setLastMembershipPaymentTimestamp(LocalDateTime.now());
 
-            attendanceRepo.save(new UserAttendanceEntity(barcode, LocalDateTime.now()));
+            attendanceRepo.saveNew(barcode, LocalDateTime.now());
 
             listPageForDate();
 

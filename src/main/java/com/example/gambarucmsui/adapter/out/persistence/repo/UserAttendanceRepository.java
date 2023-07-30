@@ -1,5 +1,6 @@
 package com.example.gambarucmsui.adapter.out.persistence.repo;
 
+import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
 import com.example.gambarucmsui.model.AttendanceCount;
 import jakarta.persistence.EntityManager;
@@ -10,6 +11,7 @@ import jakarta.persistence.criteria.Root;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,16 +39,35 @@ public class UserAttendanceRepository extends Repository<UserAttendanceEntity> {
                 .collect(Collectors.toList());
     }
 
-    public List<UserAttendanceEntity> fetchLastNEntriesForUserAttendance(Long barcodeId, int count) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserAttendanceEntity> query = criteriaBuilder.createQuery(UserAttendanceEntity.class);
-        Root<UserAttendanceEntity> root = query.from(UserAttendanceEntity.class);
-        query.select(root)
-                .where(criteriaBuilder.equal(root.get("barcode").get("barcodeId"), barcodeId))
-                .orderBy(criteriaBuilder.desc(root.get("timestamp")));
+    public List<UserAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count) {
+        String jpql = "SELECT ua FROM UserAttendanceEntity ua " +
+                "WHERE ua.barcode IN :barcodeIds " +
+                "ORDER BY ua.timestamp DESC";
 
-        return entityManager.createQuery(query)
+        return entityManager.createQuery(jpql, UserAttendanceEntity.class)
+                .setParameter("barcodeIds", barcodeIds)
                 .setMaxResults(count)
                 .getResultList();
+    }
+
+    public void saveNewAll(List<BarcodeEntity> barcodes, List<LocalDateTime> timestamps) {
+
+        List<UserAttendanceEntity> attendanceEntities = new ArrayList<>();
+        for (int i = 0; i < barcodes.size(); i++) {
+            BarcodeEntity barcode = barcodes.get(i);
+            LocalDateTime localDateTime = timestamps.get(i);
+
+            barcode.setLastAttendanceTimestamp(localDateTime);
+            UserAttendanceEntity entity = new UserAttendanceEntity(barcode, localDateTime);
+            attendanceEntities.add(entity);
+        }
+
+        saveAll(attendanceEntities);
+
+    }
+    public UserAttendanceEntity saveNew(BarcodeEntity barcode, LocalDateTime timestamp) {
+        barcode.setLastAttendanceTimestamp(timestamp);
+        UserAttendanceEntity entity = new UserAttendanceEntity(barcode, timestamp);
+        return save(entity);
     }
 }

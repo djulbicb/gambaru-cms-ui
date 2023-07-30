@@ -16,11 +16,11 @@ module com.example.gambarucmsui {
     opens com.example.gambarucmsui.adapter.out.persistence.entity to org.hibernate.orm.core;
     opens com.example.gambarucmsui.common to javafx.controls;
     opens com.example.gambarucmsui.ui.form to javafx.fxml;
+    opens com.example.gambarucmsui.ui to javafx.fxml;
+    opens com.example.gambarucmsui.ui.dto to javafx.base, javafx.fxml;
 
     exports com.example.gambarucmsui;
     exports com.example.gambarucmsui.ui;
-    opens com.example.gambarucmsui.ui to javafx.fxml;
-    opens com.example.gambarucmsui.ui.dto to javafx.base, javafx.fxml;
     exports com.example.gambarucmsui.ui.dto;
     exports com.example.gambarucmsui.ui.form;
 }
