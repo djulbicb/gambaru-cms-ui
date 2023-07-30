@@ -1,7 +1,6 @@
-package com.example.gambarucmsui.ui.dto;
+package com.example.gambarucmsui.ui.dto.admin;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 
 import java.util.StringJoiner;

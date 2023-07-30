@@ -6,27 +6,35 @@ import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 import com.example.gambarucmsui.adapter.out.persistence.repo.*;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ui.ToastView;
-import com.example.gambarucmsui.ui.dto.*;
+import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
+import com.example.gambarucmsui.ui.dto.admin.subtables.AttendanceDetail;
+import com.example.gambarucmsui.ui.dto.admin.subtables.BarcodeDetail;
+import com.example.gambarucmsui.ui.dto.admin.subtables.MembershipDetail;
+import com.example.gambarucmsui.ui.dto.admin.UserAdminDetail;
 import com.example.gambarucmsui.ui.form.*;
-import com.example.gambarucmsui.util.FormatUtil;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.common.LayoutUtil.stretchColumnsToEqualSize;
 import static com.example.gambarucmsui.util.FormatUtil.*;
 
 public class PanelAdminController implements PanelHeader{
@@ -44,23 +52,26 @@ public class PanelAdminController implements PanelHeader{
 
     // TAB USER
     /////////////////////////////
-    @FXML TableView<UserAdminDetail> tableUsers;
-    @FXML Label paginationLabel;
-    @FXML TextField txtSearchTeamName;
-    @FXML TextField txtSearchFirstName;
-    @FXML TextField txtSearchLastName;
+    @FXML private TableView<UserAdminDetail> tableUsers;
+    @FXML private Label paginationLabel;
+    @FXML private TextField txtSearchFirstName;
+    @FXML private TextField txtSearchLastName;
+    @FXML private TextField txtSearchBarcode;
+    @FXML private ComboBox<String> cmbSearchTeam;
+    @FXML private CheckBox checkSearchOnlyActive;
 
     // USER DETAILS
     @FXML
     private TableView<AttendanceDetail> tableUserAttendance;
     @FXML private TableView<MembershipDetail> tableUserMembership;
+    @FXML private TableView<BarcodeDetail> tableUserBarcode;
 
     // TEAM TAB
     /////////////////////////////
     @FXML private TableView<TeamDetail> tableTeam;
     @FXML private TableView<?> tableTeamUsers;
 
-    public PanelAdminController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
+    public PanelAdminController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
         this.primaryStage = primaryStage;
         this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
         this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
@@ -73,20 +84,13 @@ public class PanelAdminController implements PanelHeader{
     public void initialize() {
         configureTabUsers();
         configureTabTeam();
-
-        // user details
-//        TableColumn<AttendanceDetail, String> attendanceColumn = new TableColumn<>("Dolaznost (prethodnih 100)");
-//        attendanceColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
-//        tableUserAttendance.getColumns().add(attendanceColumn);
-//        tableUserAttendance.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-//
-//        TableColumn<MembershipDetail, String> membershipColumn = new TableColumn<>("Placanje (prethodnih 100)");
-//        membershipColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
-//        tableUserMembership.getColumns().add(membershipColumn);
-//        tableUserMembership.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void configureTabUsers() {
+        // Load teams to comboBox
+        loadTeamsToUserComboBox();
+
+        // Add on row click listener
         tableUsers.setRowFactory(tv -> {
             TableRow<UserAdminDetail> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -96,34 +100,128 @@ public class PanelAdminController implements PanelHeader{
                     if (userOpt.isEmpty()) {
                         return;
                     }
+                    UserEntity user = userOpt.get();
 
-                    List<AttendanceDetail> userAttendanceEntities = attendanceRepo.fetchLastNEntriesForUserAttendance(userOpt.get().getBarcodes(), 100).stream().map(e->new AttendanceDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
-                    List<MembershipDetail> userMembershipPaymentEntities = membershipRepo.fetchLastNEntriesForUserAttendance(userOpt.get().getBarcodes(), 100).stream().map(e->new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());;
-                    tableUserAttendance.getItems().setAll(userAttendanceEntities);
-                    tableUserMembership.getItems().setAll(userMembershipPaymentEntities);
+                    loadTableUserAttendance(user);
+                    loadTableUserMembership(user);
+                    loadTableUserBarcode(user);
+
                 }
             });
             return row;
         });
 
-        for (TableColumn<UserAdminDetail, ?> column : tableUsers.getColumns()) {
-            if (column.getId().equals("userIdColumn")) {
-                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() * 2));
-            } else if ( column.getId().equals("genderColumn")) {
-                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() * 4));
-            } else if ( column.getId().equals("barcodeTeamColumn")) {
-                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() / 2));
-            } else {
-                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size()));
-            }
-        }
-        for (TableColumn<AttendanceDetail, ?> column : tableUserAttendance.getColumns()) {
-            column.prefWidthProperty().bind(tableUserAttendance.widthProperty().divide(tableUserAttendance.getColumns().size()));
-        }
-        for (TableColumn<MembershipDetail, ?> column : tableUserMembership.getColumns()) {
-            column.prefWidthProperty().bind(tableUserMembership.widthProperty().divide(tableUserMembership.getColumns().size()));
-        }
+        // Set up user table for barcodes
+        // Create columns for barcode and team
+        TableColumn<BarcodeDetail, String> barcodeColumn = new TableColumn<>("Barcode");
+        barcodeColumn.setCellValueFactory(new PropertyValueFactory<>("barcode"));
+        TableColumn<BarcodeDetail, String> teamColumn = new TableColumn<>("Team");
+        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
+        TableColumn<BarcodeDetail, String> statusColumn = new TableColumn<>("Team");
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
+        TableColumn<BarcodeDetail, String> activateColumn = buildUserBarcodeButtonColumn();
+        tableUserBarcode.getColumns().addAll(barcodeColumn, teamColumn, statusColumn, activateColumn);
 
+
+
+        // Stretch columns based on table width
+//        for (TableColumn<UserAdminDetail, ?> column : tableUsers.getColumns()) {
+//            if (column.getId().equals("userIdColumn")) {
+//                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() * 2));
+//            } else if ( column.getId().equals("genderColumn")) {
+//                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() * 4));
+//            } else if ( column.getId().equals("barcodeTeamColumn")) {
+//                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() / 2));
+//            } else {
+//                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size()));
+//            }
+//        }
+        stretchColumnsToEqualSize(tableUserAttendance);
+        stretchColumnsToEqualSize(tableUserMembership);
+        stretchColumnsToEqualSize(tableUserBarcode);
+    }
+
+    private void loadTableUserMembership(UserEntity user) {
+        List<MembershipDetail> userMembershipPaymentEntities = membershipRepo.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e->new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());;
+        tableUserMembership.getItems().setAll(userMembershipPaymentEntities);
+    }
+
+    private void loadTableUserAttendance(UserEntity user) {
+        List<AttendanceDetail> userAttendanceEntities = attendanceRepo.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e->new AttendanceDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
+        tableUserAttendance.getItems().setAll(userAttendanceEntities);
+    }
+
+    private void loadTableUserBarcode(UserEntity user) {
+        List<BarcodeDetail> barcodeDetails = new ArrayList<>();
+        for (BarcodeEntity barcode : user.getBarcodes()) {
+            barcodeDetails.add(new BarcodeDetail(formatBarcode(barcode.getBarcodeId()), barcode.getStatus(), barcode.getTeam().getName()));
+        }
+        tableUserBarcode.getItems().setAll(barcodeDetails);
+    }
+
+    private TableColumn<BarcodeDetail, String> buildUserBarcodeButtonColumn() {
+        TableColumn<BarcodeDetail, String> activateColumn = new TableColumn<>("sss");
+        activateColumn.setCellFactory(param -> createButtonTableCell());
+        return activateColumn;
+    }
+    private TableCell<BarcodeDetail, String> createButtonTableCell() {
+        return new TableCell<BarcodeDetail, String>() {
+            private final Button activateBtn = new Button("Aktiviraj");
+            private final Button deactivateBtn = new Button("Deaktiviraj");
+            private HBox pane;
+            @Override
+            protected void updateItem(String s, boolean b) {
+                super.updateItem(s, b);
+
+                if (b) {
+                    setGraphic(null);
+                } else {
+                    if (pane == null) {
+                        pane = new HBox(activateBtn, deactivateBtn);
+                        activateBtn.setOnMouseClicked(event -> {
+                            BarcodeDetail selectedItem = getTableView().getItems().get(getIndex());
+                            System.out.println("sss");
+                            if (selectedItem != null) {
+                                Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(selectedItem.getBarcode()));
+                                if (byId.isPresent()) {
+                                    BarcodeEntity barcode = byId.get();
+                                    barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
+                                    barcodeRepo.updateOne(barcode);
+
+                                    loadTableUserBarcode(barcode.getUser());
+                                }
+                            }
+                        });
+                        deactivateBtn.setOnMouseClicked(event -> {
+                            BarcodeDetail selectedItem = getTableView().getItems().get(getIndex());
+                            System.out.println("qqq");
+                            if (selectedItem != null) {
+                                Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(selectedItem.getBarcode()));
+                                if (byId.isPresent()) {
+                                    BarcodeEntity barcode = byId.get();
+                                    barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
+                                    barcodeRepo.updateOne(barcode);
+
+                                    loadTableUserBarcode(barcode.getUser());
+                                }
+
+                            }
+
+                        });
+                    }
+                    setGraphic(pane);
+                }
+            }
+        };
+    }
+
+    private void loadTeamsToUserComboBox() {
+        cmbSearchTeam.getItems().clear();
+        cmbSearchTeam.getItems().add(null);
+        for (TeamEntity team : teamRepo.findAll()) {
+            cmbSearchTeam.getItems().add(team.getName());
+        }
     }
 
     @Override
@@ -131,6 +229,7 @@ public class PanelAdminController implements PanelHeader{
         System.out.println("Panel admin");
         loadTableUser();
         loadTableTeam();
+        loadTeamsToUserComboBox();
     }
 
     private String getOr(TextField txt, String opt) {
@@ -148,12 +247,33 @@ public class PanelAdminController implements PanelHeader{
     }
     private void loadTableUser() {
         List<UserAdminDetail> collect = userRepo.findAll(currentPage, PAGE_SIZE, "createdAt",
-                getOr(txtSearchTeamName, ""),
-                getOr(txtSearchFirstName, ""), getOr(txtSearchLastName, ""))
+                        getOr(cmbSearchTeam, ""),
+                        getOr(txtSearchFirstName, ""),
+                        getOr(txtSearchLastName, ""),
+                        getNumericOr(txtSearchBarcode, ""),
+                        checkSearchOnlyActive.isSelected())
                 .stream().map(o -> UserAdminDetail.fromEntityToFull(o)
                 ).collect(Collectors.toList());
 
         tableUsers.getItems().setAll(collect);
+    }
+
+    private String getNumericOr(TextField txtSearchBarcode, String opt) {
+        if (txtSearchBarcode == null) {
+            return opt;
+        }
+        String value = txtSearchBarcode.getText();
+        if (isLong(value)) {
+            return parseBarcodeStr(value).toString();
+        }
+        return opt;
+    }
+
+    private String getOr(ComboBox<String> combo, String opt) {
+        if (combo.getSelectionModel() == null || combo.getSelectionModel().getSelectedItem() == null) {
+            return opt;
+        }
+        return combo.getSelectionModel().getSelectedItem();
     }
 
     @FXML
@@ -332,15 +452,10 @@ public class PanelAdminController implements PanelHeader{
                 if (team == null) {
                     return;
                 }
-
-                System.out.println("clicked");
                 TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
                 if (selectedItem == null) {
-                    System.out.println("NULL");
+
                 }
-//                txtTeamId.setText(selectedItem.getTeamId().toString());
-//                txtTeamName.setText(selectedItem.getName());
-//                txtTeamMembershipFee.setText(getOr(selectedItem.getFee(), ""));
             });
             return row;
         });
@@ -453,6 +568,10 @@ public class PanelAdminController implements PanelHeader{
     @FXML
     private void onTeamTabSwitch() {
         loadTableTeam();
+    }
+    @FXML
+    void onCmbSearchTeamChange(ActionEvent event) {
+        loadTableUser();
     }
 
 }

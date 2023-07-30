@@ -17,10 +17,14 @@ module com.example.gambarucmsui {
     opens com.example.gambarucmsui.common to javafx.controls;
     opens com.example.gambarucmsui.ui.form to javafx.fxml;
     opens com.example.gambarucmsui.ui to javafx.fxml;
-    opens com.example.gambarucmsui.ui.dto to javafx.base, javafx.fxml;
 
     exports com.example.gambarucmsui;
     exports com.example.gambarucmsui.ui;
-    exports com.example.gambarucmsui.ui.dto;
     exports com.example.gambarucmsui.ui.form;
+    exports com.example.gambarucmsui.ui.dto.admin;
+    opens com.example.gambarucmsui.ui.dto.admin to javafx.base, javafx.fxml;
+    exports com.example.gambarucmsui.ui.dto.admin.subtables;
+    opens com.example.gambarucmsui.ui.dto.admin.subtables to javafx.base, javafx.fxml;
+    exports com.example.gambarucmsui.ui.dto.core;
+    opens com.example.gambarucmsui.ui.dto.core to javafx.base, javafx.fxml;
 }

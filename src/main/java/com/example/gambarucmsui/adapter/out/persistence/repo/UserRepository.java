@@ -1,14 +1,12 @@
 package com.example.gambarucmsui.adapter.out.persistence.repo;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,24 +22,7 @@ public class UserRepository extends Repository<UserEntity> {
                 .findFirst();
     }
 
-    @Override
-    public List<UserEntity> findAll(int page, int pageSize, String sortColumn) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserEntity> query = criteriaBuilder.createQuery(entityClass);
-        Root<UserEntity> root = query.from(entityClass);
-        query.select(root);
-
-        query.orderBy(criteriaBuilder.desc(root.get(sortColumn)));
-
-        int offset = (page - 1) * pageSize;
-
-        return entityManager.createQuery(query)
-                .setFirstResult(offset)
-                .setMaxResults(pageSize)
-                .getResultList();
-    }
-
-    public List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName) {
+    public List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
         String jpql = "SELECT u FROM UserEntity u JOIN u.barcodes b JOIN b.team t WHERE 1=1";
 
         if (firstName != null && !firstName.isBlank()) {
@@ -52,6 +33,12 @@ public class UserRepository extends Repository<UserEntity> {
         }
         if (teamName != null && !teamName.isBlank()) {
             jpql += " AND t.name LIKE :teamName";
+        }
+        if (barcode != null && !barcode.isBlank()) {
+            jpql += " AND b.barcodeId = :barcode";
+        }
+        if (isOnlyActive) {
+            jpql += " AND b.status = :status";
         }
         jpql += " ORDER BY u." + sortColumn + " DESC";
 
@@ -69,12 +56,21 @@ public class UserRepository extends Repository<UserEntity> {
             query.setParameter("teamName", teamName + "%");
         }
 
+        if (barcode != null && !barcode.isBlank()) {
+            query.setParameter("barcode", barcode);
+        }
+
+        if (isOnlyActive) {
+            query.setParameter("status", BarcodeEntity.Status.ASSIGNED);
+        }
+
         int offset = (page - 1) * pageSize;
         query.setFirstResult(offset);
         query.setMaxResults(pageSize);
 
         return query.getResultList();
     }
+
 
 
 
@@ -87,5 +83,9 @@ public class UserRepository extends Repository<UserEntity> {
 
     public UserEntity updateOne(UserEntity user) {
         return save(user);
+    }
+
+    public void saveMultiple(List<UserEntity> users) {
+        saveAll(users);
     }
 }

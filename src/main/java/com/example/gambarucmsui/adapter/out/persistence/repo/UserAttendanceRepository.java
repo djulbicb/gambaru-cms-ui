@@ -50,20 +50,8 @@ public class UserAttendanceRepository extends Repository<UserAttendanceEntity> {
                 .getResultList();
     }
 
-    public void saveNewAll(List<BarcodeEntity> barcodes, List<LocalDateTime> timestamps) {
-
-        List<UserAttendanceEntity> attendanceEntities = new ArrayList<>();
-        for (int i = 0; i < barcodes.size(); i++) {
-            BarcodeEntity barcode = barcodes.get(i);
-            LocalDateTime localDateTime = timestamps.get(i);
-
-            barcode.setLastAttendanceTimestamp(localDateTime);
-            UserAttendanceEntity entity = new UserAttendanceEntity(barcode, localDateTime);
-            attendanceEntities.add(entity);
-        }
-
+    public void saveNewAll(List<UserAttendanceEntity> attendanceEntities) {
         saveAll(attendanceEntities);
-
     }
     public UserAttendanceEntity saveNew(BarcodeEntity barcode, LocalDateTime timestamp) {
         barcode.setLastAttendanceTimestamp(timestamp);

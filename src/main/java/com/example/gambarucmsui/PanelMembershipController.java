@@ -3,20 +3,21 @@ package com.example.gambarucmsui;
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserMembershipPaymentEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
-import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
-import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
-import com.example.gambarucmsui.adapter.out.persistence.repo.UserMembershipRepository;
-import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
+import com.example.gambarucmsui.adapter.out.persistence.repo.*;
 import com.example.gambarucmsui.ui.ToastView;
-import com.example.gambarucmsui.ui.dto.UserDetail;
+import com.example.gambarucmsui.ui.dto.core.UserDetail;
+import com.example.gambarucmsui.ui.form.FormBarcodeGetMembership;
 import com.example.gambarucmsui.util.FormatUtil;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,8 @@ public class PanelMembershipController implements PanelHeader {
     private final UserRepository userRepo;
     private final UserMembershipRepository membershipRepo;
     private final BarcodeRepository barcodeRepo;
+    private final TeamRepository teamRepo;
+    private final Stage primaryStage;
     // PAGINATION
     private LocalDate paginationDate = LocalDate.now();
     private static final int PAGE_SIZE = 50;
@@ -40,11 +43,14 @@ public class PanelMembershipController implements PanelHeader {
     @FXML
     Label paginationLabel;
 
-    public PanelMembershipController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
+    public PanelMembershipController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
+        this.primaryStage = primaryStage;
         repository = (UserMembershipRepository) repositoryMap.get(UserMembershipPaymentEntity.class);
         userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
         membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
         barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
+        teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
+
     }
 
     @FXML
@@ -86,7 +92,6 @@ public class PanelMembershipController implements PanelHeader {
             BarcodeEntity barcode = optBarcode.get();
             int month = paginationDate.getMonthValue();
             int year = paginationDate.getYear();
-            LocalDateTime timestamp = LocalDateTime.now();
 
             if (barcode.getStatus() != BarcodeEntity.Status.ASSIGNED) {
                 ToastView.showModal("Barkod se trenutno ne koristi.");
@@ -97,16 +102,50 @@ public class PanelMembershipController implements PanelHeader {
                 return;
             }
 
+            System.out.println("Adding membership payment " + barcodeId);
             UserEntity user = barcode.getUser();
-            System.out.println("Adding attendance " + barcodeId);
 
-            barcode.setLastMembershipPaymentTimestamp(LocalDateTime.now());
-
-            membershipRepo.saveNew(barcode, month, year, timestamp, barcode.getTeam().getMembershipPayment());
+            addAttendance(barcode, month, year, barcode.getTeam().getMembershipPayment());
 
             listPageForDate();
 
             ToastView.showModal(String.format("Članarina plaćena za %s %s.", user.getFirstName(), user.getLastName()));
+        }
+    }
+
+    private void addAttendance(BarcodeEntity barcode, int month, int year, BigDecimal membershipPayment) {
+        membershipRepo.saveNew(barcode, month, year, membershipPayment);
+    }
+
+    @FXML
+    void onAddMembershipManually() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-barcode-get-membership.fxml"));
+        FormBarcodeGetMembership controller = new FormBarcodeGetMembership(barcodeRepo, teamRepo);
+        fxmlLoader.setController(controller);
+        VBox root = fxmlLoader.load();
+
+        Stage dialogStage = createStage("Dodaj korisnika u tim", root, primaryStage);
+        dialogStage.showAndWait();
+
+        if (controller.isFormReady()) {
+            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(controller.getBarcodeId());
+            if (barcodeOpt.isPresent()) {
+                BarcodeEntity barcode = barcodeOpt.get();
+                int month = paginationDate.getMonthValue();
+                int year = paginationDate.getYear();
+
+                if (barcode.getStatus() != BarcodeEntity.Status.ASSIGNED) {
+                    ToastView.showModal("Barkod se trenutno ne koristi.");
+                    return;
+                }
+                if (barcodeRepo.isMembershipAlreadyPayedByBarcodeAndMonthAndYear(barcode.getBarcodeId(), month, year)) {
+                    ToastView.showModal("Članarina za ovaj mesec je već plaćena.");
+                    return;
+                }
+
+                addAttendance(barcode, month, year, barcode.getTeam().getMembershipPayment());
+                listPageForDate();
+            }
         }
     }
 }

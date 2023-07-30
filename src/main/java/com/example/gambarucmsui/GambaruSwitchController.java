@@ -53,7 +53,7 @@ public class GambaruSwitchController {
 
     @FXML
     private void initialize() throws IOException {
-        HashMap<Class, Repository> repositoryMap = loadEntityManagementSystem();
+        HashMap<Class, Object> repositoryMap = loadEntityManagementSystem();
 
         panelAttendanceController = new PanelAttendanceController(primaryStage, repositoryMap);
         FXMLLoader attendanceLoader = new FXMLLoader(getClass().getResource("panel-attendance.fxml"));
@@ -94,12 +94,12 @@ public class GambaruSwitchController {
         }
     }
 
-    HashMap<Class, Repository> loadEntityManagementSystem() {
+    HashMap<Class, Object> loadEntityManagementSystem() {
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("gambaru-entity-manager");
             EntityManager entityManager = emf.createEntityManager();
 
-            HashMap<Class, Repository> repos = new HashMap<>();
+            HashMap<Class, Object> repos = new HashMap<>();
             repos.put(UserRepository.class, new UserRepository(entityManager));
             repos.put(BarcodeRepository.class, new BarcodeRepository(entityManager));
             repos.put(UserAttendanceRepository.class, new UserAttendanceRepository(entityManager));

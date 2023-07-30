@@ -1,8 +1,6 @@
 package com.example.gambarucmsui;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
+import com.example.gambarucmsui.adapter.out.persistence.entity.*;
 import com.example.gambarucmsui.adapter.out.persistence.repo.*;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
@@ -28,6 +26,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.util.DataUtil.*;
+import static com.example.gambarucmsui.util.FormatUtil.isLong;
+import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class PanelBarcodeController implements PanelHeader {
     private final BarcodeRepository barcodeRepo;
@@ -37,7 +37,7 @@ public class PanelBarcodeController implements PanelHeader {
     private final UserAttendanceRepository attendanceRepo;
     private final Stage primaryStage;
 
-    public PanelBarcodeController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
+    public PanelBarcodeController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
         this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
         this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
         this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
@@ -91,17 +91,28 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     private void printBarcodesToPdf() throws WriterException, IOException {
+        if (txtBarcodes.getText().isBlank()) {
+            ToastView.showModal("Barkod panel je prazan. Upiši barkodove npr. 123,654,789");
+            return;
+        }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Upload File Path");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PDF", "*.pdf")
         );
 
+        List<BarcodeView> views = new ArrayList<>();
+        List<Long> collect = new ArrayList<>();
+        for (String barcode : txtBarcodes.getText().split(",")) {
+            if (!isLong(barcode.trim())) {
+                ToastView.showModal(String.format("Ovo nije broj %s. Akcija je prekinuta", barcode.trim()));
+                return;
+            }
+            collect.add(parseBarcodeStr(barcode.trim()));
+        }
+
         Stage ownerStage = (Stage) savePdf.getScene().getWindow();
         File file = fileChooser.showSaveDialog(ownerStage);
-
-        List<BarcodeView> views = new ArrayList<>();
-        List<Long> collect = Arrays.stream(txtBarcodes.getText().split(",")).map(Long::parseLong).collect(Collectors.toList());
         List<BarcodeEntity> barcodeId = barcodeRepo.findByIds("barcodeId", collect);
 
         for (BarcodeEntity barcodeEntity : barcodeId) {
@@ -144,11 +155,11 @@ public class PanelBarcodeController implements PanelHeader {
                 int count = getCount();
                 for (int i = 0; i < count; i++) {
                     List<BarcodeEntity> barcodes = barcodeRepo.findAll();
-                    List<LocalDateTime> times = new ArrayList<>();
+                    List<UserAttendanceEntity> attendanceEntities = new ArrayList<>();
                     for (BarcodeEntity barcode : barcodes) {
-                        times.add(getDateTime());
+                        attendanceEntities.add(new UserAttendanceEntity(barcode, getDateTime()));
                     }
-                    attendanceRepo.saveNewAll(barcodes, times);
+                    attendanceRepo.saveNewAll(attendanceEntities);
                 }
 
                 Platform.runLater(() -> {
@@ -173,10 +184,12 @@ public class PanelBarcodeController implements PanelHeader {
                 int count = getCount();
                 for (int i = 0; i < count; i++) {
                     List<BarcodeEntity> barcodes = barcodeRepo.findAll();
+                    List<UserMembershipPaymentEntity> payments = new ArrayList<>();
                     for (BarcodeEntity barcode : barcodes) {
                         LocalDateTime dateTime = getDateTime();
-                        membershipRepo.saveNew(barcode, dateTime.getMonthValue(), dateTime.getYear(), dateTime, getDecimal());
+                        payments.add(new UserMembershipPaymentEntity(barcode, dateTime.getMonthValue(), dateTime.getYear(), dateTime, getDecimal()));
                     }
+                    membershipRepo.saveMultiple(payments);
                 }
 
                 Platform.runLater(() -> {
@@ -205,12 +218,17 @@ public class PanelBarcodeController implements PanelHeader {
             protected Void call() throws Exception {
                 List<UserEntity> users = userRepo.findAll();
                 List<TeamEntity> teams = teamRepo.findAll();
+                List<BarcodeEntity> barcodes = new ArrayList<>();
                 for (UserEntity user : users) {
                     BarcodeEntity barcode = barcodeRepo.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
                     TeamEntity team = pickRandom(teams);
 
-                    barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
+                    barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
+                    barcode.setTeam(team);
+                    barcode.setUser(user);
+                    barcodes.add(barcode);
                 }
+                barcodeRepo.saveMultiple(barcodes);
                 Platform.runLater(() -> {
                     closeAlertDialog();
                 });
@@ -231,12 +249,14 @@ public class PanelBarcodeController implements PanelHeader {
             protected Void call() throws Exception {
 
                 int count = getCount();
+                List<UserEntity> users = new ArrayList<>();
                 for (int i = 0; i < count; i++) {
                     if (getBoolean()) {
-                        userRepo.saveOne(getFemaleName(), getSurname(), UserEntity.Gender.FEMALE, getPhone(), getDateTime());
+                        users.add(new UserEntity(getFemaleName(), getSurname(), UserEntity.Gender.FEMALE, getPhone(), getDateTime()));
                     } else {
-                        userRepo.saveOne(getMaleName(), getSurname(), UserEntity.Gender.MALE, getPhone(), getDateTime());
+                        users.add(new UserEntity(getMaleName(), getSurname(), UserEntity.Gender.MALE, getPhone(), getDateTime()));
                     }
+                    userRepo.saveMultiple(users);
                 }
 
                 Platform.runLater(() -> {

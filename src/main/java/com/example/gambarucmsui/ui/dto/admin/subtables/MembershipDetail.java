@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ui.dto;
+package com.example.gambarucmsui.ui.dto.admin.subtables;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;

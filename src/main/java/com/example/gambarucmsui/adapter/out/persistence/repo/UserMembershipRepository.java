@@ -63,9 +63,14 @@ public class UserMembershipRepository extends Repository<UserMembershipPaymentEn
 
 
 
-    public UserMembershipPaymentEntity saveNew(BarcodeEntity barcode, int month, int year, LocalDateTime timestamp, BigDecimal membershipPayment) {
-        UserMembershipPaymentEntity entity = new UserMembershipPaymentEntity(barcode, month, year, timestamp, membershipPayment);
-        barcode.setLastAttendanceTimestamp(timestamp);
+    public UserMembershipPaymentEntity saveNew(BarcodeEntity barcode, int month, int year, BigDecimal membershipPayment) {
+        LocalDateTime now = LocalDateTime.now();
+        UserMembershipPaymentEntity entity = new UserMembershipPaymentEntity(barcode, month, year, now, membershipPayment);
+        barcode.setLastMembershipPaymentTimestamp(now);
         return save(entity);
+    }
+
+    public void saveMultiple(List<UserMembershipPaymentEntity> payments) {
+        saveAll(payments);
     }
 }

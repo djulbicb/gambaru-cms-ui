@@ -23,7 +23,7 @@ public class PanelStatisticsController implements PanelHeader{
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
 
-    public PanelStatisticsController(Stage primaryStage, HashMap<Class, Repository> repositoryMap) {
+    public PanelStatisticsController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
         attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
         membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
     }

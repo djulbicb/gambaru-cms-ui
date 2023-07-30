@@ -2,8 +2,9 @@ package com.example.gambarucmsui.common;
 
 import com.example.gambarucmsui.util.FormatUtil;
 import javafx.scene.Node;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 
 import java.time.LocalDate;
 
@@ -30,6 +31,12 @@ public class LayoutUtil {
     }
     public static String formatPaginationMonth(LocalDate date) {
         return FormatUtil.toMonthYeah(date.atStartOfDay());
+    }
+
+    public static void stretchColumnsToEqualSize(TableView<?> table) {
+        for (TableColumn<?, ?> column : table.getColumns()) {
+            column.prefWidthProperty().bind(table.widthProperty().divide(table.getColumns().size()));
+        }
     }
 }
 

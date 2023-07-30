@@ -100,4 +100,8 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
 
         save(barcode);
     }
+
+    public void saveMultiple(List<BarcodeEntity> barcodes) {
+        saveAll(barcodes);
+    }
 }

@@ -9,7 +9,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import static com.example.gambarucmsui.util.FormatUtil.*;
 
@@ -19,6 +18,8 @@ public class GambaruUIApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        Thread.setDefaultUncaughtExceptionHandler(new GambaruUIAppGlobalExceptionHandler());
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gambaru-header-switch.fxml"));
         GambaruSwitchController controller = new GambaruSwitchController(stage);
         loader.setController(controller);

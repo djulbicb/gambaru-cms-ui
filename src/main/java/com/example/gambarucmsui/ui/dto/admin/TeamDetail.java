@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ui.dto;
+package com.example.gambarucmsui.ui.dto.admin;
 
 import java.math.BigDecimal;
 
