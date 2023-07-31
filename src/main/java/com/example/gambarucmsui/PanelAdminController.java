@@ -297,7 +297,7 @@ public class PanelAdminController implements PanelHeader{
     public void formUserAdd() throws IOException {
         FormUserAddController controller = new FormUserAddController(teamRepo);
 
-        Pane root = loadFxml("form-user-add.fxml", controller);
+        Pane root = loadFxml("ui/panel/form-user-add.fxml", controller);
         Stage dialogStage = createStage("Kreiraj novog korisnika", root, primaryStage);
         dialogStage.showAndWait();
 
@@ -328,7 +328,7 @@ public class PanelAdminController implements PanelHeader{
 
         UserEntity user = userOpt.get();
         FormUserUpdateController controller = new FormUserUpdateController(teamRepo, new FormUserUpdateController.Data(user.getFirstName(), user.getLastName(), user.getPhone(), user.getGender()));
-        Pane root = loadFxml("form-user-add.fxml", controller);
+        Pane root = loadFxml("ui/panel/form-user-add.fxml", controller);
         Stage window = createStage("Izmeni korisnika", root, primaryStage);
 
         window.showAndWait();
@@ -358,7 +358,7 @@ public class PanelAdminController implements PanelHeader{
         }
 
         FormUserAddUserToTeamController controller = new FormUserAddUserToTeamController(teamRepo, new FormUserAddUserToTeamController.Data(selectedItem.getFirstName(), selectedItem.getLastName(), "", ""));
-        Pane root = loadFxml("form-user-add-user-to-team.fxml", controller);
+        Pane root = loadFxml("ui/panel/form-user-add-user-to-team.fxml", controller);
 
         // Create the modal dialog
         Stage dialogStage = createStage("Dodaj korisnika u tim", root, primaryStage);
@@ -397,7 +397,7 @@ public class PanelAdminController implements PanelHeader{
             return;
         }
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-user-remove-user-from-team.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui/panel/form-user-remove-user-from-team.fxml"));
         FormUserRemoveUserFromTeamController controller = new FormUserRemoveUserFromTeamController(teamRepo, new FormUserRemoveUserFromTeamController.Data(selectedItem.getUserId(), selectedItem.getFirstName(), selectedItem.getLastName(), "", ""));
 
         fxmlLoader.setController(controller);
@@ -503,7 +503,7 @@ public class PanelAdminController implements PanelHeader{
 
     @FXML
     public void addTeamForm() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-team-add.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui/panel/form-team-add.fxml"));
         FormTeamAddController controller = new FormTeamAddController(teamRepo);
 
         fxmlLoader.setController(controller);
@@ -535,7 +535,7 @@ public class PanelAdminController implements PanelHeader{
 
         FormTeamUpdateController.Data dto = new FormTeamUpdateController.Data(selectedItem.getTeamId(), selectedItem.getFee(), selectedItem.getName());
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-team-update.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui/panel/form-team-update.fxml"));
         FormTeamUpdateController controller = new FormTeamUpdateController(dto, teamRepo);
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();

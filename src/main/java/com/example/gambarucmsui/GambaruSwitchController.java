@@ -56,27 +56,27 @@ public class GambaruSwitchController {
         HashMap<Class, Object> repositoryMap = loadEntityManagementSystem();
 
         panelAttendanceController = new PanelAttendanceController(primaryStage, repositoryMap);
-        FXMLLoader attendanceLoader = new FXMLLoader(getClass().getResource("panel-attendance.fxml"));
+        FXMLLoader attendanceLoader = new FXMLLoader(getClass().getResource("ui/panel/panel-attendance.fxml"));
         attendanceLoader.setController(panelAttendanceController);
         panelAttendance = attendanceLoader.load();
 
         panelMembershipController = new PanelMembershipController(primaryStage, repositoryMap);
-        FXMLLoader membershipLoader = new FXMLLoader(getClass().getResource("panel-membership.fxml"));
+        FXMLLoader membershipLoader = new FXMLLoader(getClass().getResource("ui/panel/panel-membership.fxml"));
         membershipLoader.setController(panelMembershipController);
         panelMembership = membershipLoader.load();
 
         panelStatisticsController = new PanelStatisticsController(primaryStage, repositoryMap);
-        FXMLLoader statisticsLoader = new FXMLLoader(getClass().getResource("panel-statistics.fxml"));
+        FXMLLoader statisticsLoader = new FXMLLoader(getClass().getResource("ui/panel/panel-statistics.fxml"));
         statisticsLoader.setController(panelStatisticsController);
         panelStatistics = statisticsLoader.load();
 
         panelAdminController = new PanelAdminController(primaryStage, repositoryMap);
-        FXMLLoader settingsLoader = new FXMLLoader(getClass().getResource("panel-admin.fxml"));
+        FXMLLoader settingsLoader = new FXMLLoader(getClass().getResource("ui/panel/panel-admin.fxml"));
         settingsLoader.setController(panelAdminController);
         panelSettings = settingsLoader.load();
 
         panelBarcodeController = new PanelBarcodeController(primaryStage, repositoryMap);
-        FXMLLoader barcodeLoader = new FXMLLoader(getClass().getResource("panel-barcode.fxml"));
+        FXMLLoader barcodeLoader = new FXMLLoader(getClass().getResource("ui/panel/panel-barcode.fxml"));
         barcodeLoader.setController(panelBarcodeController);
         panelBarcode = barcodeLoader.load();
 

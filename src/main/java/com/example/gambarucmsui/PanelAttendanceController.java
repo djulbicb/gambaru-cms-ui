@@ -85,7 +85,7 @@ public class PanelAttendanceController implements PanelHeader {
     }
     @FXML
     protected void addAttendanceManually() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-barcode-get-attendance.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui/panel/form-barcode-get-attendance.fxml"));
         FormBarcodeGetAttendance controller = new FormBarcodeGetAttendance(barcodeRepository);
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();

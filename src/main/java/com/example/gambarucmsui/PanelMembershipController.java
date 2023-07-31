@@ -119,7 +119,7 @@ public class PanelMembershipController implements PanelHeader {
 
     @FXML
     void onAddMembershipManually() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("form-barcode-get-membership.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui/panel/form-barcode-get-membership.fxml"));
         FormBarcodeGetMembership controller = new FormBarcodeGetMembership(barcodeRepo, teamRepo);
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();
