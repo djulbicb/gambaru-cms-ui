@@ -90,7 +90,6 @@ public class GambaruSwitchController {
         for (Toggle toggle : headerToggleBtns.getToggles()) {
             ToggleButton button = (ToggleButton) toggle;
             button.setOnAction(actionEvent -> {
-                System.out.println("Some action");
                 toggle.setSelected(true);
             });
         }

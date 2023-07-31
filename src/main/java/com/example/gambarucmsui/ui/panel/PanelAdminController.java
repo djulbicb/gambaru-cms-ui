@@ -12,6 +12,7 @@ import com.example.gambarucmsui.ui.dto.admin.subtables.BarcodeDetail;
 import com.example.gambarucmsui.ui.dto.admin.subtables.MembershipDetail;
 import com.example.gambarucmsui.ui.dto.admin.UserAdminDetail;
 import com.example.gambarucmsui.ui.form.*;
+import com.example.gambarucmsui.util.LayoutUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,37 +41,11 @@ import static com.example.gambarucmsui.util.PathUtil.*;
 
 public class PanelAdminController implements PanelHeader{
     private final Stage primaryStage;
-    ;
-    // PAGINATION
-    private int currentPage = 1;
-    private static final int PAGE_SIZE = 50;
-    // REPOSITORY
     private final UserRepository userRepo;
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
     private final TeamRepository teamRepo;
     private final BarcodeRepository barcodeRepo;
-
-    // TAB USER
-    /////////////////////////////
-    @FXML private TableView<UserAdminDetail> tableUsers;
-    @FXML private Label paginationLabel;
-    @FXML private TextField txtSearchFirstName;
-    @FXML private TextField txtSearchLastName;
-    @FXML private TextField txtSearchBarcode;
-    @FXML private ComboBox<String> cmbSearchTeam;
-    @FXML private CheckBox checkSearchOnlyActive;
-
-    // USER DETAILS
-    @FXML
-    private TableView<AttendanceDetail> tableUserAttendance;
-    @FXML private TableView<MembershipDetail> tableUserMembership;
-    @FXML private TableView<BarcodeDetail> tableUserBarcode;
-
-    // TEAM TAB
-    /////////////////////////////
-    @FXML private TableView<TeamDetail> tableTeam;
-    @FXML private TableView<?> tableTeamUsers;
 
     public PanelAdminController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
         this.primaryStage = primaryStage;
@@ -80,68 +55,62 @@ public class PanelAdminController implements PanelHeader{
         this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
         this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
     }
-
     @FXML
     public void initialize() {
         configureTabUsers();
         configureTabTeam();
     }
 
-    private void configureTabUsers() {
-        // Load teams to comboBox
+    @FXML
+    private void onUserTabSwitch() {
         loadTeamsToUserComboBox();
-
-        // Add on row click listener
-        tableUsers.setRowFactory(tv -> {
-            TableRow<UserAdminDetail> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
-                    UserAdminDetail rowData = row.getItem();
-                    Optional<UserEntity> userOpt = userRepo.findById(rowData.getUserId());
-                    if (userOpt.isEmpty()) {
-                        return;
-                    }
-                    UserEntity user = userOpt.get();
-
-                    loadTableUserAttendance(user);
-                    loadTableUserMembership(user);
-                    loadTableUserBarcode(user);
-
-                }
-            });
-            return row;
-        });
-
-        // Set up user table for barcodes
-        // Create columns for barcode and team
-        TableColumn<BarcodeDetail, String> barcodeColumn = new TableColumn<>("Barcode");
-        barcodeColumn.setCellValueFactory(new PropertyValueFactory<>("barcode"));
-        TableColumn<BarcodeDetail, String> teamColumn = new TableColumn<>("Team");
-        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-        TableColumn<BarcodeDetail, String> statusColumn = new TableColumn<>("Team");
-        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-        TableColumn<BarcodeDetail, String> activateColumn = buildUserBarcodeButtonColumn();
-        tableUserBarcode.getColumns().addAll(barcodeColumn, teamColumn, statusColumn, activateColumn);
-
-
-
-        // Stretch columns based on table width
-//        for (TableColumn<UserAdminDetail, ?> column : tableUsers.getColumns()) {
-//            if (column.getId().equals("userIdColumn")) {
-//                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() * 2));
-//            } else if ( column.getId().equals("genderColumn")) {
-//                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() * 4));
-//            } else if ( column.getId().equals("barcodeTeamColumn")) {
-//                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size() / 2));
-//            } else {
-//                column.prefWidthProperty().bind(tableUsers.widthProperty().divide(tableUsers.getColumns().size()));
-//            }
-//        }
-        stretchColumnsToEqualSize(tableUserAttendance);
-        stretchColumnsToEqualSize(tableUserMembership);
-        stretchColumnsToEqualSize(tableUserBarcode);
+        loadTableUser();
     }
+    @FXML
+    private void onTeamTabSwitch() {
+        loadTableTeam();
+    }
+
+    @Override
+    public void viewSwitched() {
+        System.out.println("Panel admin");
+    }
+
+    // TAB USER
+    ///////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
+    @FXML private TableView<UserAdminDetail> tableUsers;
+    @FXML private Label paginationLabel;
+    @FXML private TextField txtSearchFirstName;
+    @FXML private TextField txtSearchLastName;
+    @FXML private TextField txtSearchBarcode;
+    @FXML private ComboBox<String> cmbSearchTeam;
+    @FXML private CheckBox checkSearchOnlyActive;
+
+    // PAGINATION
+    private int currentPage = 1;
+    private static final int PAGE_SIZE = 50;
+    @FXML
+    protected void goNextPage() {
+        currentPage++;
+        paginationLabel.setText(formatPagination(currentPage));
+        loadTableUser();
+    }
+    @FXML
+    protected void goPrevPage() {
+        if (currentPage <= 1) {
+            return;
+        }
+        currentPage--;
+        paginationLabel.setText(formatPagination(currentPage));
+        loadTableUser();
+    }
+
+    // USER DETAILS
+    @FXML
+    private TableView<AttendanceDetail> tableUserAttendance;
+    @FXML private TableView<MembershipDetail> tableUserMembership;
+    @FXML private TableView<BarcodeDetail> tableUserBarcode;
 
     private void loadTableUserMembership(UserEntity user) {
         List<MembershipDetail> userMembershipPaymentEntities = membershipRepo.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e->new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());;
@@ -165,7 +134,6 @@ public class PanelAdminController implements PanelHeader{
         }
         tableUserBarcode.getItems().setAll(barcodeDetails);
     }
-
     private TableColumn<BarcodeDetail, String> buildUserBarcodeButtonColumn() {
         TableColumn<BarcodeDetail, String> activateColumn = new TableColumn<>("sss");
         activateColumn.setCellFactory(param -> createButtonTableCell());
@@ -234,19 +202,50 @@ public class PanelAdminController implements PanelHeader{
         }
     }
 
-    @Override
-    public void viewSwitched() {
-        System.out.println("Panel admin");
-        loadTeamsToUserComboBox();
-        loadTableUser();
-        loadTableTeam();
-    }
 
-    private String getOr(TextField txt, String opt) {
-        if (txt == null) {
-            return opt;
-        }
-        return txt.getText();
+    // TEAM TAB
+    ///////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
+    @FXML private TableView<TeamDetail> tableTeam;
+    @FXML private TableView<?> tableTeamUsers;
+    private void configureTabUsers() {
+        // Add on row click listener
+        tableUsers.setRowFactory(tv -> {
+            TableRow<UserAdminDetail> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
+                    UserAdminDetail rowData = row.getItem();
+                    Optional<UserEntity> userOpt = userRepo.findById(rowData.getUserId());
+                    if (userOpt.isEmpty()) {
+                        return;
+                    }
+                    UserEntity user = userOpt.get();
+
+                    loadTableUserAttendance(user);
+                    loadTableUserMembership(user);
+                    loadTableUserBarcode(user);
+
+                }
+            });
+            return row;
+        });
+
+        // Set up user table for barcodes
+        // Create columns for barcode and team
+        TableColumn<BarcodeDetail, String> barcodeColumn = new TableColumn<>("Barcode");
+        barcodeColumn.setCellValueFactory(new PropertyValueFactory<>("barcode"));
+        TableColumn<BarcodeDetail, String> teamColumn = new TableColumn<>("Team");
+        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
+        TableColumn<BarcodeDetail, String> statusColumn = new TableColumn<>("Team");
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
+        TableColumn<BarcodeDetail, String> activateColumn = buildUserBarcodeButtonColumn();
+        tableUserBarcode.getColumns().addAll(barcodeColumn, teamColumn, statusColumn, activateColumn);
+
+
+        stretchColumnsToEqualSize(tableUserAttendance);
+        stretchColumnsToEqualSize(tableUserMembership);
+        stretchColumnsToEqualSize(tableUserBarcode);
     }
 
     // USERS
@@ -258,51 +257,20 @@ public class PanelAdminController implements PanelHeader{
     private void loadTableUser() {
         List<UserAdminDetail> collect = userRepo.findAll(
                         currentPage, PAGE_SIZE, "createdAt",
-                        getOr(cmbSearchTeam, ""),
-                        getOr(txtSearchFirstName, ""),
-                        getOr(txtSearchLastName, ""),
-                        getNumericOr(txtSearchBarcode, ""),
+                        LayoutUtil.getOr(cmbSearchTeam, ""),
+                        LayoutUtil.getOr(txtSearchFirstName, ""),
+                        LayoutUtil.getOr(txtSearchLastName, ""),
+                        LayoutUtil.getNumericOr(txtSearchBarcode, ""),
                         checkSearchOnlyActive.isSelected())
                 .stream().map(o -> UserAdminDetail.fromEntityToFull(o)
                 ).collect(Collectors.toList());
 
         tableUsers.getItems().setAll(collect);
     }
-
-    private String getNumericOr(TextField txtSearchBarcode, String opt) {
-        if (txtSearchBarcode == null) {
-            return opt;
-        }
-        String value = txtSearchBarcode.getText();
-        if (isLong(value)) {
-            return parseBarcodeStr(value).toString();
-        }
-        return opt;
-    }
-
-    private String getOr(ComboBox<String> combo, String opt) {
-        if (combo.getSelectionModel() == null || combo.getSelectionModel().getSelectedItem() == null) {
-            return opt;
-        }
-        return combo.getSelectionModel().getSelectedItem();
-    }
-
     @FXML
-    protected void goNextPage() {
-        currentPage++;
-        paginationLabel.setText(formatPagination(currentPage));
+    void onCmbSearchTeamChange(ActionEvent event) {
         loadTableUser();
     }
-    @FXML
-    protected void goPrevPage() {
-        if (currentPage <= 1) {
-            return;
-        }
-        currentPage--;
-        paginationLabel.setText(formatPagination(currentPage));
-        loadTableUser();
-    }
-
 
     @FXML
     public void formUserAdd() throws IOException {
@@ -356,11 +324,6 @@ public class PanelAdminController implements PanelHeader{
         loadTableUser();
     }
     @FXML
-    public void formUserDelete() {
-
-    }
-
-    @FXML
     void formUserAddUserToTeam(MouseEvent event) throws IOException {
         UserAdminDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
@@ -410,59 +373,6 @@ public class PanelAdminController implements PanelHeader{
         loadTableUser();
     }
 
-//    @FXML
-//    void formUserRemoveUserFromTeam(MouseEvent event) throws IOException {
-//        UserAdminDetail selectedItem = tableUsers.getSelectionModel().getSelectedItem();
-//        if (selectedItem == null) {
-//            ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
-//            return;
-//        }
-//
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui/form/form-user-remove-user-from-team.fxml"));
-//        FormUserRemoveUserFromTeamController controller = new FormUserRemoveUserFromTeamController(teamRepo, new FormUserRemoveUserFromTeamController.Data(selectedItem.getUserId(), selectedItem.getFirstName(), selectedItem.getLastName(), "", ""));
-//
-//        fxmlLoader.setController(controller);
-//        VBox root = fxmlLoader.load();
-//
-//        // Create the modal dialog
-//        Stage dialogStage = createStage("Ukloni korisnika iz tima", root, primaryStage);
-//        dialogStage.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener()
-//        {
-//            @Override
-//            public void onFinish(String word) {
-//                if (isBarcode(word)) {
-//                    controller.onBarcodeScanned(cleanBarcodeStr(word));
-//                }
-//            }
-//        });
-//
-//        dialogStage.showAndWait();
-//
-//        if (controller.isFormReady()) {
-////            FormUserRemoveUserFromTeamController.Data data = controller.getData();
-////
-////            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
-////
-////            if (barcodeOpt.isEmpty()) {
-////                return;
-////            }
-////
-////            BarcodeEntity barcode = barcodeOpt.get();
-////
-////            barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
-////            barcode.setTeam(null);
-////
-////            barcodeRepo.updateOne(barcode);
-//        }
-//        loadTableUser();
-//    }
-
-//    @FXML
-//    void formUserDelete(MouseEvent event) {
-//
-//    }
-
-
     // TEAM
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void configureTabTeam() {
@@ -485,48 +395,6 @@ public class PanelAdminController implements PanelHeader{
     void loadTableTeam() {
         List<TeamDetail> teams = teamRepo.findAllActive().stream().map(en -> new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
         tableTeam.getItems().setAll(teams);
-    }
-
-    @FXML
-    void teamDeleteForm() {
-        TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
-        if (selectedItem == null) {
-            ToastView.showModal("Izaberi unos iz tabele pa onda klikni na obrisi.");
-            return;
-        }
-
-        Optional<TeamEntity> teamOpt = teamRepo.findById(selectedItem.getTeamId());
-        if (teamOpt.isEmpty()) {
-            return;
-        }
-
-        TeamEntity team = teamOpt.get();
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Do you want to continue?");
-
-        ButtonType yesButton = new ButtonType("Yes");
-        ButtonType noButton = new ButtonType("No");
-        alert.getButtonTypes().setAll(yesButton, noButton);
-
-        alert.getDialogPane().getStylesheets().add(getClass().getResource(CSS).toExternalForm());
-        alert.showAndWait().ifPresent(response -> {
-            if (response == yesButton) {
-                List<BarcodeEntity> barcodes = barcodeRepo.findByTeam(team);
-                for (BarcodeEntity barcode : barcodes) {
-                    barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
-                }
-                barcodeRepo.saveMultiple(barcodes);
-                team.setStatus(TeamEntity.Status.DEACTIVATED);
-                teamRepo.save(team);
-                ToastView.showModal("Tim je obrisan");
-                loadTableTeam();
-            }
-        });
-
-        loadTableTeam();
     }
 
     @FXML
@@ -587,16 +455,44 @@ public class PanelAdminController implements PanelHeader{
     }
 
     @FXML
-    private void onUserTabSwitch() {
-        loadTableUser();
-    }
-    @FXML
-    private void onTeamTabSwitch() {
+    void teamDeleteForm() {
+        TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Izaberi unos iz tabele pa onda klikni na obrisi.");
+            return;
+        }
+
+        Optional<TeamEntity> teamOpt = teamRepo.findById(selectedItem.getTeamId());
+        if (teamOpt.isEmpty()) {
+            return;
+        }
+
+        TeamEntity team = teamOpt.get();
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("Do you want to continue?");
+
+        ButtonType yesButton = new ButtonType("Yes");
+        ButtonType noButton = new ButtonType("No");
+        alert.getButtonTypes().setAll(yesButton, noButton);
+
+        alert.getDialogPane().getStylesheets().add(getClass().getResource(CSS).toExternalForm());
+        alert.showAndWait().ifPresent(response -> {
+            if (response == yesButton) {
+                List<BarcodeEntity> barcodes = barcodeRepo.findByTeam(team);
+                for (BarcodeEntity barcode : barcodes) {
+                    barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
+                }
+                barcodeRepo.saveMultiple(barcodes);
+                team.setStatus(TeamEntity.Status.DEACTIVATED);
+                teamRepo.save(team);
+                ToastView.showModal("Tim je obrisan");
+                loadTableTeam();
+            }
+        });
+
         loadTableTeam();
     }
-    @FXML
-    void onCmbSearchTeamChange(ActionEvent event) {
-        loadTableUser();
-    }
-
 }

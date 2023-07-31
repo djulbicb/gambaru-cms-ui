@@ -111,6 +111,8 @@ public class PanelMembershipController implements PanelHeader {
             listPageForDate();
 
             ToastView.showModal(String.format("Članarina plaćena za %s %s.", user.getFirstName(), user.getLastName()));
+        } else {
+            ToastView.showModal("Barkod ne postoji u sistemu.");
         }
     }
 

@@ -95,7 +95,7 @@ public class PanelAttendanceController implements PanelHeader {
         dialogStage.showAndWait();
 
         if (controller.isFormReady()) {
-            addAttendanceForBarcodeId(paginationDate, controller.getBarcodeId());
+            addAttendanceForBarcodeId(getDateOfPaginationOrNow(), controller.getBarcodeId());
         }
 
     }
@@ -107,17 +107,18 @@ public class PanelAttendanceController implements PanelHeader {
 
     public void onBarcodeRead(String barcodeIdStr) {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        addAttendanceForBarcodeId(barcodeId);
-    }
-    private void addAttendanceForBarcodeId(Long barcodeId) {
-        addAttendanceForBarcodeId(LocalDateTime.now(), barcodeId);
+        addAttendanceForBarcodeId(getDateOfPaginationOrNow(), barcodeId );
     }
 
-    private void addAttendanceForBarcodeId(LocalDate paginationDate, Long barcodeId) {
-        addAttendanceForBarcodeId(paginationDate.atStartOfDay(), barcodeId);
+    private LocalDateTime getDateOfPaginationOrNow() {
+        LocalDateTime now = LocalDateTime.now();
+        if (paginationDate.equals(now.toLocalDate())) {
+           return now;
+        }
+        return paginationDate.atStartOfDay();
     }
 
-    private void addAttendanceForBarcodeId(LocalDateTime paginationDate, Long barcodeId) {
+    private void addAttendanceForBarcodeId(LocalDateTime timestamp, Long barcodeId) {
         Optional<BarcodeEntity> optBarcode = barcodeRepository.findById(barcodeId);
         if (optBarcode.isPresent()) {
             BarcodeEntity barcode = optBarcode.get();
@@ -127,13 +128,13 @@ public class PanelAttendanceController implements PanelHeader {
                 return;
             }
 
-            System.out.println("Adding attendance " + barcodeId);
-            attendanceRepo.saveNew(barcode, LocalDateTime.now());
-
+            attendanceRepo.saveNew(barcode, timestamp);
 
             listPageForDate();
             UserEntity user = barcode.getUser();
             ToastView.showModal(String.format("Prisutnost registrovana za %s %s", user.getFirstName(), user.getLastName()));
+        } else {
+            ToastView.showModal("Barkod ne postoji u sistemu.");
         }
     }
 }

@@ -51,7 +51,11 @@ public class FormUserUpdateController implements Initializable {
         txtUserFirstName.setText(input.getFirstName());
         txtUserLastName.setText(input.getLastName());
         txtUserPhone.setText(input.getPhone());
-        cmbUserGender.getSelectionModel().selectFirst();
+        if (input.getGender() == UserEntity.Gender.MALE) {
+            cmbUserGender.getSelectionModel().selectFirst();
+        } else {
+            cmbUserGender.getSelectionModel().selectLast();
+        }
     }
 
     @FXML

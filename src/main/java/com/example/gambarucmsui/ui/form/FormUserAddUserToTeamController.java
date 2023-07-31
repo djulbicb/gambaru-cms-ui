@@ -43,7 +43,7 @@ public class FormUserAddUserToTeamController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        List<TeamEntity> allTeams = teamRepository.findAll();
+        List<TeamEntity> allTeams = teamRepository.findAllActive();
         for (TeamEntity team : allTeams) {
             cmbUserTeamName.getItems().add(team.getName());
         }
