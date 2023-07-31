@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.ui.dto.admin.subtables;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
 
 public class BarcodeDetail {
     private final String barcode;

@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.adapter.out.persistence.repo;
+package com.example.gambarucmsui.database.repo;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;

@@ -1,8 +1,4 @@
-package com.example.gambarucmsui.adapter.out.persistence.entity;
-
-import jakarta.persistence.*;
-
-import jakarta.persistence.*;
+package com.example.gambarucmsui.database.entity;
 
 import jakarta.persistence.*;
 

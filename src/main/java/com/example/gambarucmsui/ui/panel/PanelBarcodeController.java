@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.*;
-import com.example.gambarucmsui.adapter.out.persistence.repo.*;
+import com.example.gambarucmsui.database.entity.*;
+import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
 import com.example.gambarucmsui.util.generators.BarcodeView;

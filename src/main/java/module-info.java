@@ -13,7 +13,7 @@ module com.example.gambarucmsui {
     requires itextpdf;
 
     opens com.example.gambarucmsui to javafx.fxml;
-    opens com.example.gambarucmsui.adapter.out.persistence.entity to org.hibernate.orm.core;
+    opens com.example.gambarucmsui.database.entity to org.hibernate.orm.core;
     opens com.example.gambarucmsui.common to javafx.controls;
     opens com.example.gambarucmsui.ui.form to javafx.fxml;
     opens com.example.gambarucmsui.ui to javafx.fxml;

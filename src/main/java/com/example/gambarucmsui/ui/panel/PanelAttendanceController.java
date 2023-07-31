@@ -1,10 +1,10 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
-import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
-import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
-import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.repo.BarcodeRepository;
+import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
+import com.example.gambarucmsui.database.repo.UserRepository;
 
 import com.example.gambarucmsui.util.LayoutUtil;
 import com.example.gambarucmsui.ui.ToastView;

@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.adapter.out.persistence.repo.TeamRepository;
+import com.example.gambarucmsui.database.repo.TeamRepository;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;

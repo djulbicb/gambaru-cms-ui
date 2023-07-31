@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
-import com.example.gambarucmsui.adapter.out.persistence.repo.UserMembershipRepository;
+import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
+import com.example.gambarucmsui.database.repo.UserMembershipRepository;
 import com.example.gambarucmsui.ui.dto.statistics.AttendanceCount;
 import com.example.gambarucmsui.ui.dto.statistics.MembershipCount;
 import javafx.fxml.FXML;

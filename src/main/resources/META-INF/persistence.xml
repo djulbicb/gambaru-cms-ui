@@ -5,11 +5,11 @@
              https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
 
     <persistence-unit name="gambaru-entity-manager">
-        <class>com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity</class>
-        <class>com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity</class>
-        <class>com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity</class>
-        <class>com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity</class>
-        <class>com.example.gambarucmsui.adapter.out.persistence.entity.UserMembershipPaymentEntity</class>
+        <class>com.example.gambarucmsui.database.entity.UserEntity</class>
+        <class>com.example.gambarucmsui.database.entity.BarcodeEntity</class>
+        <class>com.example.gambarucmsui.database.entity.TeamEntity</class>
+        <class>com.example.gambarucmsui.database.entity.UserAttendanceEntity</class>
+        <class>com.example.gambarucmsui.database.entity.UserMembershipPaymentEntity</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />

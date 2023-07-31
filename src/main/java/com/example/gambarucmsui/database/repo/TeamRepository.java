@@ -1,6 +1,6 @@
-package com.example.gambarucmsui.adapter.out.persistence.repo;
+package com.example.gambarucmsui.database.repo;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
+import com.example.gambarucmsui.database.entity.TeamEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 

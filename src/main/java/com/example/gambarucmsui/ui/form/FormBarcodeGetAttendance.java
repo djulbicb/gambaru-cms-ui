@@ -1,8 +1,8 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
-import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;

@@ -1,7 +1,7 @@
-package com.example.gambarucmsui.adapter.out.persistence.repo;
+package com.example.gambarucmsui.database.repo;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserMembershipPaymentEntity;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.UserMembershipPaymentEntity;
 import com.example.gambarucmsui.ui.dto.statistics.MembershipCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

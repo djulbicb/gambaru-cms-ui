@@ -1,13 +1,8 @@
-package com.example.gambarucmsui.adapter.out.persistence.entity;
+package com.example.gambarucmsui.database.entity;
 
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-
-import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "team")

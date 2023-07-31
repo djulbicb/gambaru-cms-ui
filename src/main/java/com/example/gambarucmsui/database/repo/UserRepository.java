@@ -1,10 +1,9 @@
-package com.example.gambarucmsui.adapter.out.persistence.repo;
+package com.example.gambarucmsui.database.repo;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.UserEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

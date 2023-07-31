@@ -1,8 +1,8 @@
 package com.example.gambarucmsui.ui.dto.core;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.TeamEntity;
+import com.example.gambarucmsui.database.entity.UserEntity;
 
 import java.util.StringJoiner;
 

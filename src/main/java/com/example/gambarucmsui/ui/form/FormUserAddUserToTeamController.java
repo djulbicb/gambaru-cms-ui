@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
-import com.example.gambarucmsui.adapter.out.persistence.repo.TeamRepository;
+import com.example.gambarucmsui.database.entity.TeamEntity;
+import com.example.gambarucmsui.database.repo.TeamRepository;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

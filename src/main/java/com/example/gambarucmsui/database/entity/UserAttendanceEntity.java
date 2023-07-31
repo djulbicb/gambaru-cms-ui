@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.adapter.out.persistence.entity;
+package com.example.gambarucmsui.database.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.util;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.UserEntity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

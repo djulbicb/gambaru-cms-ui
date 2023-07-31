@@ -1,9 +1,9 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.TeamEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserEntity;
-import com.example.gambarucmsui.adapter.out.persistence.repo.*;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.TeamEntity;
+import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
