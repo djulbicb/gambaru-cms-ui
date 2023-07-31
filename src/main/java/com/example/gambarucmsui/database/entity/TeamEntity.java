@@ -11,7 +11,7 @@ public class TeamEntity {
 
 
     public static enum Status {
-        ACTIVE, DEACTIVATED;
+        ACTIVE, DELETED;
     }
 
     @Id
@@ -22,7 +22,7 @@ public class TeamEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Column(name = "name", unique = true, columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
+    @Column(name = "name", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
     private String name;
 
     @Column(name = "membership_payment")

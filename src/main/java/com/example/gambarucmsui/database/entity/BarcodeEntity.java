@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class BarcodeEntity {
 
     public static enum Status {
-        NOT_USED, ASSIGNED, DEACTIVATED
+        NOT_USED, ASSIGNED, DEACTIVATED, DELETED
     }
 
     @Id

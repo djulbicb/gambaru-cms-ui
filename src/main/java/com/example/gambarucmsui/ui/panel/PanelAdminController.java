@@ -126,11 +126,7 @@ public class PanelAdminController implements PanelHeader{
         List<BarcodeDetail> barcodeDetails = new ArrayList<>();
         for (BarcodeEntity barcode : user.getBarcodes()) {
             TeamEntity team = barcode.getTeam();
-            String teamName = team.getName();
-            if (team.getStatus() == TeamEntity.Status.DEACTIVATED) {
-                teamName = team.getName() + " (Obrisan)";
-            }
-            barcodeDetails.add(new BarcodeDetail(formatBarcode(barcode.getBarcodeId()), barcode.getStatus(), teamName));
+            barcodeDetails.add(new BarcodeDetail(formatBarcode(barcode.getBarcodeId()), barcode.getStatus(), team.getName()));
         }
         tableUserBarcode.getItems().setAll(barcodeDetails);
     }
@@ -160,7 +156,7 @@ public class PanelAdminController implements PanelHeader{
                                 Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(selectedItem.getBarcode()));
                                 if (byId.isPresent()) {
                                     BarcodeEntity barcode = byId.get();
-                                    if (barcode.getTeam().getStatus() == TeamEntity.Status.DEACTIVATED) {
+                                    if (barcode.getTeam().getStatus() == TeamEntity.Status.DELETED) {
                                         ToastView.showModal("Tim je obrisan. Barkod se ne moze aktivirati.");
                                         return;
                                     }
@@ -367,7 +363,7 @@ public class PanelAdminController implements PanelHeader{
             barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
 
             user.getBarcodes().add(barcode);
-            userRepo.save(user);
+            userRepo.saveOne(user);
 
         }
         loadTableUser();
@@ -483,11 +479,12 @@ public class PanelAdminController implements PanelHeader{
             if (response == yesButton) {
                 List<BarcodeEntity> barcodes = barcodeRepo.findByTeam(team);
                 for (BarcodeEntity barcode : barcodes) {
-                    barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
+                    barcode.setStatus(BarcodeEntity.Status.DELETED);
                 }
                 barcodeRepo.saveMultiple(barcodes);
-                team.setStatus(TeamEntity.Status.DEACTIVATED);
-                teamRepo.save(team);
+                team.setStatus(TeamEntity.Status.DELETED);
+                team.setName(team.getName() + " (Obrisan)");
+                teamRepo.updateOne(team);
                 ToastView.showModal("Tim je obrisan");
                 loadTableTeam();
             }

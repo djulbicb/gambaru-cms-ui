@@ -88,4 +88,8 @@ public class UserRepository extends Repository<UserEntity> {
     public void saveMultiple(List<UserEntity> users) {
         saveAll(users);
     }
+
+    public void saveOne(UserEntity user) {
+        save(user);
+    }
 }
