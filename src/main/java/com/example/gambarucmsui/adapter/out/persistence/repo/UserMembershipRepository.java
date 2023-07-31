@@ -1,14 +1,10 @@
 package com.example.gambarucmsui.adapter.out.persistence.repo;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
-import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserMembershipPaymentEntity;
-import com.example.gambarucmsui.model.MembershipCount;
+import com.example.gambarucmsui.ui.dto.statistics.MembershipCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

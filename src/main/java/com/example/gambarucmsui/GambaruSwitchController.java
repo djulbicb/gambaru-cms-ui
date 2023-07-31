@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.HashMap;
 
-import static com.example.gambarucmsui.common.LayoutUtil.stretchInsideAnchorPance;
+import static com.example.gambarucmsui.util.LayoutUtil.stretchInsideAnchorPance;
 
 public class GambaruSwitchController {
     private final Stage primaryStage;

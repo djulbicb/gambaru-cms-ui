@@ -6,7 +6,7 @@ import com.example.gambarucmsui.adapter.out.persistence.repo.BarcodeRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserRepository;
 
-import com.example.gambarucmsui.common.LayoutUtil;
+import com.example.gambarucmsui.util.LayoutUtil;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.FormBarcodeGetAttendance;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.FormatUtil.*;
 
 public class PanelAttendanceController implements PanelHeader {

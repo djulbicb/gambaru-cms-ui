@@ -2,16 +2,12 @@ package com.example.gambarucmsui.adapter.out.persistence.repo;
 
 import com.example.gambarucmsui.adapter.out.persistence.entity.BarcodeEntity;
 import com.example.gambarucmsui.adapter.out.persistence.entity.UserAttendanceEntity;
-import com.example.gambarucmsui.model.AttendanceCount;
+import com.example.gambarucmsui.ui.dto.statistics.AttendanceCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
-import static com.example.gambarucmsui.common.LayoutUtil.stretchColumnsToEqualSize;
+import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize;
 import static com.example.gambarucmsui.util.FormatUtil.*;
 
 public class PanelAdminController implements PanelHeader{

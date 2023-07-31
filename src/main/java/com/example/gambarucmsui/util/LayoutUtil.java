@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.common;
+package com.example.gambarucmsui.util;
 
 import com.example.gambarucmsui.util.FormatUtil;
 import javafx.scene.Node;

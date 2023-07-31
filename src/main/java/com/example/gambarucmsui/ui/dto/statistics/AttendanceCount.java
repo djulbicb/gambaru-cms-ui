@@ -1,12 +1,13 @@
-package com.example.gambarucmsui.model;
+package com.example.gambarucmsui.ui.dto.statistics;
 
 import java.time.LocalDate;
+import java.util.Date;
 
-public class MembershipCount {
+public class AttendanceCount {
     private LocalDate date;
     private long count;
 
-    public MembershipCount(LocalDate date, long count) {
+    public AttendanceCount(LocalDate date, long count) {
         this.date = date;
         this.count = count;
     }

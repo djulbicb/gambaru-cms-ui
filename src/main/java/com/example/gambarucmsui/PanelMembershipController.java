@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.gambarucmsui.common.LayoutUtil.formatPagination;
-import static com.example.gambarucmsui.common.LayoutUtil.formatPaginationMonth;
+import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.util.LayoutUtil.formatPaginationMonth;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class PanelMembershipController implements PanelHeader {

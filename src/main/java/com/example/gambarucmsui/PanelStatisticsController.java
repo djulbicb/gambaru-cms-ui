@@ -1,10 +1,9 @@
 package com.example.gambarucmsui;
 
-import com.example.gambarucmsui.adapter.out.persistence.repo.Repository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserAttendanceRepository;
 import com.example.gambarucmsui.adapter.out.persistence.repo.UserMembershipRepository;
-import com.example.gambarucmsui.model.AttendanceCount;
-import com.example.gambarucmsui.model.MembershipCount;
+import com.example.gambarucmsui.ui.dto.statistics.AttendanceCount;
+import com.example.gambarucmsui.ui.dto.statistics.MembershipCount;
 import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -17,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.example.gambarucmsui.common.LayoutUtil.stretchInsideAnchorPance;
+import static com.example.gambarucmsui.util.LayoutUtil.stretchInsideAnchorPance;
 
 public class PanelStatisticsController implements PanelHeader{
     private final UserAttendanceRepository attendanceRepo;
