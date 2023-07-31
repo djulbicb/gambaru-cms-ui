@@ -13,10 +13,19 @@ import java.util.List;
 @Table(name = "team")
 public class TeamEntity {
 
+
+
+    public static enum Status {
+        ACTIVE, DEACTIVATED;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "team_id")
     private Long teamId;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Column(name = "name", unique = true, columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
     private String name;
@@ -27,9 +36,10 @@ public class TeamEntity {
     public TeamEntity() {
     }
 
-    public TeamEntity(String name, BigDecimal membershipPayment) {
+    public TeamEntity(String name, Status status, BigDecimal membershipPayment) {
         this.name = name;
         this.membershipPayment = membershipPayment;
+        this.status = status;
     }
 
     public Long getTeamId() {
@@ -56,11 +66,11 @@ public class TeamEntity {
         this.membershipPayment = membershipPayment;
     }
 
-    public void addBarcode(BarcodeEntity barcode) {
-        barcode.setTeam(this);
+    public Status getStatus() {
+        return status;
     }
 
-    public void removeBarcode(BarcodeEntity barcode) {
-        barcode.setTeam(null);
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

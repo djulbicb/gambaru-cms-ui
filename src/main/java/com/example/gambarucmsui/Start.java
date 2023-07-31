@@ -5,3 +5,5 @@ public class Start {
         GambaruUIApplication.main(args);
     }
 }
+
+// DROP TABLE user_attendance, user_membership_payments, team, log, user, barcode

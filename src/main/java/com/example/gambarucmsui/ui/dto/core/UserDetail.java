@@ -44,6 +44,10 @@ public class UserDetail {
 //            }
 //        }
 
+        if (user == null) {
+            System.out.println("");
+        }
+
         return new UserDetail(
                 user.getUserId(),
                 formatBarcode(b.getBarcodeId()),

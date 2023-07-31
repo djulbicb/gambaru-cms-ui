@@ -217,7 +217,7 @@ public class PanelBarcodeController implements PanelHeader {
             @Override
             protected Void call() throws Exception {
                 List<UserEntity> users = userRepo.findAll();
-                List<TeamEntity> teams = teamRepo.findAll();
+                List<TeamEntity> teams = teamRepo.findAllActive();
                 List<BarcodeEntity> barcodes = new ArrayList<>();
                 for (UserEntity user : users) {
                     BarcodeEntity barcode = barcodeRepo.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);

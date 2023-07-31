@@ -17,7 +17,7 @@ public class Repository<T> {
         this.entityClass = entityClass;
     }
 
-    protected T save(T entity) {
+    public T save(T entity) {
         entityManager.getTransaction().begin();
         entityManager.persist(entity);
         entityManager.getTransaction().commit();

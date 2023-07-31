@@ -104,4 +104,11 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
     public void saveMultiple(List<BarcodeEntity> barcodes) {
         saveAll(barcodes);
     }
+
+    public List<BarcodeEntity> findByTeam(TeamEntity team) {
+        String jpql = "SELECT b FROM BarcodeEntity b WHERE b.team = :team";
+        TypedQuery<BarcodeEntity> query = entityManager.createQuery(jpql, BarcodeEntity.class);
+        query.setParameter("team", team);
+        return query.getResultList();
+    }
 }

@@ -21,6 +21,13 @@ public class TeamRepository extends Repository<TeamEntity> {
         return count > 0;
     }
 
+    public List<TeamEntity> findAllActive() {
+        String jpql = "SELECT t FROM TeamEntity t WHERE t.status = :status";
+        TypedQuery<TeamEntity> query = entityManager.createQuery(jpql, TeamEntity.class);
+        query.setParameter("status", TeamEntity.Status.ACTIVE);
+        return query.getResultList();
+    }
+
     public TeamEntity findByName(String teamName) {
         String jpql = "SELECT t FROM TeamEntity t WHERE t.name = :teamName";
         TypedQuery<TeamEntity> query = entityManager.createQuery(jpql, TeamEntity.class);
@@ -38,7 +45,7 @@ public class TeamRepository extends Repository<TeamEntity> {
     }
 
     public TeamEntity saveNewTeam(String teamName, BigDecimal membershipPaymentFee) {
-        TeamEntity en = new TeamEntity(teamName, membershipPaymentFee);
+        TeamEntity en = new TeamEntity(teamName, TeamEntity.Status.ACTIVE, membershipPaymentFee);
         return save(en);
     }
 

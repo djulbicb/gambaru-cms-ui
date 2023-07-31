@@ -23,7 +23,7 @@ public class UserRepository extends Repository<UserEntity> {
     }
 
     public List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
-        String jpql = "SELECT u FROM UserEntity u JOIN u.barcodes b JOIN b.team t WHERE 1=1";
+        String jpql = "SELECT u FROM UserEntity u LEFT JOIN u.barcodes b LEFT JOIN b.team t WHERE 1=1";
 
         if (firstName != null && !firstName.isBlank()) {
             jpql += " AND u.firstName LIKE :firstName";
@@ -70,6 +70,7 @@ public class UserRepository extends Repository<UserEntity> {
 
         return query.getResultList();
     }
+
 
 
 

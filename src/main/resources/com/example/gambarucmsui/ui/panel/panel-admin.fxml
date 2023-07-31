@@ -41,10 +41,10 @@
                                                 <HBox spacing="5.0" VBox.vgrow="ALWAYS">
                                                    <children>
                                                       <ComboBox fx:id="cmbSearchTeam" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#onCmbSearchTeamChange" prefWidth="150.0" promptText="IME TIMA" HBox.hgrow="ALWAYS" />
-                                                      <TextField fx:id="txtSearchBarcode" maxHeight="1.7976931348623157E308" onKeyTyped="#textSearchFieldChanged" promptText="IME" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="txtSearchFirstName" maxHeight="1.7976931348623157E308" onKeyTyped="#textSearchFieldChanged" promptText="IME" HBox.hgrow="ALWAYS" />
                                                       <TextField fx:id="txtSearchLastName" maxHeight="1.7976931348623157E308" onKeyTyped="#textSearchFieldChanged" promptText="PREZIME" HBox.hgrow="ALWAYS" />
                                                       <TextField fx:id="txtSearchBarcode" maxHeight="1.7976931348623157E308" onKeyTyped="#textSearchFieldChanged" promptText="BARKOD" />
-                                                      <CheckBox fx:id="checkSearchOnlyActive" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#textSearchFieldChanged" selected="true" text="SAMO AKTIVNI" textFill="WHITE" />
+                                                      <CheckBox fx:id="checkSearchOnlyActive" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#textSearchFieldChanged" text="SAMO AKTIVNI" textFill="WHITE" />
                                                    </children>
                                                 </HBox>
                                              </children>
@@ -145,7 +145,6 @@
                                              </font>
                                           </Label>
                                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserUpdate" text="IZMENI KORISNIKA" textFill="#fcfcfc" />
-                                          <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserDelete" text="OBRISI KORISNIKA" textFill="#fcfcfc" />
                                           <HBox spacing="5.0">
                                              <children>
                                                 <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAddUserToTeam" text="DODAJ TIM" textFill="#fcfcfc" HBox.hgrow="ALWAYS" />

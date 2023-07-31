@@ -29,6 +29,9 @@ public class UserAdminDetail {
         StringJoiner barcodeTeamCsv = new StringJoiner(",");
 
         for (BarcodeEntity barcode : user.getBarcodes()) {
+            if (barcode.getStatus() != BarcodeEntity.Status.ASSIGNED) {
+                continue;
+            }
             String barcodeWithTeam = String.format("%s (%s)", formatBarcode(barcode.getBarcodeId()), barcode.getTeam().getName());
             barcodeTeamCsv.add(barcodeWithTeam);
         }

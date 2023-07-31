@@ -156,7 +156,12 @@ public class PanelAdminController implements PanelHeader{
     private void loadTableUserBarcode(UserEntity user) {
         List<BarcodeDetail> barcodeDetails = new ArrayList<>();
         for (BarcodeEntity barcode : user.getBarcodes()) {
-            barcodeDetails.add(new BarcodeDetail(formatBarcode(barcode.getBarcodeId()), barcode.getStatus(), barcode.getTeam().getName()));
+            TeamEntity team = barcode.getTeam();
+            String teamName = team.getName();
+            if (team.getStatus() == TeamEntity.Status.DEACTIVATED) {
+                teamName = team.getName() + " (Obrisan)";
+            }
+            barcodeDetails.add(new BarcodeDetail(formatBarcode(barcode.getBarcodeId()), barcode.getStatus(), teamName));
         }
         tableUserBarcode.getItems().setAll(barcodeDetails);
     }
@@ -187,6 +192,10 @@ public class PanelAdminController implements PanelHeader{
                                 Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(selectedItem.getBarcode()));
                                 if (byId.isPresent()) {
                                     BarcodeEntity barcode = byId.get();
+                                    if (barcode.getTeam().getStatus() == TeamEntity.Status.DEACTIVATED) {
+                                        ToastView.showModal("Tim je obrisan. Barkod se ne moze aktivirati.");
+                                        return;
+                                    }
                                     barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
                                     barcodeRepo.updateOne(barcode);
 
@@ -220,7 +229,7 @@ public class PanelAdminController implements PanelHeader{
     private void loadTeamsToUserComboBox() {
         cmbSearchTeam.getItems().clear();
         cmbSearchTeam.getItems().add(null);
-        for (TeamEntity team : teamRepo.findAll()) {
+        for (TeamEntity team : teamRepo.findAllActive()) {
             cmbSearchTeam.getItems().add(team.getName());
         }
     }
@@ -228,9 +237,9 @@ public class PanelAdminController implements PanelHeader{
     @Override
     public void viewSwitched() {
         System.out.println("Panel admin");
+        loadTeamsToUserComboBox();
         loadTableUser();
         loadTableTeam();
-        loadTeamsToUserComboBox();
     }
 
     private String getOr(TextField txt, String opt) {
@@ -247,7 +256,8 @@ public class PanelAdminController implements PanelHeader{
         loadTableUser();
     }
     private void loadTableUser() {
-        List<UserAdminDetail> collect = userRepo.findAll(currentPage, PAGE_SIZE, "createdAt",
+        List<UserAdminDetail> collect = userRepo.findAll(
+                        currentPage, PAGE_SIZE, "createdAt",
                         getOr(cmbSearchTeam, ""),
                         getOr(txtSearchFirstName, ""),
                         getOr(txtSearchLastName, ""),
@@ -308,8 +318,8 @@ public class PanelAdminController implements PanelHeader{
             UserEntity saved = userRepo.saveOne(data.getFirstName(), data.getLastName(), data.getGender(), data.getPhone(), LocalDateTime.now());
 
             ToastView.showModal(String.format("Korisnik %s %s je dodat.", saved.getFirstName(), saved.getLastName()));
-            loadTableUser();
         }
+        loadTableUser();
     }
 
 
@@ -380,12 +390,22 @@ public class PanelAdminController implements PanelHeader{
 
             Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
             Optional<UserEntity> userOpt = userRepo.findById(selectedItem.getUserId());
-            TeamEntity team = teamRepo.findByName(data.getTeamName());
-
             if (barcodeOpt.isEmpty() || userOpt.isEmpty()) {
                 return;
             }
-            barcodeRepo.updateBarcodeWithUserAndTeam(barcodeOpt.get(), userOpt.get(), team);
+            BarcodeEntity barcode = barcodeOpt.get();
+            if (barcode.getStatus() != BarcodeEntity.Status.NOT_USED) {
+                ToastView.showModal("Taj barkod je već u upotrebi. Koristi drugi.");
+                return;
+            }
+
+            UserEntity user = userOpt.get();
+            TeamEntity team = teamRepo.findByName(data.getTeamName());
+            barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
+
+            user.getBarcodes().add(barcode);
+            userRepo.save(user);
+
         }
         loadTableUser();
     }
@@ -437,10 +457,10 @@ public class PanelAdminController implements PanelHeader{
 //        loadTableUser();
 //    }
 
-    @FXML
-    void formUserDelete(MouseEvent event) {
-
-    }
+//    @FXML
+//    void formUserDelete(MouseEvent event) {
+//
+//    }
 
 
     // TEAM
@@ -463,7 +483,7 @@ public class PanelAdminController implements PanelHeader{
     }
 
     void loadTableTeam() {
-        List<TeamDetail> teams = teamRepo.findAll().stream().map(en -> new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
+        List<TeamDetail> teams = teamRepo.findAllActive().stream().map(en -> new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
         tableTeam.getItems().setAll(teams);
     }
 
@@ -494,8 +514,15 @@ public class PanelAdminController implements PanelHeader{
         alert.getDialogPane().getStylesheets().add(getClass().getResource(CSS).toExternalForm());
         alert.showAndWait().ifPresent(response -> {
             if (response == yesButton) {
-                teamRepo.delete(team);
+                List<BarcodeEntity> barcodes = barcodeRepo.findByTeam(team);
+                for (BarcodeEntity barcode : barcodes) {
+                    barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
+                }
+                barcodeRepo.saveMultiple(barcodes);
+                team.setStatus(TeamEntity.Status.DEACTIVATED);
+                teamRepo.save(team);
                 ToastView.showModal("Tim je obrisan");
+                loadTableTeam();
             }
         });
 
@@ -517,13 +544,10 @@ public class PanelAdminController implements PanelHeader{
 
         if (controller.isFormReady()) {
             FormTeamAddController.Data data = controller.getData();
-
-
             TeamEntity team = teamRepo.saveNewTeam(data.getTeamName(), data.getMembershipPaymentFee());
-            loadTableTeam();
-
             ToastView.showModal(String.format("Tim %s je dodat.", team.getName()));
         }
+        loadTableTeam();
     }
 
     @FXML
