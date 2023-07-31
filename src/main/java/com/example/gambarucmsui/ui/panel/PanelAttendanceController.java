@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.FormatUtil.*;
+import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET_ATTENDANCE;
 
 public class PanelAttendanceController implements PanelHeader {
 
@@ -85,7 +86,7 @@ public class PanelAttendanceController implements PanelHeader {
     }
     @FXML
     protected void addAttendanceManually() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui/panel/form-barcode-get-attendance.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FORM_BARCODE_GET_ATTENDANCE));
         FormBarcodeGetAttendance controller = new FormBarcodeGetAttendance(barcodeRepository);
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();

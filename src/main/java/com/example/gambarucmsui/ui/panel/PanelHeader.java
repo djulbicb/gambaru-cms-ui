@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.example.gambarucmsui.util.PathUtil.CSS;
+
 public interface PanelHeader {
     void initialize();
     void viewSwitched();
@@ -21,7 +23,7 @@ public interface PanelHeader {
         dialogStage.setScene(scene);
         dialogStage.setTitle(title);
         dialogStage.setResizable(false);
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource(CSS).toExternalForm());
         return dialogStage;
     }
 

@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 import static com.example.gambarucmsui.util.FormatUtil.*;
+import static com.example.gambarucmsui.util.PathUtil.CSS;
 
 
 public class GambaruUIApplication extends Application {
@@ -42,7 +43,7 @@ public class GambaruUIApplication extends Application {
         stage.setScene(scene);
 
 
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource(CSS).toExternalForm());
 
 
 

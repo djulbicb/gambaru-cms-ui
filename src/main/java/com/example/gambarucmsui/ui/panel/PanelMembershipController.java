@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.LayoutUtil.formatPaginationMonth;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
+import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET_MEMBERSHIP;
 
 public class PanelMembershipController implements PanelHeader {
     private final UserMembershipRepository repository;
@@ -119,7 +120,7 @@ public class PanelMembershipController implements PanelHeader {
 
     @FXML
     void onAddMembershipManually() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui/panel/form-barcode-get-membership.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FORM_BARCODE_GET_MEMBERSHIP));
         FormBarcodeGetMembership controller = new FormBarcodeGetMembership(barcodeRepo, teamRepo);
         fxmlLoader.setController(controller);
         VBox root = fxmlLoader.load();

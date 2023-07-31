@@ -16,6 +16,7 @@ public class GambaruUIAppGlobalExceptionHandler implements Thread.UncaughtExcept
     public void uncaughtException(Thread thread, Throwable throwable) {
         // Perform some action here, such as logging the exception
         System.err.println("Uncaught exception occurred: " + throwable.getMessage());
+        System.out.println(getStackTraceAsString(throwable));;
 
         // Get the stack trace as a string
         StringWriter sw = new StringWriter();
