@@ -28,4 +28,6 @@ module com.example.gambarucmsui {
     exports com.example.gambarucmsui.ui.dto.core;
     opens com.example.gambarucmsui.ui.dto.core to javafx.base, javafx.fxml;
     opens com.example.gambarucmsui.util to javafx.controls;
+    exports com.example.gambarucmsui.ui.panel;
+    opens com.example.gambarucmsui.ui.panel to javafx.fxml;
 }

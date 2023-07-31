@@ -1,4 +1,4 @@
-package com.example.gambarucmsui;
+package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.ui.form.FormUserAddController;
 import javafx.fxml.FXMLLoader;
