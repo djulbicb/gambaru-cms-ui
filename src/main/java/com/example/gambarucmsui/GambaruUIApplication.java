@@ -9,16 +9,27 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 import static com.example.gambarucmsui.util.FormatUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.CSS;
+import liquibase.Contexts;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class GambaruUIApplication extends Application {
 
 
     @Override
     public void start(Stage stage) throws IOException {
+        database();
         Thread.setDefaultUncaughtExceptionHandler(new GambaruUIAppGlobalExceptionHandler());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gambaru-header-switch.fxml"));
@@ -55,5 +66,28 @@ public class GambaruUIApplication extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    public static void database() {
+        try {
+            // Load the JDBC driver and create a connection
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/gambaru",
+                    "gambaru", "password");
+
+            // Create a Liquibase database instance
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+
+            // Create a Liquibase object and set the change log file
+            Liquibase liquibase = new Liquibase("META-INF/changelog.xml", new ClassLoaderResourceAccessor(), database);
+
+            // Run the migrations
+            liquibase.update(new Contexts());
+
+            // Close the connection
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

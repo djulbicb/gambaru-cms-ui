@@ -11,6 +11,7 @@ module com.example.gambarucmsui {
     requires java.desktop;
     requires com.google.zxing;
     requires itextpdf;
+    requires liquibase.core;
 
     opens com.example.gambarucmsui to javafx.fxml;
     opens com.example.gambarucmsui.database.entity to org.hibernate.orm.core;

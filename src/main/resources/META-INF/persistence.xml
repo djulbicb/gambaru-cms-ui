@@ -18,12 +18,12 @@
             <property name="jakarta.persistence.jdbc.password" value="password" />
 
             <!-- Generate the database schema -->
-            <property name="javax.persistence.schema-generation.database.action" value="update"/>
+<!--            <property name="javax.persistence.schema-generation.database.action" value="update"/>-->
 
             <!-- Customize the schema generation behavior -->
-            <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
-            <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
-            <property name="javax.persistence.schema-generation.scripts.action" value="none"/>
+<!--            <property name="javax.persistence.schema-generation.create-source" value="metadata"/>-->
+<!--            <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>-->
+<!--            <property name="javax.persistence.schema-generation.scripts.action" value="none"/>-->
         </properties>
     </persistence-unit>
 </persistence>

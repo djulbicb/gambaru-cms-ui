@@ -23,18 +23,18 @@
 
 
     <dependencies>
-        <!--DATA LIBRARY-->
-        <dependency>
-            <groupId>com.github.djulbicb</groupId>
-            <artifactId>DataLibrary</artifactId>
-            <version>v9.0</version>
-        </dependency>
         <!--DATABASE-->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.0.33</version>
         </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.23.0</version>
+        </dependency>
+
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
