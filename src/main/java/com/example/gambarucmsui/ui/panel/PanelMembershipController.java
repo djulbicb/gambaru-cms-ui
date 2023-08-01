@@ -23,9 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
-import static com.example.gambarucmsui.util.LayoutUtil.formatPaginationMonth;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
+import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET_MEMBERSHIP;
 
 public class PanelMembershipController implements PanelHeader {
@@ -58,6 +57,8 @@ public class PanelMembershipController implements PanelHeader {
     public void initialize() {
         System.out.println("Membership loaded");
         updatePagination(LocalDate.now());
+
+        stretchColumnsToEqualSize(table);
     }
 
     @Override

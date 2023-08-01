@@ -71,11 +71,6 @@
                   <PropertyValueFactory property="lastName" />
                </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Pol">
-               <cellValueFactory>
-                  <PropertyValueFactory property="gender" />
-               </cellValueFactory>
-            </TableColumn>
             <TableColumn text="Tim">
                <cellValueFactory>
                   <PropertyValueFactory property="team" />
@@ -84,11 +79,6 @@
             <TableColumn text="Dolazak">
                <cellValueFactory>
                   <PropertyValueFactory property="timestamp" />
-               </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="createdAt">
-               <cellValueFactory>
-                  <PropertyValueFactory property="createdAt" />
                </cellValueFactory>
             </TableColumn>
          </columns>

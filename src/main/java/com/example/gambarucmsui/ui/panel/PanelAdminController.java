@@ -175,6 +175,11 @@ public class PanelAdminController implements PanelHeader{
                                 Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(selectedItem.getBarcode()));
                                 if (byId.isPresent()) {
                                     BarcodeEntity barcode = byId.get();
+                                    if (barcode.getTeam().getStatus() == TeamEntity.Status.DELETED) {
+                                        ToastView.showModal("Tim je obrisan. Barkod se ne moze aktivirati.");
+                                        return;
+                                    }
+
                                     barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
                                     barcodeRepo.updateOne(barcode);
 
@@ -241,6 +246,8 @@ public class PanelAdminController implements PanelHeader{
         tableUserBarcode.getColumns().addAll(barcodeColumn, teamColumn, statusColumn, activateColumn);
 
 
+        stretchColumnsToEqualSize(tableUsers);
+        stretchColumnsToEqualSize(tableTeam);
         stretchColumnsToEqualSize(tableUserAttendance);
         stretchColumnsToEqualSize(tableUserMembership);
         stretchColumnsToEqualSize(tableUserBarcode);
@@ -329,7 +336,9 @@ public class PanelAdminController implements PanelHeader{
             return;
         }
 
-        FormUserAddUserToTeamController controller = new FormUserAddUserToTeamController(teamRepo, new FormUserAddUserToTeamController.Data(selectedItem.getFirstName(), selectedItem.getLastName(), "", ""));
+        Long userId = Long.valueOf(selectedItem.getUserId());
+        FormUserAddUserToTeamController controller = new FormUserAddUserToTeamController( new
+                FormUserAddUserToTeamController.Data( userId, 0L, ""), teamRepo, barcodeRepo, userRepo);
         Pane root = loadFxml(FORM_USER_ADD_USER_TO_TEAM, controller);
 
         // Create the modal dialog
@@ -349,23 +358,18 @@ public class PanelAdminController implements PanelHeader{
         if (controller.isFormReady()) {
             FormUserAddUserToTeamController.Data data = controller.getData();
 
-            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(parseBarcodeStr(data.getBarcode()));
+            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(data.getBarcode());
             Optional<UserEntity> userOpt = userRepo.findById(selectedItem.getUserId());
-            if (barcodeOpt.isEmpty() || userOpt.isEmpty()) {
-                return;
-            }
-            BarcodeEntity barcode = barcodeOpt.get();
-            if (barcode.getStatus() != BarcodeEntity.Status.NOT_USED) {
-                ToastView.showModal("Taj barkod je već u upotrebi. Koristi drugi.");
-                return;
-            }
 
-            UserEntity user = userOpt.get();
-            TeamEntity team = teamRepo.findByName(data.getTeamName());
-            barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
+            if (barcodeOpt.isPresent() && userOpt.isPresent()) {
+                BarcodeEntity barcode = barcodeOpt.get();
+                UserEntity user = userOpt.get();
+                TeamEntity team = teamRepo.findByName(data.getTeamName());
 
-            user.getBarcodes().add(barcode);
-            userRepo.saveOne(user);
+                barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
+                user.getBarcodes().add(barcode);
+                userRepo.saveOne(user);
+            }
 
         }
         loadTableUser();

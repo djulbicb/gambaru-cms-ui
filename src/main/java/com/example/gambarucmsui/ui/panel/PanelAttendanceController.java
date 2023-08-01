@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.FormatUtil.*;
+import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize;
 import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET_ATTENDANCE;
 
 public class PanelAttendanceController implements PanelHeader {
@@ -61,6 +62,8 @@ public class PanelAttendanceController implements PanelHeader {
         LayoutUtil.stretchColumnsToEqualSize(table);
         updatePagination(LocalDate.now());
         listPageForDate();
+
+        stretchColumnsToEqualSize(table);
     }
 
     @Override
