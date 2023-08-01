@@ -57,9 +57,10 @@ public class FormBarcodeGetAttendance {
 
         String barcodeIdStr = txtBarcodeId.getText();
         if (!isLong(barcodeIdStr)) {
-            if (!barcodeIdStr.isBlank()) {
-                lblErrBarcodeId.setText("Upiši barkod npr 123.");
+            if (barcodeIdStr.isBlank()) {
+                return;
             }
+            lblErrBarcodeId.setText("Upiši barkod npr 123.");
             return;
         }
 

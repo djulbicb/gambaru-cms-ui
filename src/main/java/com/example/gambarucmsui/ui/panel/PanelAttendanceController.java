@@ -65,7 +65,7 @@ public class PanelAttendanceController implements PanelHeader {
 
     @Override
     public void viewSwitched() {
-        System.out.println("Panel attendance");
+        System.out.println("Switched to panel Attendance.");
     }
 
     private void listPageForDate() {

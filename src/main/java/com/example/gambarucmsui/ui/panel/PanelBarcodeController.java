@@ -62,7 +62,7 @@ public class PanelBarcodeController implements PanelHeader {
 
     @Override
     public void viewSwitched() {
-
+        System.out.println("Switched to panel Barcode.");
     }
 
     @FXML

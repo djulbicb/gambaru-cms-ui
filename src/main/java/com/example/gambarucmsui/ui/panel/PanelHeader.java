@@ -11,25 +11,7 @@ import java.io.IOException;
 
 import static com.example.gambarucmsui.util.PathUtil.CSS;
 
-public interface PanelHeader {
+public interface PanelHeader extends FxmlViewHandler {
     void initialize();
     void viewSwitched();
-
-    default Stage createStage(String title, Pane root, Stage primaryStage) {
-        Stage dialogStage = new Stage();
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.initOwner(primaryStage);
-        Scene scene = new Scene(root);
-        dialogStage.setScene(scene);
-        dialogStage.setTitle(title);
-        dialogStage.setResizable(false);
-        scene.getStylesheets().add(getClass().getResource(CSS).toExternalForm());
-        return dialogStage;
-    }
-
-    default Pane loadFxml(String fxmlPath, Object controller) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
-        fxmlLoader.setController(controller);
-        return fxmlLoader.load();
-    }
 }

@@ -18,7 +18,7 @@ public class ToastView {
     public static void showModal(String message) {
         Label label = new Label(message);
         label.setStyle("-fx-text-fill: white;");
-        showModal(label, 500, 100);
+        showModal(label, 700, 100);
     }
     public static void showModal(Node content, double durationMillis, double fadeDurationMillis) {
         Stage modalStage = new Stage();

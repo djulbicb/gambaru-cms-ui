@@ -1,6 +1,7 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.common.DelayedKeyListener;
+import com.example.gambarucmsui.common.LoggingService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -20,10 +22,6 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-
 public class GambaruUIApplication extends Application {
 
 
@@ -43,14 +41,14 @@ public class GambaruUIApplication extends Application {
             @Override
             public void onFinish(String word) {
                 if (isBarcode(word)) {
+                    System.out.println(String.format("Barcode scanned: %s", word));
                     String barcodeId = cleanBarcodeStr(word);
-                    System.out.println("Barcode scanned: " + barcodeId);
                     controller.onBarcodeScanned(barcodeId);
                 }
             }
         });
 
-        stage.setTitle("Hello!");
+        stage.setTitle("Gambaru CMS");
         stage.setScene(scene);
 
 
@@ -62,30 +60,27 @@ public class GambaruUIApplication extends Application {
     }
 
 
-    
-
     public static void main(String[] args) {
         launch();
     }
 
     public static void database() {
         try {
-            // Load the JDBC driver and create a connection
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/gambaru",
-                    "gambaru", "password");
+            System.out.println("Starting Liquibase...");
 
-            // Create a Liquibase database instance
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/gambaru",
+                    "gambaru",
+                    "password");
+
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
-            // Create a Liquibase object and set the change log file
             Liquibase liquibase = new Liquibase("META-INF/changelog.xml", new ClassLoaderResourceAccessor(), database);
-
-            // Run the migrations
             liquibase.update(new Contexts());
-
-            // Close the connection
             connection.close();
+
+            System.out.println("Liquibase started.");
         } catch (Exception e) {
             e.printStackTrace();
         }

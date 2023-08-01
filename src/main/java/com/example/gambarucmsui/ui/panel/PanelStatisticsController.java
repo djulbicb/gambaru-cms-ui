@@ -37,7 +37,7 @@ public class PanelStatisticsController implements PanelHeader{
 
     @Override
     public void viewSwitched() {
-        System.out.println("Panel statistic");
+        System.out.println("Switched to panel Statistic.");
 
         List<AttendanceCount> attendanceData = attendanceRepo.getAttendanceDataLast60Days();
         List<MembershipCount> membershipData = membershipRepo.getMembershipCountByMonthLastYear();

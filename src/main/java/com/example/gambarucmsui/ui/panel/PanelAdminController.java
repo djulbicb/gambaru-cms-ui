@@ -73,7 +73,7 @@ public class PanelAdminController implements PanelHeader{
 
     @Override
     public void viewSwitched() {
-        System.out.println("Panel admin");
+        System.out.println("Switched to panel Admin.");
     }
 
     // TAB USER
@@ -151,7 +151,7 @@ public class PanelAdminController implements PanelHeader{
                         pane = new HBox(activateBtn, deactivateBtn);
                         activateBtn.setOnMouseClicked(event -> {
                             BarcodeDetail selectedItem = getTableView().getItems().get(getIndex());
-                            System.out.println("sss");
+                            System.out.println("Akcije");
                             if (selectedItem != null) {
                                 Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(selectedItem.getBarcode()));
                                 if (byId.isPresent()) {
@@ -164,6 +164,7 @@ public class PanelAdminController implements PanelHeader{
                                     barcodeRepo.updateOne(barcode);
 
                                     loadTableUserBarcode(barcode.getUser());
+                                    loadTableUser();
                                 }
                             }
                         });
@@ -178,6 +179,7 @@ public class PanelAdminController implements PanelHeader{
                                     barcodeRepo.updateOne(barcode);
 
                                     loadTableUserBarcode(barcode.getUser());
+                                    loadTableUser();
                                 }
 
                             }
@@ -466,12 +468,12 @@ public class PanelAdminController implements PanelHeader{
         TeamEntity team = teamOpt.get();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Do you want to continue?");
+        alert.setTitle("Brisanje tima");
+        alert.setHeaderText(String.format("Da li želiš da obrišeš tim %s?", team.getName()));
+        alert.setContentText("Svi barkodovi asocirani sa ovim timom ce biti trajno deaktivirani");
 
-        ButtonType yesButton = new ButtonType("Yes");
-        ButtonType noButton = new ButtonType("No");
+        ButtonType yesButton = new ButtonType("Obriši");
+        ButtonType noButton = new ButtonType("Nemoj da brišeš");
         alert.getButtonTypes().setAll(yesButton, noButton);
 
         alert.getDialogPane().getStylesheets().add(getClass().getResource(CSS).toExternalForm());

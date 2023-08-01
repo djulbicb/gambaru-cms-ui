@@ -7,12 +7,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 import static com.example.gambarucmsui.util.LayoutUtil.stretchInsideAnchorPance;
 
-public class GambaruSwitchController {
+public class GambaruSwitchController implements FxmlViewHandler{
     private final Stage primaryStage;
 
     // FXML
@@ -37,16 +37,16 @@ public class GambaruSwitchController {
 
     // PANELS AND CONTROLLERS
     ////////////////////////////////////////
-    private AnchorPane currentSelected;
-    private AnchorPane panelAttendance;
+    private Pane currentSelected;
+    private Pane panelAttendance;
     private PanelAttendanceController panelAttendanceController;
-    private AnchorPane panelMembership;
+    private Pane panelMembership;
     private PanelMembershipController panelMembershipController;
-    private AnchorPane panelStatistics;
+    private Pane panelStatistics;
     private PanelStatisticsController panelStatisticsController;
-    private AnchorPane panelSettings;
+    private Pane panelSettings;
     private PanelAdminController panelAdminController;
-    private AnchorPane panelBarcode;
+    private Pane panelBarcode;
     private PanelBarcodeController panelBarcodeController;
 
     public GambaruSwitchController(Stage primaryStage) {
@@ -58,35 +58,28 @@ public class GambaruSwitchController {
         HashMap<Class, Object> repositoryMap = loadEntityManagementSystem();
 
         panelAttendanceController = new PanelAttendanceController(primaryStage, repositoryMap);
-        FXMLLoader attendanceLoader = new FXMLLoader(getClass().getResource(PathUtil.PANEL_ATTENDANCE));
-        attendanceLoader.setController(panelAttendanceController);
-        panelAttendance = attendanceLoader.load();
+        panelAttendance = loadFxml(PathUtil.PANEL_ATTENDANCE, panelAttendanceController);
 
         panelMembershipController = new PanelMembershipController(primaryStage, repositoryMap);
-        FXMLLoader membershipLoader = new FXMLLoader(getClass().getResource(PathUtil.PANEL_MEMBERSHIP));
-        membershipLoader.setController(panelMembershipController);
-        panelMembership = membershipLoader.load();
+        panelMembership = loadFxml(PathUtil.PANEL_MEMBERSHIP, panelMembershipController);
 
         panelStatisticsController = new PanelStatisticsController(primaryStage, repositoryMap);
-        FXMLLoader statisticsLoader = new FXMLLoader(getClass().getResource(PathUtil.PANEL_STATISTICS));
-        statisticsLoader.setController(panelStatisticsController);
-        panelStatistics = statisticsLoader.load();
+        panelStatistics = loadFxml(PathUtil.PANEL_STATISTICS, panelStatisticsController);
 
         panelAdminController = new PanelAdminController(primaryStage, repositoryMap);
-        FXMLLoader settingsLoader = new FXMLLoader(getClass().getResource(PathUtil.PANEL_ADMIN));
-        settingsLoader.setController(panelAdminController);
-        panelSettings = settingsLoader.load();
+        panelSettings = loadFxml(PathUtil.PANEL_ADMIN, panelAdminController);
 
         panelBarcodeController = new PanelBarcodeController(primaryStage, repositoryMap);
-        FXMLLoader barcodeLoader = new FXMLLoader(getClass().getResource(PathUtil.PANEL_BARCODE));
-        barcodeLoader.setController(panelBarcodeController);
-        panelBarcode = barcodeLoader.load();
+        panelBarcode = loadFxml(PathUtil.PANEL_BARCODE, panelBarcodeController);
 
-        setHeaderToggleButtonToIgnoreAction();
+        setPanelHeaderToggleButtonsToIgnoreAction();
         switchToAttendance();
     }
 
-    private void setHeaderToggleButtonToIgnoreAction() {
+    private void setPanelHeaderToggleButtonsToIgnoreAction() {
+        // Barcode scanning sometimes forced view switching.
+        // Because barcode scanner inputs ENTER at the end,
+        // and if toggle button view was "selected" its going to trigger toggle
         for (Toggle toggle : headerToggleBtns.getToggles()) {
             ToggleButton button = (ToggleButton) toggle;
             button.setOnAction(actionEvent -> {
@@ -96,6 +89,7 @@ public class GambaruSwitchController {
     }
 
     HashMap<Class, Object> loadEntityManagementSystem() {
+        System.out.println("Entity Managment starting.");
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("gambaru-entity-manager");
             EntityManager entityManager = emf.createEntityManager();
@@ -107,51 +101,49 @@ public class GambaruSwitchController {
             repos.put(UserMembershipRepository.class, new UserMembershipRepository(entityManager));
             repos.put(TeamRepository.class, new TeamRepository(entityManager));
 
+            System.out.println("Entity Managment started.");
             return repos;
 
         } catch (Exception e) {
+            System.out.println(String.format("There was an error starting entity system", e));
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Hello!");
             alert.setHeaderText(null);
             alert.setContentText("Baza nije startovana");
             alert.showAndWait();
-
             throw e;
         }
+
     };
 
     private void switchToAttendance() {
-        panelContent.getChildren().clear();
-        panelContent.getChildren().add(panelAttendance);
+        panelContent.getChildren().setAll(panelAttendance);
         currentSelected = panelAttendance;
         stretchInsideAnchorPance(panelAttendance);
         panelAttendanceController.viewSwitched();
     }
 
     private void switchToMembership() {
-        panelContent.getChildren().clear();
-        panelContent.getChildren().add(panelMembership);
+        panelContent.getChildren().setAll(panelMembership);
         currentSelected = panelMembership;
         stretchInsideAnchorPance(panelMembership);
         panelMembershipController.viewSwitched();
     }
     private void switchToStatistic() {
-        panelContent.getChildren().clear();
-        panelContent.getChildren().add(panelStatistics);
+        panelContent.getChildren().setAll(panelStatistics);
         currentSelected = panelStatistics;
         stretchInsideAnchorPance(panelStatistics);
         panelStatisticsController.viewSwitched();
     }
     private void switchToAdmin() {
-        panelContent.getChildren().clear();
-        panelContent.getChildren().add(panelSettings);
+        panelContent.getChildren().setAll(panelSettings);
         currentSelected = panelSettings;
         stretchInsideAnchorPance(panelSettings);
         panelAdminController.viewSwitched();
     }
     private void switchToBarcode() {
-        panelContent.getChildren().clear();
-        panelContent.getChildren().add(panelBarcode);
+        panelContent.getChildren().setAll(panelBarcode);
         currentSelected = panelBarcode;
         stretchInsideAnchorPance(panelBarcode);
         panelBarcodeController.viewSwitched();

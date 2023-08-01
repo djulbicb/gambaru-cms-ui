@@ -62,8 +62,8 @@ public class PanelMembershipController implements PanelHeader {
 
     @Override
     public void viewSwitched() {
+        System.out.println("Switched to panel Membership.");
         listPageForDate();
-        System.out.println("Panel membership");
     }
 
     private void listPageForDate() {
