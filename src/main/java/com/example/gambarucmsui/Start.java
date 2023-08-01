@@ -7,3 +7,4 @@ public class Start {
 }
 
 // DROP TABLE user_attendance, user_membership_payments, team, log, user, barcode
+// DROP TABLE team, user, DATABASECHANGELOGLOCK, DATABASECHANGELOG

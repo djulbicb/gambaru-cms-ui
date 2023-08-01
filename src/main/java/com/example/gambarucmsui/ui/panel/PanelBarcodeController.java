@@ -154,7 +154,7 @@ public class PanelBarcodeController implements PanelHeader {
             protected Void call() throws Exception {
                 int count = getCount();
                 for (int i = 0; i < count; i++) {
-                    List<BarcodeEntity> barcodes = barcodeRepo.findAll();
+                    List<BarcodeEntity> barcodes = barcodeRepo.findAllByStatus(BarcodeEntity.Status.ASSIGNED);
                     List<UserAttendanceEntity> attendanceEntities = new ArrayList<>();
                     for (BarcodeEntity barcode : barcodes) {
                         attendanceEntities.add(new UserAttendanceEntity(barcode, getDateTime()));
@@ -183,7 +183,7 @@ public class PanelBarcodeController implements PanelHeader {
             protected Void call() throws Exception {
                 int count = getCount();
                 for (int i = 0; i < count; i++) {
-                    List<BarcodeEntity> barcodes = barcodeRepo.findAll();
+                    List<BarcodeEntity> barcodes = barcodeRepo.findAllByStatus(BarcodeEntity.Status.ASSIGNED);
                     List<UserMembershipPaymentEntity> payments = new ArrayList<>();
                     for (BarcodeEntity barcode : barcodes) {
                         LocalDateTime dateTime = getDateTime();

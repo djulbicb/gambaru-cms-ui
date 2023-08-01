@@ -111,4 +111,11 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         query.setParameter("team", team);
         return query.getResultList();
     }
+
+    public List<BarcodeEntity> findAllByStatus(BarcodeEntity.Status status) {
+        String jpql = "SELECT b FROM BarcodeEntity b WHERE b.status = :status";
+        TypedQuery<BarcodeEntity> query = entityManager.createQuery(jpql, BarcodeEntity.class);
+        query.setParameter("status", status);
+        return query.getResultList();
+    }
 }
