@@ -69,6 +69,7 @@ public class PanelAdminController implements PanelHeader{
     @FXML
     private void onTeamTabSwitch() {
         loadTableTeam();
+        loadTableUser();
     }
 
     @Override
