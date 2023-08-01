@@ -2,6 +2,7 @@ package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.database.repo.TeamRepository;
+import com.example.gambarucmsui.ui.form.validation.UserInputValidator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,10 +16,13 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static com.example.gambarucmsui.util.LayoutUtil.getOr;
+
 public class FormUserAddController implements Initializable {
     // Input
     //////////////////////////////////////////
     private final TeamRepository teamRepo;
+    private final UserInputValidator validator = new UserInputValidator();
 
     // FXML
     //////////////////////////////////////////
@@ -56,41 +60,42 @@ public class FormUserAddController implements Initializable {
 
     @FXML
     void onSave(MouseEvent event) {
+        String firstNameStr = getOr(txtUserFirstName, "");
+        String lastNameStr = getOr(txtUserLastName, "");
+        String phoneStr = getOr(txtUserPhone, "");
+        String genderStr = getOr(cmbUserGender, "");
+
+        if (validate(firstNameStr, lastNameStr, phoneStr, genderStr)) {
+            isFormReady = true;
+            outFirstName = firstNameStr.trim();
+            outLastName = lastNameStr.trim();
+            outPhone = phoneStr.trim();
+            outGender = genderStr.equals("Muški") ? UserEntity.Gender.MALE : UserEntity.Gender.FEMALE;
+            close();
+        }
+    }
+
+    boolean validate(String firstNameStr, String lastNameStr, String phoneStr, String genderStr) {
         boolean isFormCorrect = true;
 
-        String firstNameStr = txtUserFirstName.getText().trim();
-        String lastNameStr = txtUserLastName.getText().trim();
-        String phoneStr = txtUserPhone.getText().trim();
-        String genderStr = cmbUserGender.getSelectionModel().getSelectedItem();
-
-        if (firstNameStr.isBlank()) {
-            lblErrUserFirstName.setText("Upiši ime.");
+        if (!validator.isValidFirstName(firstNameStr)) {
+            lblErrUserFirstName.setText(validator.errFirstName());
             isFormCorrect = false;
         }
-        if (lastNameStr.isBlank()) {
-            lblErrUserLastName.setText("Upiši prezime.");
+        if (!validator.isValidLastName(lastNameStr)) {
+            lblErrUserLastName.setText(validator.errLastName());
             isFormCorrect = false;
         }
-        if (phoneStr.isBlank()) {
-            lblErrUserPhone.setText("Upiši telefon.");
+        if (!validator.isValidPhone(phoneStr)) {
+            lblErrUserPhone.setText(validator.errPhone());
             isFormCorrect = false;
         }
-        if (genderStr == null || genderStr.isBlank()) {
-            lblErrUserGender.setText("Izaberi pol.");
+        if (!validator.isValidGender(genderStr)) {
+            lblErrUserGender.setText(validator.errGender());
             isFormCorrect = false;
         }
 
-        if (!isFormCorrect) {
-            return;
-        }
-
-        isFormReady = true;
-        outFirstName = firstNameStr.trim();
-        outLastName = lastNameStr.trim();
-        outPhone = phoneStr.trim();
-        outGender = genderStr.equals("Muški") ? UserEntity.Gender.MALE : UserEntity.Gender.FEMALE;
-
-        close();
+        return isFormCorrect;
     }
 
     private void close() {

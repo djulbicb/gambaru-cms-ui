@@ -74,7 +74,7 @@ public class LayoutUtil {
         if (txt == null) {
             return opt;
         }
-        return txt.getText();
+        return txt.getText().trim();
     }
 }
 

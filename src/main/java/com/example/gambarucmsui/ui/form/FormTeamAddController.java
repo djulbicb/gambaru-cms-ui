@@ -1,6 +1,7 @@
 package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.database.repo.TeamRepository;
+import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -13,12 +14,11 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static com.example.gambarucmsui.util.FormatUtil.isDecimal;
-
 public class FormTeamAddController implements Initializable {
     // Repo
     //////////////////////////////////////////
     private final TeamRepository teamRepo;
+    private TeamInputValidator validator = new TeamInputValidator();
     // FXML
     //////////////////////////////////////////
     @FXML private VBox root;
@@ -30,8 +30,8 @@ public class FormTeamAddController implements Initializable {
     // OUTPUT DATA
     /////////////////////////////////////////
     private boolean isFormReady = false;
-    private BigDecimal membershipPayment;
-    private String teamName;
+    private BigDecimal outMembershipPayment;
+    private String outTeamName;
 
     public FormTeamAddController(TeamRepository teamRepo) {
         this.teamRepo = teamRepo;
@@ -54,33 +54,33 @@ public class FormTeamAddController implements Initializable {
 
     @FXML
     void onSave(MouseEvent event) {
-        boolean isFormCorrect = true;
-
         String paymentFeeStr = txtMembershipFee.getText().trim();
         String teamNameStr = txtTeamName.getText().trim();
 
-        if (teamNameStr.isBlank()) {
-            lblErrTeamName.setText("Upiši ime tima");
+        if (validate(teamNameStr, paymentFeeStr)) {
+            isFormReady = true;
+            outMembershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
+            outTeamName = teamNameStr;
+            close();
+        }
+    }
+
+    private boolean validate(String teamNameStr, String paymentFeeStr) {
+        boolean isFormCorrect = true;
+        if (!validator.isTeamNameValid(teamNameStr)) {
+            lblErrTeamName.setText(validator.errTeamName());
             isFormCorrect = false;
         }
         if (teamRepo.ifTeamNameExists(teamNameStr)) {
-            lblErrTeamName.setText("Takvo ime tima već postoji. Upiši drugačije ime.");
+            lblErrTeamName.setText(validator.errTeamNameExists());
             isFormCorrect = false;
         }
-        if (paymentFeeStr.isBlank() || !isDecimal(paymentFeeStr)) {
-            lblErrMembershipFee.setText("Upiši cenu članarine. Npr 4000");
+        if (!validator.isFeeValid(paymentFeeStr)) {
+            lblErrMembershipFee.setText(validator.errTeamFee());
             isFormCorrect = false;
         }
 
-        if (!isFormCorrect) {
-            return;
-        }
-
-        isFormReady = true;
-        membershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
-        teamName = teamNameStr;
-
-        close();
+        return isFormCorrect;
     }
 
     private void close() {
@@ -97,7 +97,7 @@ public class FormTeamAddController implements Initializable {
     }
 
     public FormTeamAddController.Data getData () {
-        return new Data(membershipPayment, teamName);
+        return new Data(outMembershipPayment, outTeamName);
     }
 
     public static class Data {

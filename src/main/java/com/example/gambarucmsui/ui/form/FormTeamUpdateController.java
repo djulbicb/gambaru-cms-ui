@@ -1,6 +1,7 @@
 package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.database.repo.TeamRepository;
+import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -14,26 +15,25 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.FormatUtil.isDecimal;
+import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class FormTeamUpdateController implements Initializable {
     // Input
     //////////////////////////////////////////
     private final TeamRepository teamRepo;
     private final Data inputData;
+    private TeamInputValidator validator = new TeamInputValidator();
     // FXML
     //////////////////////////////////////////
     @FXML private VBox root;
     @FXML private Label lblErrMembershipFee;
     @FXML private Label lblErrTeamName;
-    @FXML private Label lblErrTeamId;
-    @FXML private TextField txtTeamId;
     @FXML private TextField txtMembershipFee;
     @FXML private TextField txtTeamName;
 
     // OUTPUT DATA
     /////////////////////////////////////////
     private boolean isFormReady = false;
-    private Long teamId;
     private BigDecimal membershipPayment;
     private String teamName;
 
@@ -44,7 +44,6 @@ public class FormTeamUpdateController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        txtTeamId.setText(inputData.getTeamId().toString());
         txtTeamName.setText(inputData.getTeamName());
         txtMembershipFee.setText(inputData.getMembershipPaymentFee().toString());
     }
@@ -66,35 +65,34 @@ public class FormTeamUpdateController implements Initializable {
 
     @FXML
     void onUpdate(MouseEvent event) {
+
+        String teamNameStr = getOr(txtTeamName, "");
+        String paymentFeeStr = getOr(txtMembershipFee, "");
+
+        if (validate(teamNameStr, paymentFeeStr)) {
+            isFormReady = true;
+            membershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
+            teamName = teamNameStr;
+            close();
+        }
+    }
+
+    private boolean validate(String teamNameStr, String paymentFeeStr) {
         boolean isFormCorrect = true;
-
-        String paymentFeeStr = txtMembershipFee.getText().trim();
-        String teamNameStr = txtTeamName.getText().trim();
-        String teamIdStr = txtTeamId.getText().trim();
-
-        if (teamNameStr.isBlank()) {
-            lblErrTeamName.setText("Upiši ime tima");
+        if (!validator.isTeamNameValid(teamNameStr)) {
+            lblErrTeamName.setText(validator.errTeamName());
             isFormCorrect = false;
         }
         if (!teamNameStr.equals(inputData.getTeamName()) && teamRepo.ifTeamNameExists(teamNameStr)) {
-            lblErrTeamName.setText("Takvo ime tima već postoji. Upiši drugačije ime.");
+            lblErrTeamName.setText(validator.errTeamNameExists());
             isFormCorrect = false;
         }
-        if (paymentFeeStr.isBlank() || !isDecimal(paymentFeeStr)) {
-            lblErrMembershipFee.setText("Upiši cenu članarine. Npr 4000");
+        if (!validator.isFeeValid(paymentFeeStr)) {
+            lblErrMembershipFee.setText(validator.errTeamFee());
             isFormCorrect = false;
         }
 
-        if (!isFormCorrect) {
-            return;
-        }
-
-        isFormReady = true;
-
-        membershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
-        teamName = teamNameStr;
-        teamId = Long.valueOf(teamIdStr);
-        close();
+        return isFormCorrect;
     }
 
     private void close() {
@@ -106,16 +104,14 @@ public class FormTeamUpdateController implements Initializable {
     }
 
     public FormTeamUpdateController.Data getData () {
-        return new Data(teamId, membershipPayment, teamName);
+        return new Data( membershipPayment, teamName);
     }
 
     public static class Data {
-        private Long teamId;
         private BigDecimal membershipPaymentFee;
         private String teamName;
 
-        public Data(Long teamId, BigDecimal membershipPaymentFee, String teamName) {
-            this.teamId = teamId;
+        public Data(BigDecimal membershipPaymentFee, String teamName) {
             this.membershipPaymentFee = membershipPaymentFee;
             this.teamName = teamName;
         }
@@ -128,14 +124,10 @@ public class FormTeamUpdateController implements Initializable {
             return teamName;
         }
 
-        public Long getTeamId() {
-            return teamId;
-        }
 
         @Override
         public String toString() {
             return "Data{" +
-                    "teamId=" + teamId +
                     ", membershipPaymentFee=" + membershipPaymentFee +
                     ", teamName='" + teamName + '\'' +
                     '}';

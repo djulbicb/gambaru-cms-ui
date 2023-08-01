@@ -424,7 +424,7 @@ public class PanelAdminController implements PanelHeader{
             return;
         }
 
-        FormTeamUpdateController.Data dto = new FormTeamUpdateController.Data(selectedItem.getTeamId(), selectedItem.getFee(), selectedItem.getName());
+        FormTeamUpdateController.Data dto = new FormTeamUpdateController.Data(selectedItem.getFee(), selectedItem.getName());
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FORM_TEAM_UPDATE));
         FormTeamUpdateController controller = new FormTeamUpdateController(dto, teamRepo);
@@ -438,7 +438,7 @@ public class PanelAdminController implements PanelHeader{
 
         if (controller.isFormReady()) {
             FormTeamUpdateController.Data data = controller.getData();
-            Optional<TeamEntity> en = teamRepo.findById(data.getTeamId());
+            Optional<TeamEntity> en = teamRepo.findById(selectedItem.getTeamId());
             if (en.isEmpty()) {
                 return;
             }
