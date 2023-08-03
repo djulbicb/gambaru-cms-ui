@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -17,8 +18,9 @@ public class ToastView {
 
     public static void showModal(String message) {
         Label label = new Label(message);
+        label.setFont(Font.font(20));
         label.setStyle("-fx-text-fill: white;");
-        showModal(label, 700, 100);
+        showModal(label, 1100, 100);
     }
     public static void showModal(Node content, double durationMillis, double fadeDurationMillis) {
         Stage modalStage = new Stage();
@@ -28,7 +30,7 @@ public class ToastView {
         modalStage.setAlwaysOnTop(true);
 
         StackPane modalRoot = new StackPane(content);
-        modalRoot.setStyle("-fx-background-radius: 10; -fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 10px;");
+        modalRoot.setStyle("-fx-background-radius: 10; -fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20px;");
         modalRoot.setAlignment(Pos.CENTER);
 
         Scene modalScene = new Scene(modalRoot);

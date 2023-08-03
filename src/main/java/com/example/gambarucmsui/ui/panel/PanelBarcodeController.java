@@ -113,6 +113,9 @@ public class PanelBarcodeController implements PanelHeader {
 
         Stage ownerStage = (Stage) savePdf.getScene().getWindow();
         File file = fileChooser.showSaveDialog(ownerStage);
+        if (file == null) {
+            return;
+        }
         List<BarcodeEntity> barcodeId = barcodeRepo.findByIds("barcodeId", collect);
 
         for (BarcodeEntity barcodeEntity : barcodeId) {
