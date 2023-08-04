@@ -3,6 +3,7 @@ package com.example.gambarucmsui.ui.form;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.user.AddUserAttendancePort;
 import com.example.gambarucmsui.ports.user.BarcodeLoadPort;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.example.gambarucmsui.util.FormatUtil.*;
@@ -41,11 +43,34 @@ public class FormBarcodeGetAttendance {
     }
 
     @FXML void onOk(MouseEvent event) {
-        if (verify(getOr(txtBarcodeId, ""))) {
+        String barcodeIdStr = getOr(txtBarcodeId, "");
+
+        if (validate(barcodeIdStr)) {
             Long barcodeId = parseBarcodeStr(getOr(txtBarcodeId, ""));
             addAttendance.addAttendance(barcodeId, timestamp);
             close();
         }
+    }
+
+    boolean validate(String barcodeIdStr) {
+        ValidatorResponse validator = addAttendance.verifyForAttendance(barcodeIdStr);
+        if (validator.hasErrors()) {
+            Map<String, String> errors = validator.getErrors();
+            if (errors.containsKey("barcodeId")) {
+                lblErrBarcodeId.setText(errors.get("barcodeId"));
+                return false;
+            }
+        }
+        Long barcodeId = parseBarcodeStr(getOr(txtBarcodeId, ""));
+        Optional<BarcodeEntity> byId = barcodeLoadPort.findById(barcodeId);
+        if (byId.isEmpty()) {
+            return false;
+        }
+
+        BarcodeEntity barcode = byId.get();
+        UserEntity user = barcode.getUser();
+        lblResult.setText(String.format("Polaznik: %s %s", user.getFirstName(), user.getLastName()));
+        return true;
     }
 
     @FXML void onClose(MouseEvent event) {
@@ -55,34 +80,7 @@ public class FormBarcodeGetAttendance {
     void onTextfieldTyped(KeyEvent event) {
         lblErrBarcodeId.setText("");
         lblResult.setText("");
-        verify(getOr(txtBarcodeId, ""));
-    }
-
-    private boolean verify(String barcodeIdStr) {
-        if (!isLong(barcodeIdStr)) {
-            if (barcodeIdStr.isBlank()) {
-                return false;
-            }
-            lblErrBarcodeId.setText("Upiši barkod npr 123.");
-            return false;
-        }
-
-        Long barcode = parseBarcodeStr(barcodeIdStr);
-        Optional<BarcodeEntity> barcodeEntityOptional = barcodeLoadPort.findById(barcode);
-        if (barcodeEntityOptional.isEmpty()) {
-            lblErrBarcodeId.setText("Taj barkod nije registrovan u bazi.");
-            return false;
-        }
-
-        BarcodeEntity b = barcodeEntityOptional.get();
-        if (b.getStatus() != BarcodeEntity.Status.ASSIGNED)  {
-            lblErrBarcodeId.setText("Taj barkod postoji ali nije u upotrebi. Probaj drugi drugi.");
-            return false;
-        }
-
-        UserEntity user = b.getUser();
-        lblResult.setText(String.format("Korisnik nađen: %s %s.", user.getFirstName(), user.getLastName()));
-        return true;
+        validate(getOr(txtBarcodeId, ""));
     }
 
     private void close() {

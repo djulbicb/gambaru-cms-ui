@@ -39,7 +39,6 @@ import static com.example.gambarucmsui.util.PathUtil.*;
 
 public class PanelAdminUserController implements PanelHeader {
     private final Stage primaryStage;
-    private final UserRepository userRepo;
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
     private final TeamRepository teamRepo;
@@ -162,7 +161,6 @@ public class PanelAdminUserController implements PanelHeader {
 
     public PanelAdminUserController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
         this.primaryStage = primaryStage;
-        this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
         this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
         this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
         this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
@@ -274,7 +272,7 @@ public class PanelAdminUserController implements PanelHeader {
     }
 
     private void loadTableUser() {
-        List<UserAdminDetail> collect = userRepo.findAll(
+        List<UserAdminDetail> collect = loadUserPort.findAll(
                         currentPage, PAGE_SIZE, "createdAt",
                         LayoutUtil.getOr(cmbSearchTeam, ""),
                         LayoutUtil.getOr(txtSearchFirstName, ""),

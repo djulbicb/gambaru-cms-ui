@@ -44,7 +44,6 @@ public class PanelAttendanceController implements PanelHeader {
         this.primaryStage = primaryStage;
         addAttendance = Container.getBean(AddUserAttendancePort.class);
         loadAttendanceForUser = Container.getBean(LoadAttendanceForUser.class);
-
     }
 
     @FXML
@@ -93,7 +92,6 @@ public class PanelAttendanceController implements PanelHeader {
         paginationDate = localDate;
         paginationLabel.setText(formatPagination(paginationDate));
     }
-
 
     public void onBarcodeRead(String barcodeIdStr) {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);

@@ -45,4 +45,17 @@ public class UserAttendanceRepository extends Repository<UserAttendanceEntity> {
                 .setMaxResults(count)
                 .getResultList();
     }
+
+    public List<UserAttendanceEntity> findAllForAttendanceDate(LocalDate forDate) {
+        String fetchBarcodesFromAttendanceQuery = "SELECT ua FROM UserAttendanceEntity ua WHERE DATE(ua.timestamp) = :date ORDER BY ua.timestamp DESC";
+        TypedQuery<UserAttendanceEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, UserAttendanceEntity.class);
+        subquery.setParameter("date", forDate);
+
+//        List<Object[]> barcodeEntitiesWithTimestamp = subquery.getResultList();
+//        List<BarcodeWithAttendance> wrappers = barcodeEntitiesWithTimestamp.stream()
+//                .map(arr -> new BarcodeWithAttendance((BarcodeEntity) arr[0], (UserAttendanceEntity) arr[1]))
+//                .collect(Collectors.toList());
+
+        return subquery.getResultList();
+    }
 }

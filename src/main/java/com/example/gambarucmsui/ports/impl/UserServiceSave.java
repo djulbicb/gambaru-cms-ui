@@ -152,6 +152,11 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     }
 
     @Override
+    public List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
+        return userRepo.findAll(page, pageSize, sortColumn, teamName, firstName, lastName, barcode, isOnlyActive);
+    }
+
+    @Override
     public boolean isUserAlreadyInThisTeam(Long userId, Long teamId) {
         return userRepo.isUserAlreadyInThisTeam(userId, teamId);
     }

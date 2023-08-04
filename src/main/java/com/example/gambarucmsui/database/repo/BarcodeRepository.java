@@ -20,18 +20,6 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         return fetchOrGenerateBarcodes(1, BarcodeEntity.Status.NOT_USED).get(0);
     }
 
-    public List<UserAttendanceEntity> findAllForAttendanceDate(LocalDate forDate) {
-        String fetchBarcodesFromAttendanceQuery = "SELECT ua FROM UserAttendanceEntity ua WHERE DATE(ua.timestamp) = :date ORDER BY ua.timestamp DESC";
-        TypedQuery<UserAttendanceEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, UserAttendanceEntity.class);
-        subquery.setParameter("date", forDate);
-//        List<Object[]> barcodeEntitiesWithTimestamp = subquery.getResultList();
-//        List<BarcodeWithAttendance> wrappers = barcodeEntitiesWithTimestamp.stream()
-//                .map(arr -> new BarcodeWithAttendance((BarcodeEntity) arr[0], (UserAttendanceEntity) arr[1]))
-//                .collect(Collectors.toList());
-
-        return subquery.getResultList();
-    }
-
     public List<UserMembershipPaymentEntity> findAllMembershipsForMonthAndYear(int month, int year) {
         String fetchBarcodesFromMembershipQuery = "SELECT um FROM UserMembershipPaymentEntity um WHERE um.year = :year AND um.month = :month ORDER BY um.timestamp DESC";
         TypedQuery<UserMembershipPaymentEntity> query = entityManager.createQuery(fetchBarcodesFromMembershipQuery, UserMembershipPaymentEntity.class);
