@@ -127,7 +127,7 @@ public class PanelMembershipController implements PanelHeader {
         }
     }
 
-    private void addAttendance(Long barcodeId, int month, int year, BigDecimal membershipPayment) {
+    private void addMembership(Long barcodeId, int month, int year, BigDecimal membershipPayment) {
         addUserMembership.addMembership(barcodeId, month, year, membershipPayment);
     }
 

@@ -23,7 +23,7 @@ public class FormatUtil {
         }
     }
 
-    public final static boolean isBarcode(String barcodeStr) {
+    public final static boolean isBarcodeString(String barcodeStr) {
         if (barcodeStr == null || barcodeStr.isBlank()) {
             return false;
         }

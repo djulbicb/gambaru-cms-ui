@@ -1,9 +1,7 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.Response;
@@ -13,35 +11,21 @@ import com.example.gambarucmsui.ports.user.UserSavePort;
 import com.example.gambarucmsui.ports.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
-import com.example.gambarucmsui.ui.dto.admin.UserAdminDetail;
-import com.example.gambarucmsui.ui.dto.admin.subtables.AttendanceDetail;
-import com.example.gambarucmsui.ui.dto.admin.subtables.BarcodeDetail;
-import com.example.gambarucmsui.ui.dto.admin.subtables.MembershipDetail;
 import com.example.gambarucmsui.ui.form.*;
-import com.example.gambarucmsui.util.LayoutUtil;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.gambarucmsui.util.FormatUtil.cleanBarcodeStr;
-import static com.example.gambarucmsui.util.FormatUtil.isBarcode;
 import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
-import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize;
 import static com.example.gambarucmsui.util.PathUtil.*;
 
 public class PanelAdminTeamController implements PanelHeader {

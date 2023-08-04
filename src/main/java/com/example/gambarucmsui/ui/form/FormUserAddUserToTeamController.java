@@ -1,12 +1,13 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
-import com.example.gambarucmsui.database.repo.BarcodeRepository;
-import com.example.gambarucmsui.database.repo.TeamRepository;
-import com.example.gambarucmsui.database.repo.UserRepository;
-import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.ValidatorResponse;
+import com.example.gambarucmsui.ports.user.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.user.IsUserAlreadyInThisTeamPort;
+import com.example.gambarucmsui.ports.user.TeamLoadPort;
+import com.example.gambarucmsui.ports.user.UserAddToTeamPort;
+import com.example.gambarucmsui.ui.form.validation.BarcodeInputValidator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,17 +20,19 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.ResourceBundle;
 
-import static com.example.gambarucmsui.util.FormatUtil.isBarcode;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
+import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class FormUserAddUserToTeamController implements Initializable {
-    private final TeamRepository teamRepository;
-    private final BarcodeRepository barcodeRepository;
-    private final UserRepository userRepo;
-    private final Data input;
+    private final Long userId;
+    private final UserAddToTeamPort userAddToTeamPort;
+    private final TeamLoadPort teamLoadPort;
+    private final BarcodeLoadPort barcodeLoadPort;
+    private final IsUserAlreadyInThisTeamPort isUserInTeam;
+    private final BarcodeInputValidator barcodeValidator = new BarcodeInputValidator();
 
     @FXML private VBox root;
     @FXML private Label lblErrUserBarcodeId;
@@ -37,22 +40,17 @@ public class FormUserAddUserToTeamController implements Initializable {
     @FXML private ComboBox<String> cmbUserTeamName;
     @FXML private TextField txtUserBarcodeId;
 
-    // OUTPUT DATA
-    /////////////////////////////////////////
-    private boolean isFormReady;
-    private Long outBarcodeId;
-    private String outTeamName;
-
-    public FormUserAddUserToTeamController(Data input, TeamRepository teamRepository, BarcodeRepository barcodeRepository, UserRepository userRepo) {
-        this.input = input;
-        this.teamRepository = teamRepository;
-        this.barcodeRepository = barcodeRepository;
-        this.userRepo = userRepo;
+    public FormUserAddUserToTeamController(Long userId) {
+        this.userId = userId;
+        this.userAddToTeamPort = Container.getBean(UserAddToTeamPort.class);
+        this.teamLoadPort = Container.getBean(TeamLoadPort.class);
+        this.barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
+        this.isUserInTeam = Container.getBean(IsUserAlreadyInThisTeamPort.class);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        List<TeamEntity> allTeams = teamRepository.findAllActive();
+        List<TeamEntity> allTeams = teamLoadPort.findAllActive();
         for (TeamEntity team : allTeams) {
             cmbUserTeamName.getItems().add(team.getName());
         }
@@ -60,58 +58,31 @@ public class FormUserAddUserToTeamController implements Initializable {
 
     @FXML
     void onAddUserToTeam(MouseEvent event) {
+        String barcodeIdStr = getOr(txtUserBarcodeId, "");
+        String teamNameStr = getOr(cmbUserTeamName, "");
 
-        String barcodeIdStr = txtUserBarcodeId.getText().trim();
-        String teamNameStr = cmbUserTeamName.getSelectionModel().getSelectedItem();
-
-        if (validate(barcodeIdStr, teamNameStr)) {
-            isFormReady = true;
-            outBarcodeId = parseBarcodeStr(barcodeIdStr);
-            outTeamName = teamNameStr;
+        if (validate(userId, barcodeIdStr, teamNameStr)) {
+            Long barcodeId = parseBarcodeStr(barcodeIdStr);
+            String teamName = teamNameStr;
+            userAddToTeamPort.addUserToPort(userId, barcodeId, teamName);
             close();
         }
     }
 
-    private boolean validate(String barcodeIdStr, String teamNameStr) {
-        boolean isFormCorrect = true;
+    private boolean validate(Long userId, String barcodeId, String teamName) {
+        ValidatorResponse validator = userAddToTeamPort.verifyAddUserToPort(userId, barcodeId, teamName);
 
-        if (!isBarcode(barcodeIdStr)) {
-            lblErrUserBarcodeId.setText("Skeniraj barkod.");
-            isFormCorrect = false;
-        }
-        if (teamNameStr == null || teamNameStr.isBlank()) {
-            lblErrUserTeamName.setText("Izaberi tim.");
-            isFormCorrect = false;
-        }
-        if (!isFormCorrect) {
-            return false;
-        }
-
-        Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        Optional<BarcodeEntity> barcodeOpt = barcodeRepository.findById(barcodeId);
-        if (barcodeOpt.isEmpty()) {
-            lblErrUserBarcodeId.setText("Taj barkod ne postoji u sistemu. Kreiraj ga prvo.");
-            isFormCorrect = false;
-            return false;
-        }
-        BarcodeEntity barcode = barcodeOpt.get();
-        if (barcode.getStatus() != BarcodeEntity.Status.NOT_USED) {
-            lblErrUserBarcodeId.setText("Taj barkod postoji, ali je već u upotrebi. Koristi drugi.");
-            isFormCorrect = false;
-            return false;
-        }
-
-        TeamEntity team = teamRepository.findByName(teamNameStr);
-        if (userRepo.isUserAlreadyInThisTeam(input.userId, team.getTeamId())) {
-            lblErrUserTeamName.setText("Selektovani polaznik je već u tom timu.");
-            isFormCorrect = false;
+        if (validator.hasErrors()) {
+            Map<String, String> errors = validator.getErrors();
+            if (errors.containsKey("barcodeId")) {
+                lblErrUserBarcodeId.setText(errors.get("barcodeId"));
+            }
+            if (errors.containsKey("teamName")) {
+                lblErrUserTeamName.setText(errors.get("teamName"));
+            }
             return false;
         }
         return true;
-    }
-
-    public FormUserAddUserToTeamController.Data getData() {
-        return new FormUserAddUserToTeamController.Data(input.getUserId(), outBarcodeId, outTeamName);
     }
 
     @FXML
@@ -137,34 +108,6 @@ public class FormUserAddUserToTeamController implements Initializable {
 
     private void close() {
         root.getScene().getWindow().hide();
-    }
-
-    public boolean isFormReady() {
-        return isFormReady;
-    }
-
-    public static class Data {
-        private Long userId;
-        private Long barcode;
-        private String teamName;
-
-        public Data(Long userId, Long barcode, String teamName) {
-            this.barcode = barcode;
-            this.teamName = teamName;
-            this.userId = userId;
-        }
-
-        public Long getUserId() {
-            return userId;
-        }
-
-        public Long getBarcode() {
-            return barcode;
-        }
-
-        public String getTeamName() {
-            return teamName;
-        }
     }
 }
 

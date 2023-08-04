@@ -6,7 +6,6 @@ import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.Response;
 import com.example.gambarucmsui.ports.user.*;
 import com.example.gambarucmsui.ui.ToastView;
-import com.example.gambarucmsui.util.DataUtil;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
 import com.example.gambarucmsui.util.generators.BarcodeView;
 import com.example.gambarucmsui.util.generators.PDFGenerator;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +41,7 @@ public class PanelBarcodeController implements PanelHeader {
     private final UserSavePort userSavePort;
 
     private final TeamSavePort teamSavePort;
-    private final AddUserAttendance addAttendance;
+    private final AddUserAttendancePort addAttendance;
     private final AddUserMembership addMembership;
     private final UserAddToTeamPort userAddToTeamPort;
     public PanelBarcodeController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
@@ -56,7 +54,7 @@ public class PanelBarcodeController implements PanelHeader {
 
         teamSavePort = Container.getBean(TeamSavePort.class);
         userSavePort = Container.getBean(UserSavePort.class);
-        addAttendance = Container.getBean(AddUserAttendance.class);
+        addAttendance = Container.getBean(AddUserAttendancePort.class);
         addMembership = Container.getBean(AddUserMembership.class);
         userAddToTeamPort = Container.getBean(UserAddToTeamPort.class);
     }
@@ -264,9 +262,9 @@ public class PanelBarcodeController implements PanelHeader {
                 List<UserEntity> users = new ArrayList<>();
                 for (int i = 0; i < count; i++) {
                     if (getBoolean()) {
-                        userSavePort.addToBulkSave(getFemaleName(), getSurname(), UserEntity.Gender.FEMALE, getPhone(), getDateTime());
+                        userSavePort.addToBulkSave(getFemaleName(), getSurname(), UserEntity.Gender.FEMALE, getPhone());
                     } else {
-                        userSavePort.addToBulkSave(getMaleName(), getSurname(), UserEntity.Gender.MALE, getPhone(), getDateTime());
+                        userSavePort.addToBulkSave(getMaleName(), getSurname(), UserEntity.Gender.MALE, getPhone());
                     }
                     userSavePort.executeBulkSave();
                 }

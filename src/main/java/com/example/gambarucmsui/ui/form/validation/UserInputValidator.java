@@ -31,7 +31,11 @@ public class UserInputValidator {
     }
 
     public boolean isValidGender(String gender) {
-        return gender != null && !gender.isBlank();
+        if (gender == null || gender.isBlank()) {
+            return false;
+        }
+        boolean isCorrectTranslation = gender.equals("Muški") || gender.equals("Ženski");
+        return isCorrectTranslation;
     }
 
     public String errGender() {

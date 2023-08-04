@@ -1,7 +1,6 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.common.DelayedKeyListener;
-import com.example.gambarucmsui.common.LoggingService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,7 +9,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -40,7 +38,7 @@ public class GambaruUIApplication extends Application {
         scene.addEventFilter(KeyEvent.KEY_PRESSED, new DelayedKeyListener() {
             @Override
             public void onFinish(String word) {
-                if (isBarcode(word)) {
+                if (isBarcodeString(word)) {
                     System.out.println(String.format("Barcode scanned: %s", word));
                     String barcodeId = cleanBarcodeStr(word);
                     controller.onBarcodeScanned(barcodeId);

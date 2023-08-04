@@ -83,4 +83,13 @@ public class UserRepository extends Repository<UserEntity> {
         return count > 0;
     }
 
+    public boolean isUserAlreadyInThisTeam(Long userId, String teamName) {
+        String jpql = "SELECT COUNT(b) FROM BarcodeEntity b WHERE b.user.userId = :userId AND b.team.name = :teamName";
+        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
+        query.setParameter("userId", userId);
+        query.setParameter("teamName", teamName);
+        Long count = query.getSingleResult();
+        return count > 0;
+    }
+
 }

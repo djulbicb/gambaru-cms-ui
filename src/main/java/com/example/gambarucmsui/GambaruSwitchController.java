@@ -1,8 +1,9 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.database.repo.*;
-import com.example.gambarucmsui.ports.impl.AttendanceAndMembershipService;
+import com.example.gambarucmsui.ports.impl.AttendanceAndMembershipServicePort;
 import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.impl.BarcodeService;
 import com.example.gambarucmsui.ports.impl.TeamServiceSave;
 import com.example.gambarucmsui.ports.impl.UserServiceSave;
 import com.example.gambarucmsui.ui.panel.*;
@@ -72,7 +73,7 @@ public class GambaruSwitchController implements FxmlViewHandler {
     private void initialize() throws IOException {
         HashMap<Class, Object> repositoryMap = loadEntityManagementSystem();
 
-        panelAttendanceController = new PanelAttendanceController(primaryStage, repositoryMap);
+        panelAttendanceController = new PanelAttendanceController(primaryStage);
         panelAttendance = loadFxml(PathUtil.PANEL_ATTENDANCE, panelAttendanceController);
 
         panelMembershipController = new PanelMembershipController(primaryStage, repositoryMap);
@@ -120,9 +121,10 @@ public class GambaruSwitchController implements FxmlViewHandler {
             TeamRepository teamRepository = new TeamRepository(entityManager);
             UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
 
-            Container.addBean(new UserServiceSave(barcodeRepository, teamRepository, userRepository, userPictureRepository));
+            Container.addBean(new UserServiceSave(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
             Container.addBean(new TeamServiceSave(teamRepository));
-            Container.addBean(new AttendanceAndMembershipService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
+            Container.addBean(new AttendanceAndMembershipServicePort(barcodeRepository, userAttendanceRepository, userMembershipRepository));
+            Container.addBean(new BarcodeService(barcodeRepository));
 
             HashMap<Class, Object> repos = new HashMap<>();
             repos.put(UserRepository.class, userRepository);

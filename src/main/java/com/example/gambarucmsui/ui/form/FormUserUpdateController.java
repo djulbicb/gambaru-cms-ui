@@ -1,7 +1,10 @@
 package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.database.entity.UserEntity;
-import com.example.gambarucmsui.database.repo.TeamRepository;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.ValidatorResponse;
+import com.example.gambarucmsui.ports.user.UserLoadPort;
+import com.example.gambarucmsui.ports.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.form.validation.UserInputValidator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
@@ -25,9 +30,10 @@ import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 public class FormUserUpdateController implements Initializable {
     // Input
     //////////////////////////////////////////
-    private final TeamRepository teamRepo;
     private final UserInputValidator validator = new UserInputValidator();
-    private final Data input;
+    private final UserUpdatePort userUpdatePort;
+    private final UserLoadPort userLoadPort;
+    private final Long userId;
 
     // FXML
     //////////////////////////////////////////
@@ -41,9 +47,10 @@ public class FormUserUpdateController implements Initializable {
     @FXML private TextField txtUserLastName;
     @FXML private TextField txtUserPhone;
 
-    public FormUserUpdateController(TeamRepository teamRepo, Data input) {
-        this.teamRepo = teamRepo;
-        this.input = input;
+    public FormUserUpdateController(Long userId) {
+        this.userUpdatePort = Container.getBean(UserUpdatePort.class);
+        this.userLoadPort = Container.getBean(UserLoadPort.class);
+        this.userId = userId;
     }
 
     // OUTPUT DATA
@@ -53,17 +60,24 @@ public class FormUserUpdateController implements Initializable {
     private String outLastName;
     private String outPhone;
     private UserEntity.Gender outGender;
-    private byte[] outPictureData;
+    private byte[] pictureData;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        txtUserFirstName.setText(input.getFirstName());
-        txtUserLastName.setText(input.getLastName());
-        txtUserPhone.setText(input.getPhone());
-        if (input.getGender() == UserEntity.Gender.MALE) {
-            cmbUserGender.getSelectionModel().selectFirst();
+        Optional<UserEntity> userOpt = userLoadPort.loadUserByUserId(userId);
+        if (userOpt.isPresent()) {
+            UserEntity user = userOpt.get();
+
+            txtUserFirstName.setText(user.getFirstName());
+            txtUserLastName.setText(user.getLastName());
+            txtUserPhone.setText(user.getPhone());
+            if (user.getGender() == UserEntity.Gender.MALE) {
+                cmbUserGender.getSelectionModel().selectFirst();
+            } else {
+                cmbUserGender.getSelectionModel().selectLast();
+            }
         } else {
-            cmbUserGender.getSelectionModel().selectLast();
+            close();
         }
     }
 
@@ -80,48 +94,37 @@ public class FormUserUpdateController implements Initializable {
         String genderStr = getOr(cmbUserGender, "");
 
         if (validate(firstNameStr, lastNameStr, phoneStr, genderStr)) {
-            isFormReady = true;
-            outFirstName = firstNameStr.trim();
-            outLastName = lastNameStr.trim();
-            outPhone = phoneStr.trim();
-            outGender = genderStr.equals("Muški") ? UserEntity.Gender.MALE : UserEntity.Gender.FEMALE;
+            UserEntity.Gender gender = genderStr.equals("Muški") ? UserEntity.Gender.MALE : UserEntity.Gender.FEMALE;
+            userUpdatePort.update(userId, firstNameStr, lastNameStr, gender, phoneStr, pictureData);
             close();
         }
     }
 
     boolean validate(String firstNameStr, String lastNameStr, String phoneStr, String genderStr) {
-        boolean isFormCorrect = true;
+        ValidatorResponse verify = userUpdatePort.verify(firstNameStr, lastNameStr, genderStr, phoneStr);
+        if (verify.hasErrors()) {
+            Map<String, String> errors = verify.getErrors();
 
-        if (!validator.isValidFirstName(firstNameStr)) {
-            lblErrUserFirstName.setText(validator.errFirstName());
-            isFormCorrect = false;
-        }
-        if (!validator.isValidLastName(lastNameStr)) {
-            lblErrUserLastName.setText(validator.errLastName());
-            isFormCorrect = false;
-        }
-        if (!validator.isValidPhone(phoneStr)) {
-            lblErrUserPhone.setText(validator.errPhone());
-            isFormCorrect = false;
-        }
-        if (!validator.isValidGender(genderStr)) {
-            lblErrUserGender.setText(validator.errGender());
-            isFormCorrect = false;
+            if (errors.containsKey("firstName")) {
+                lblErrUserFirstName.setText(errors.get("firstName"));
+            }
+            if (errors.containsKey("lastName")) {
+                lblErrUserLastName.setText(errors.get("lastName"));
+            }
+            if (errors.containsKey("phone")) {
+                lblErrUserPhone.setText(errors.get("phone"));
+            }
+            if (errors.containsKey("gender")) {
+                lblErrUserGender.setText(errors.get("gender"));
+            }
+            return false;
         }
 
-        return isFormCorrect;
+        return true;
     }
 
     private void close() {
         root.getScene().getWindow().hide();
-    }
-
-    public boolean isFormReady() {
-        return isFormReady;
-    }
-
-    public FormUserUpdateController.Data getData() {
-        return new Data(outFirstName, outLastName, outPhone, outGender, outPictureData);
     }
 
     @FXML
@@ -150,43 +153,7 @@ public class FormUserUpdateController implements Initializable {
         fileChooser.setTitle("Save Stack Trace");
         File file = fileChooser.showOpenDialog(null);
         if (file != null && file.exists()) {
-            outPictureData = Files.readAllBytes(file.toPath());
-        }
-    }
-
-    public static class Data {
-        private String firstName;
-        private String lastName;
-        private String phone;
-        private UserEntity.Gender gender;
-        private byte[] pictureData;
-
-        public Data(String firstName, String lastName, String phone, UserEntity.Gender gender, byte[] pictureData) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.phone = phone;
-            this.gender = gender;
-            this.pictureData = pictureData;
-        }
-
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public String getLastName() {
-            return lastName;
-        }
-
-        public String getPhone() {
-            return phone;
-        }
-
-        public UserEntity.Gender getGender() {
-            return gender;
-        }
-
-        public byte[] getPictureData() {
-            return pictureData;
+            pictureData = Files.readAllBytes(file.toPath());
         }
     }
 }

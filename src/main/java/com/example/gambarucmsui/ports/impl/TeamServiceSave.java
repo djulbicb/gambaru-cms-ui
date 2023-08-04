@@ -3,13 +3,15 @@ package com.example.gambarucmsui.ports.impl;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.repo.TeamRepository;
 import com.example.gambarucmsui.ports.Response;
+import com.example.gambarucmsui.ports.user.TeamLoadPort;
 import com.example.gambarucmsui.ports.user.TeamSavePort;
 import com.example.gambarucmsui.ports.user.TeamUpdatePort;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
-public class TeamServiceSave implements TeamSavePort, TeamUpdatePort {
+public class TeamServiceSave implements TeamLoadPort, TeamSavePort, TeamUpdatePort {
 
     private final TeamRepository teamRepository;
 
@@ -44,6 +46,16 @@ public class TeamServiceSave implements TeamSavePort, TeamUpdatePort {
             return Response.ok(String.format("Tim %s je uspešno updejtovan.", teamName), teamRepository.save(en));
         }
         return Response.bad("Došlo je do neočekivane situacije. Navedeni tim ne postoji.");
+    }
+
+    @Override
+    public List<TeamEntity> findAllActive() {
+        return teamRepository.findAllActive();
+    }
+
+    @Override
+    public TeamEntity findByName(String teamName) {
+        return teamRepository.findByName(teamName);
     }
 }
 
