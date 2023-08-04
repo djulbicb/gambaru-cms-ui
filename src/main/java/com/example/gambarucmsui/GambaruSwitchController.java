@@ -1,10 +1,10 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.database.repo.*;
-import com.example.gambarucmsui.ports.AttendanceAndMembershipService;
+import com.example.gambarucmsui.ports.impl.AttendanceAndMembershipService;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.TeamServiceSave;
-import com.example.gambarucmsui.ports.UserServiceSave;
+import com.example.gambarucmsui.ports.impl.TeamServiceSave;
+import com.example.gambarucmsui.ports.impl.UserServiceSave;
 import com.example.gambarucmsui.ui.panel.*;
 import com.example.gambarucmsui.util.PathUtil;
 import jakarta.persistence.EntityManager;

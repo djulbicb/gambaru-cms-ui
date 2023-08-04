@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ports;
+package com.example.gambarucmsui.ports.impl;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;

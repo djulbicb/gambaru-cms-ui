@@ -1,7 +1,8 @@
-package com.example.gambarucmsui.ports;
+package com.example.gambarucmsui.ports.impl;
 
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.repo.TeamRepository;
+import com.example.gambarucmsui.ports.Response;
 import com.example.gambarucmsui.ports.user.TeamSavePort;
 import com.example.gambarucmsui.ports.user.TeamUpdatePort;
 
