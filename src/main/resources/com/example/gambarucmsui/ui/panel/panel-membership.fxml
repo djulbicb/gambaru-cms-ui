@@ -31,19 +31,24 @@
                         <Font size="10.0" />
                      </font>
                   </Label>
-                  <HBox prefHeight="30.0" prefWidth="200.0" spacing="5.0">
+                  <HBox spacing="5.0">
                      <children>
-                        <Button mnemonicParsing="false" onMouseClicked="#goPrevPage" text="&lt;&lt;&lt;" textFill="#fcfcfc" HBox.hgrow="ALWAYS">
+                        <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goPrevPage" prefWidth="75.0" text="&lt;&lt;&lt;" textFill="#fcfcfc" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Button>
-                        <Label fx:id="paginationLabel" maxHeight="1.7976931348623157E308" text="01" textFill="#fcfcfc">
+                        <Label fx:id="paginationLabel" maxHeight="1.7976931348623157E308" prefWidth="75.0" text="01" textFill="#fcfcfc" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Label>
-                        <Button layoutX="77.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#goNextPage" text="&gt;&gt;&gt;" textFill="#fcfcfc">
+                        <Button layoutX="77.0" layoutY="10.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goNextPage" prefWidth="75.0" text="&gt;&gt;&gt;" textFill="#fcfcfc">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goToToday" prefWidth="75.0" text="DANAS" textFill="#fcfcfc">
                            <font>
                               <Font size="10.0" />
                            </font>

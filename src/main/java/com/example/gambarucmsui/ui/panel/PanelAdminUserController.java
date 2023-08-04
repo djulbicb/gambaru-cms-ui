@@ -55,9 +55,9 @@ public class PanelAdminUserController implements PanelHeader{
         private final TeamUpdatePort teamUpdatePort;
     private final UserAddToTeamPort userAddToTeamPort;
 
-    // TAB USER
+    // FXML
     ///////////////////////////////////////////////////
-    ///////////////////////////////////////////////////
+    @FXML private TableView<?> tableTeamUsers;
     @FXML private TableView<UserAdminDetail> tableUsers;
     @FXML private Label paginationLabel;
     @FXML private TextField txtSearchFirstName;
@@ -65,6 +65,18 @@ public class PanelAdminUserController implements PanelHeader{
     @FXML private TextField txtSearchBarcode;
     @FXML private ComboBox<String> cmbSearchTeam;
     @FXML private CheckBox checkSearchOnlyActive;
+
+    @Override
+    public void initialize() {
+        configureTabUsers();
+        loadTeamsToUserComboBox();
+    }
+
+    @Override
+    public void viewSwitched() {
+        System.out.println("Switched to panel Admin.");
+        loadTableUser();
+    }
 
     // PAGINATION
     private int currentPage = 1;
@@ -85,7 +97,14 @@ public class PanelAdminUserController implements PanelHeader{
         loadTableUser();
     }
 
-    @FXML private TableView<?> tableTeamUsers;
+    private void loadTeamsToUserComboBox() {
+        cmbSearchTeam.getItems().clear();
+        cmbSearchTeam.getItems().add(null);
+        for (TeamEntity team : teamRepo.findAllActive()) {
+            cmbSearchTeam.getItems().add(team.getName());
+        }
+    }
+
     private void configureTabUsers() {
         // Add on row click listener
         tableUsers.setRowFactory(tv -> {
@@ -125,18 +144,6 @@ public class PanelAdminUserController implements PanelHeader{
         stretchColumnsToEqualSize(tableUserAttendance);
         stretchColumnsToEqualSize(tableUserMembership);
         stretchColumnsToEqualSize(tableUserBarcode);
-    }
-
-    @Override
-    public void initialize() {
-        configureTabUsers();
-        loadTeamsToUserComboBox();
-    }
-
-    @Override
-    public void viewSwitched() {
-        System.out.println("Switched to panel Admin.");
-        loadTableUser();
     }
 
     // USER DETAILS
@@ -347,13 +354,4 @@ public class PanelAdminUserController implements PanelHeader{
         }
         loadTableUser();
     }
-
-    private void loadTeamsToUserComboBox() {
-        cmbSearchTeam.getItems().clear();
-        cmbSearchTeam.getItems().add(null);
-        for (TeamEntity team : teamRepo.findAllActive()) {
-            cmbSearchTeam.getItems().add(team.getName());
-        }
-    }
-
 }

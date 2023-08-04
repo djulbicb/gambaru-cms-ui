@@ -45,6 +45,9 @@ import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize
 import static com.example.gambarucmsui.util.PathUtil.*;
 
 public class PanelAdminTeamController implements PanelHeader {
+    @FXML
+    private TableView<TeamDetail> tableTeam;
+
     private final Stage primaryStage;
     private final UserRepository userRepo;
     private final UserAttendanceRepository attendanceRepo;
@@ -80,18 +83,6 @@ public class PanelAdminTeamController implements PanelHeader {
         loadTableTeam();
     }
 
-
-
-    // TEAM TAB
-    ///////////////////////////////////////////////////
-    ///////////////////////////////////////////////////
-    @FXML
-    private TableView<TeamDetail> tableTeam;
-
-
-
-    // TEAM
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void configureTabTeam() {
         tableTeam.setRowFactory(tv -> {
             TableRow<TeamDetail> row = new TableRow<>();

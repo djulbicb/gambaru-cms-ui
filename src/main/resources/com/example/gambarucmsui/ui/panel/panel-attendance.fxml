@@ -2,14 +2,14 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="650.0" style="-fx-background-color: #34495e;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox layoutX="5.0" layoutY="5.0" maxHeight="10.0" prefHeight="10.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -24,26 +24,31 @@
                   <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addAttendanceManually" text="DODAJ RUCNO" textFill="#fcfcfc" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
-            <VBox>
+            <VBox HBox.hgrow="ALWAYS">
                <children>
                   <Label maxHeight="1.7976931348623157E308" text="PAGINACIJA" textFill="#fcfcfc">
                      <font>
                         <Font size="10.0" />
                      </font>
                   </Label>
-                  <HBox prefHeight="30.0" prefWidth="200.0" spacing="5.0">
+                  <HBox maxWidth="1.7976931348623157E308" spacing="5.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Button mnemonicParsing="false" onMouseClicked="#goPrevPage" text="&lt;&lt;&lt;" textFill="#fcfcfc" HBox.hgrow="ALWAYS">
+                        <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goPrevPage" prefWidth="75.0" text="&lt;&lt;&lt;" textFill="#fcfcfc" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Button>
-                        <Label fx:id="paginationLabel" maxHeight="1.7976931348623157E308" text="01" textFill="#fcfcfc">
+                        <Label fx:id="paginationLabel" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" prefWidth="75.0" text="01" textFill="#fcfcfc" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Label>
-                        <Button layoutX="77.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#goNextPage" text="&gt;&gt;&gt;" textFill="#fcfcfc">
+                        <Button layoutX="77.0" layoutY="10.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goNextPage" prefWidth="75.0" text="&gt;&gt;&gt;" textFill="#fcfcfc">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Button>
+                        <Button layoutX="73.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#goToToday" prefWidth="75.0" text="DANAS" textFill="#fcfcfc">
                            <font>
                               <Font size="10.0" />
                            </font>

@@ -84,6 +84,11 @@ public class PanelAttendanceController implements PanelHeader {
     }
 
     @FXML
+    protected void goToToday() {
+        updatePagination(LocalDate.now());
+        listPageForDate();
+    }
+    @FXML
     protected void goNextPage() {
         updatePagination(paginationDate.plusDays(1));
         listPageForDate();

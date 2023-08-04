@@ -87,6 +87,12 @@ public class PanelMembershipController implements PanelHeader {
         updatePagination(paginationDate.minusMonths(1));
         listPageForDate();
     }
+
+    @FXML
+    protected void goToToday() {
+        updatePagination(LocalDate.now());
+        listPageForDate();
+    }
     private void updatePagination(LocalDate localDate) {
         paginationDate = localDate;
         paginationLabel.setText(formatPaginationMonth(paginationDate));
