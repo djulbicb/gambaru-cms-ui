@@ -44,11 +44,6 @@ public class TeamRepository extends Repository<TeamEntity> {
         return query.getResultList();
     }
 
-    public TeamEntity saveNewTeam(String teamName, BigDecimal membershipPaymentFee) {
-        TeamEntity en = new TeamEntity(teamName, TeamEntity.Status.ACTIVE, membershipPaymentFee);
-        return save(en);
-    }
-
     public TeamEntity updateOne(TeamEntity team) {
         return save(team);
     }

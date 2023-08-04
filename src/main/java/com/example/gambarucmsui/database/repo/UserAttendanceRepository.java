@@ -45,13 +45,4 @@ public class UserAttendanceRepository extends Repository<UserAttendanceEntity> {
                 .setMaxResults(count)
                 .getResultList();
     }
-
-    public void saveNewAll(List<UserAttendanceEntity> attendanceEntities) {
-        saveAll(attendanceEntities);
-    }
-    public UserAttendanceEntity saveNew(BarcodeEntity barcode, LocalDateTime timestamp) {
-        barcode.setLastAttendanceTimestamp(timestamp);
-        UserAttendanceEntity entity = new UserAttendanceEntity(barcode, timestamp);
-        return save(entity);
-    }
 }

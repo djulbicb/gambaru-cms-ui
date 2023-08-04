@@ -4,6 +4,8 @@ import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.UserMembershipPaymentEntity;
 import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.database.repo.*;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.user.AddUserMembership;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.FormBarcodeGetMembership;
@@ -34,6 +36,7 @@ public class PanelMembershipController implements PanelHeader {
     private final BarcodeRepository barcodeRepo;
     private final TeamRepository teamRepo;
     private final Stage primaryStage;
+    private final AddUserMembership addUserMembership;
     // PAGINATION
     private LocalDate paginationDate = LocalDate.now();
     private static final int PAGE_SIZE = 50;
@@ -51,6 +54,7 @@ public class PanelMembershipController implements PanelHeader {
         barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
         teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
 
+        addUserMembership = Container.getBean(AddUserMembership.class);
     }
 
     @FXML
@@ -107,7 +111,7 @@ public class PanelMembershipController implements PanelHeader {
             System.out.println("Adding membership payment " + barcodeId);
             UserEntity user = barcode.getUser();
 
-            addAttendance(barcode, month, year, barcode.getTeam().getMembershipPayment());
+            addUserMembership.addMembership(barcode.getBarcodeId(), month, year, barcode.getTeam().getMembershipPayment());
 
             listPageForDate();
 
@@ -117,8 +121,8 @@ public class PanelMembershipController implements PanelHeader {
         }
     }
 
-    private void addAttendance(BarcodeEntity barcode, int month, int year, BigDecimal membershipPayment) {
-        membershipRepo.saveNew(barcode, month, year, membershipPayment);
+    private void addAttendance(Long barcodeId, int month, int year, BigDecimal membershipPayment) {
+        addUserMembership.addMembership(barcodeId, month, year, membershipPayment);
     }
 
     @FXML
@@ -147,7 +151,7 @@ public class PanelMembershipController implements PanelHeader {
                     return;
                 }
 
-                addAttendance(barcode, month, year, barcode.getTeam().getMembershipPayment());
+                addUserMembership.addMembership(barcode.getBarcodeId(), month, year, barcode.getTeam().getMembershipPayment());
                 listPageForDate();
             }
         }

@@ -3,8 +3,10 @@ package com.example.gambarucmsui.ui.panel;
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.user.UserSavePort;
+import com.example.gambarucmsui.ports.Response;
+import com.example.gambarucmsui.ports.user.*;
 import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.util.DataUtil;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
 import com.example.gambarucmsui.util.generators.BarcodeView;
 import com.example.gambarucmsui.util.generators.PDFGenerator;
@@ -40,6 +42,10 @@ public class PanelBarcodeController implements PanelHeader {
     private final Stage primaryStage;
     private final UserSavePort userSavePort;
 
+    private final TeamSavePort teamSavePort;
+    private final AddUserAttendance addAttendance;
+    private final AddUserMembership addMembership;
+    private final UserAddToTeamPort userAddToTeamPort;
     public PanelBarcodeController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
         this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
         this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
@@ -48,7 +54,11 @@ public class PanelBarcodeController implements PanelHeader {
         this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
         this.primaryStage = primaryStage;
 
+        teamSavePort = Container.getBean(TeamSavePort.class);
         userSavePort = Container.getBean(UserSavePort.class);
+        addAttendance = Container.getBean(AddUserAttendance.class);
+        addMembership = Container.getBean(AddUserMembership.class);
+        userAddToTeamPort = Container.getBean(UserAddToTeamPort.class);
     }
 
     @FXML
@@ -163,11 +173,10 @@ public class PanelBarcodeController implements PanelHeader {
                 int count = getCount();
                 for (int i = 0; i < count; i++) {
                     List<BarcodeEntity> barcodes = barcodeRepo.findAllByStatus(BarcodeEntity.Status.ASSIGNED);
-                    List<UserAttendanceEntity> attendanceEntities = new ArrayList<>();
                     for (BarcodeEntity barcode : barcodes) {
-                        attendanceEntities.add(new UserAttendanceEntity(barcode, getDateTime()));
+                        addAttendance.addToSaveBulk(barcode, getDateTime());
                     }
-                    attendanceRepo.saveNewAll(attendanceEntities);
+                    addAttendance.executeBulk();
                 }
 
                 Platform.runLater(() -> {
@@ -192,12 +201,10 @@ public class PanelBarcodeController implements PanelHeader {
                 int count = getCount();
                 for (int i = 0; i < count; i++) {
                     List<BarcodeEntity> barcodes = barcodeRepo.findAllByStatus(BarcodeEntity.Status.ASSIGNED);
-                    List<UserMembershipPaymentEntity> payments = new ArrayList<>();
                     for (BarcodeEntity barcode : barcodes) {
-                        LocalDateTime dateTime = getDateTime();
-                        payments.add(new UserMembershipPaymentEntity(barcode, dateTime.getMonthValue(), dateTime.getYear(), dateTime, getDecimal()));
+                        addMembership.addToSaveBulkMembership(barcode, getDateTime(), getDecimal());
                     }
-                    membershipRepo.saveMultiple(payments);
+                    addMembership.executeBulkMembership();
                 }
 
                 Platform.runLater(() -> {
@@ -212,9 +219,9 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     void onAddTeams(MouseEvent event) {
-        System.out.println("Attendance");
-        TeamEntity team = teamRepo.saveNewTeam(getTeamName(), getDecimal());
-        ToastView.showModal(String.format("Tim %s dodat.", team.getName()));
+        System.out.println("Kreiranje novog tima");
+        Response<TeamEntity> save = teamSavePort.save(getTeamName(), getDecimal());
+        ToastView.showModal(save.getMessage());
     }
 
     @FXML
@@ -231,10 +238,7 @@ public class PanelBarcodeController implements PanelHeader {
                     BarcodeEntity barcode = barcodeRepo.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
                     TeamEntity team = pickRandom(teams);
 
-                    barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
-                    barcode.setTeam(team);
-                    barcode.setUser(user);
-                    barcodes.add(barcode);
+                    userAddToTeamPort.addUserToPort(user.getUserId(), barcode.getBarcodeId(), team.getName());
                 }
                 barcodeRepo.saveMultiple(barcodes);
                 Platform.runLater(() -> {

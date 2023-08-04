@@ -8,7 +8,8 @@ public class PathUtil {
     public static final String PANEL_ATTENDANCE = RESOURCE + "ui/panel/panel-attendance.fxml";
     public static final String PANEL_MEMBERSHIP = RESOURCE + "ui/panel/panel-membership.fxml";
     public static final String PANEL_STATISTICS = RESOURCE + "ui/panel/panel-statistics.fxml";
-    public static final String PANEL_ADMIN = RESOURCE + "ui/panel/panel-admin.fxml";
+    public static final String PANEL_ADMIN_USER = RESOURCE + "ui/panel/panel-admin-user.fxml";
+    public static final String PANEL_ADMIN_TEAM = RESOURCE + "ui/panel/panel-admin-team.fxml";
     public static final String PANEL_BARCODE = RESOURCE + "ui/panel/panel-barcode.fxml";
 
     // FORM

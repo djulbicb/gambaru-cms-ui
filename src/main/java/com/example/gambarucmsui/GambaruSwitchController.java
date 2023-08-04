@@ -1,6 +1,7 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.database.repo.*;
+import com.example.gambarucmsui.ports.AttendanceAndMembershipService;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.TeamServiceSave;
 import com.example.gambarucmsui.ports.UserServiceSave;
@@ -23,20 +24,29 @@ import java.util.HashMap;
 
 import static com.example.gambarucmsui.util.LayoutUtil.stretchInsideAnchorPance;
 
-public class GambaruSwitchController implements FxmlViewHandler{
+public class GambaruSwitchController implements FxmlViewHandler {
     private final Stage primaryStage;
 
     // FXML
     ////////////////////////////////////////
 
-    @FXML AnchorPane panelContent;
+    @FXML
+    AnchorPane panelContent;
     // TOGGLE BUTTONS
-    @FXML ToggleGroup headerToggleBtns;
-    @FXML ToggleButton headerBtnAttendance;
-    @FXML ToggleButton headerBtnMembership;
-    @FXML ToggleButton headerBtnStatistics;
-    @FXML ToggleButton headerBtnSettings;
-    @FXML ToggleButton headerBtnBarcode;
+    @FXML
+    ToggleGroup headerToggleBtns;
+    @FXML
+    ToggleButton headerBtnAttendance;
+    @FXML
+    ToggleButton headerBtnMembership;
+    @FXML
+    ToggleButton headerBtnStatistics;
+    @FXML
+    ToggleButton headerBtnAdminUser;
+    @FXML
+    ToggleButton headerBtnAdminTeam;
+    @FXML
+    ToggleButton headerBtnBarcode;
 
     // PANELS AND CONTROLLERS
     ////////////////////////////////////////
@@ -47,8 +57,10 @@ public class GambaruSwitchController implements FxmlViewHandler{
     private PanelMembershipController panelMembershipController;
     private Pane panelStatistics;
     private PanelStatisticsController panelStatisticsController;
-    private Pane panelSettings;
-    private PanelAdminController panelAdminController;
+    private Pane panelAdminUser;
+    private PanelAdminUserController panelAdminUserController;
+    private Pane panelAdminTeam;
+    private PanelAdminTeamController panelAdminTeamController;
     private Pane panelBarcode;
     private PanelBarcodeController panelBarcodeController;
 
@@ -69,8 +81,11 @@ public class GambaruSwitchController implements FxmlViewHandler{
         panelStatisticsController = new PanelStatisticsController(primaryStage, repositoryMap);
         panelStatistics = loadFxml(PathUtil.PANEL_STATISTICS, panelStatisticsController);
 
-        panelAdminController = new PanelAdminController(primaryStage, repositoryMap);
-        panelSettings = loadFxml(PathUtil.PANEL_ADMIN, panelAdminController);
+        panelAdminUserController = new PanelAdminUserController(primaryStage, repositoryMap);
+        panelAdminUser = loadFxml(PathUtil.PANEL_ADMIN_USER, panelAdminUserController);
+
+        panelAdminTeamController = new PanelAdminTeamController(primaryStage, repositoryMap);
+        panelAdminTeam = loadFxml(PathUtil.PANEL_ADMIN_TEAM, panelAdminTeamController);
 
         panelBarcodeController = new PanelBarcodeController(primaryStage, repositoryMap);
         panelBarcode = loadFxml(PathUtil.PANEL_BARCODE, panelBarcodeController);
@@ -105,8 +120,9 @@ public class GambaruSwitchController implements FxmlViewHandler{
             TeamRepository teamRepository = new TeamRepository(entityManager);
             UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
 
-            Container.addBean(new UserServiceSave(userRepository, userPictureRepository));
+            Container.addBean(new UserServiceSave(barcodeRepository, teamRepository, userRepository, userPictureRepository));
             Container.addBean(new TeamServiceSave(teamRepository));
+            Container.addBean(new AttendanceAndMembershipService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
 
             HashMap<Class, Object> repos = new HashMap<>();
             repos.put(UserRepository.class, userRepository);
@@ -129,7 +145,9 @@ public class GambaruSwitchController implements FxmlViewHandler{
             throw e;
         }
 
-    };
+    }
+
+    ;
 
     private void switchToAttendance() {
         panelContent.getChildren().setAll(panelAttendance);
@@ -144,18 +162,28 @@ public class GambaruSwitchController implements FxmlViewHandler{
         stretchInsideAnchorPance(panelMembership);
         panelMembershipController.viewSwitched();
     }
+
     private void switchToStatistic() {
         panelContent.getChildren().setAll(panelStatistics);
         currentSelected = panelStatistics;
         stretchInsideAnchorPance(panelStatistics);
         panelStatisticsController.viewSwitched();
     }
-    private void switchToAdmin() {
-        panelContent.getChildren().setAll(panelSettings);
-        currentSelected = panelSettings;
-        stretchInsideAnchorPance(panelSettings);
-        panelAdminController.viewSwitched();
+
+    private void switchToAdminUser() {
+        panelContent.getChildren().setAll(panelAdminUser);
+        currentSelected = panelAdminUser;
+        stretchInsideAnchorPance(panelAdminUser);
+        panelAdminUserController.viewSwitched();
     }
+
+    private void switchToAdminTeam() {
+        panelContent.getChildren().setAll(panelAdminTeam);
+        currentSelected = panelAdminTeam;
+        stretchInsideAnchorPance(panelAdminTeam);
+        panelAdminTeamController.viewSwitched();
+    }
+
     private void switchToBarcode() {
         panelContent.getChildren().setAll(panelBarcode);
         currentSelected = panelBarcode;
@@ -175,8 +203,10 @@ public class GambaruSwitchController implements FxmlViewHandler{
             switchToMembership();
         } else if (selectedButton.equals(headerBtnStatistics)) {
             switchToStatistic();
-        } else if (selectedButton.equals(headerBtnSettings)) {
-            switchToAdmin();
+        } else if (selectedButton.equals(headerBtnAdminUser)) {
+            switchToAdminUser();
+        } else if (selectedButton.equals(headerBtnAdminTeam)) {
+            switchToAdminTeam();
         } else if (selectedButton.equals(headerBtnBarcode)) {
             switchToBarcode();
         }

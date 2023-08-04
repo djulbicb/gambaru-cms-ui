@@ -21,7 +21,7 @@ public class Response<T> {
         this.model = model;
     }
 
-    public boolean hasError() {
+    public boolean isOk() {
         return isOk;
     }
 

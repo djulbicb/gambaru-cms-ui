@@ -6,10 +6,8 @@ import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.user.TeamSavePort;
-import com.example.gambarucmsui.ports.user.TeamUpdatePort;
-import com.example.gambarucmsui.ports.user.UserSavePort;
-import com.example.gambarucmsui.ports.user.UserUpdatePort;
+import com.example.gambarucmsui.ports.Response;
+import com.example.gambarucmsui.ports.user.*;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
 import com.example.gambarucmsui.ui.dto.admin.subtables.AttendanceDetail;
@@ -44,51 +42,18 @@ import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize
 import static com.example.gambarucmsui.util.FormatUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.*;
 
-public class PanelAdminController implements PanelHeader{
-    private final Stage primaryStage;
-    private final UserRepository userRepo;
-    private final UserAttendanceRepository attendanceRepo;
-    private final UserMembershipRepository membershipRepo;
-    private final TeamRepository teamRepo;
-    private final BarcodeRepository barcodeRepo;
-    private final UserSavePort userSavePort;
-    private final UserUpdatePort userUpdatePort;
-    private final TeamSavePort teamSavePort;
-    private final TeamUpdatePort teamUpdatePort;
-
-    public PanelAdminController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
-        this.primaryStage = primaryStage;
-        this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
-        this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
-        this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
-        this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
-        this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
-
-        userSavePort = Container.getBean(UserSavePort.class);
-        userUpdatePort = Container.getBean(UserUpdatePort.class);
-        teamSavePort = Container.getBean(TeamSavePort.class);
-        teamUpdatePort = Container.getBean(TeamUpdatePort.class);
-    }
-    @FXML
-    public void initialize() {
-        configureTabUsers();
-        configureTabTeam();
-    }
-
-    @FXML
-    private void onUserTabSwitch() {
-        loadTeamsToUserComboBox();
-        loadTableUser();
-    }
-    @FXML
-    private void onTeamTabSwitch() {
-        loadTableTeam();
-    }
-
-    @Override
-    public void viewSwitched() {
-        System.out.println("Switched to panel Admin.");
-    }
+public class PanelAdminUserController implements PanelHeader{
+        private final Stage primaryStage;
+        private final UserRepository userRepo;
+        private final UserAttendanceRepository attendanceRepo;
+        private final UserMembershipRepository membershipRepo;
+        private final TeamRepository teamRepo;
+        private final BarcodeRepository barcodeRepo;
+        private final UserSavePort userSavePort;
+        private final UserUpdatePort userUpdatePort;
+        private final TeamSavePort teamSavePort;
+        private final TeamUpdatePort teamUpdatePort;
+    private final UserAddToTeamPort userAddToTeamPort;
 
     // TAB USER
     ///////////////////////////////////////////////////
@@ -120,11 +85,80 @@ public class PanelAdminController implements PanelHeader{
         loadTableUser();
     }
 
+    @FXML private TableView<?> tableTeamUsers;
+    private void configureTabUsers() {
+        // Add on row click listener
+        tableUsers.setRowFactory(tv -> {
+            TableRow<UserAdminDetail> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
+                    UserAdminDetail rowData = row.getItem();
+                    Optional<UserEntity> userOpt = userRepo.findById(rowData.getUserId());
+                    if (userOpt.isEmpty()) {
+                        return;
+                    }
+                    UserEntity user = userOpt.get();
+
+                    loadTableUserAttendance(user);
+                    loadTableUserMembership(user);
+                    loadTableUserBarcode(user);
+
+                }
+            });
+            return row;
+        });
+
+        // Set up user table for barcodes
+        // Create columns for barcode and team
+        TableColumn<BarcodeDetail, String> barcodeColumn = new TableColumn<>("Barcode");
+        barcodeColumn.setCellValueFactory(new PropertyValueFactory<>("barcode"));
+        TableColumn<BarcodeDetail, String> teamColumn = new TableColumn<>("Team");
+        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
+        TableColumn<BarcodeDetail, String> statusColumn = new TableColumn<>("Team");
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
+        TableColumn<BarcodeDetail, String> activateColumn = buildUserBarcodeButtonColumn();
+        tableUserBarcode.getColumns().addAll(barcodeColumn, teamColumn, statusColumn, activateColumn);
+
+
+        stretchColumnsToEqualSize(tableUsers);
+        stretchColumnsToEqualSize(tableUserAttendance);
+        stretchColumnsToEqualSize(tableUserMembership);
+        stretchColumnsToEqualSize(tableUserBarcode);
+    }
+
+    @Override
+    public void initialize() {
+        configureTabUsers();
+        loadTeamsToUserComboBox();
+    }
+
+    @Override
+    public void viewSwitched() {
+        System.out.println("Switched to panel Admin.");
+        loadTableUser();
+    }
+
     // USER DETAILS
     @FXML
     private TableView<AttendanceDetail> tableUserAttendance;
     @FXML private TableView<MembershipDetail> tableUserMembership;
     @FXML private TableView<BarcodeDetail> tableUserBarcode;
+
+        public PanelAdminUserController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
+            this.primaryStage = primaryStage;
+            this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
+            this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
+            this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
+            this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
+            this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
+
+            userSavePort = Container.getBean(UserSavePort.class);
+            userUpdatePort = Container.getBean(UserUpdatePort.class);
+            teamSavePort = Container.getBean(TeamSavePort.class);
+            teamUpdatePort = Container.getBean(TeamUpdatePort.class);
+            userAddToTeamPort = Container.getBean(UserAddToTeamPort.class);
+        }
 
     private void loadTableUserMembership(UserEntity user) {
         List<MembershipDetail> userMembershipPaymentEntities = membershipRepo.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e->new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());;
@@ -211,62 +245,6 @@ public class PanelAdminController implements PanelHeader{
         };
     }
 
-    private void loadTeamsToUserComboBox() {
-        cmbSearchTeam.getItems().clear();
-        cmbSearchTeam.getItems().add(null);
-        for (TeamEntity team : teamRepo.findAllActive()) {
-            cmbSearchTeam.getItems().add(team.getName());
-        }
-    }
-
-
-    // TEAM TAB
-    ///////////////////////////////////////////////////
-    ///////////////////////////////////////////////////
-    @FXML private TableView<TeamDetail> tableTeam;
-    @FXML private TableView<?> tableTeamUsers;
-    private void configureTabUsers() {
-        // Add on row click listener
-        tableUsers.setRowFactory(tv -> {
-            TableRow<UserAdminDetail> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
-                    UserAdminDetail rowData = row.getItem();
-                    Optional<UserEntity> userOpt = userRepo.findById(rowData.getUserId());
-                    if (userOpt.isEmpty()) {
-                        return;
-                    }
-                    UserEntity user = userOpt.get();
-
-                    loadTableUserAttendance(user);
-                    loadTableUserMembership(user);
-                    loadTableUserBarcode(user);
-
-                }
-            });
-            return row;
-        });
-
-        // Set up user table for barcodes
-        // Create columns for barcode and team
-        TableColumn<BarcodeDetail, String> barcodeColumn = new TableColumn<>("Barcode");
-        barcodeColumn.setCellValueFactory(new PropertyValueFactory<>("barcode"));
-        TableColumn<BarcodeDetail, String> teamColumn = new TableColumn<>("Team");
-        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-        TableColumn<BarcodeDetail, String> statusColumn = new TableColumn<>("Team");
-        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        teamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-        TableColumn<BarcodeDetail, String> activateColumn = buildUserBarcodeButtonColumn();
-        tableUserBarcode.getColumns().addAll(barcodeColumn, teamColumn, statusColumn, activateColumn);
-
-
-        stretchColumnsToEqualSize(tableUsers);
-        stretchColumnsToEqualSize(tableTeam);
-        stretchColumnsToEqualSize(tableUserAttendance);
-        stretchColumnsToEqualSize(tableUserMembership);
-        stretchColumnsToEqualSize(tableUserBarcode);
-    }
-
     // USERS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @FXML
@@ -316,14 +294,14 @@ public class PanelAdminController implements PanelHeader{
             ToastView.showModal("Selektuj korisnika u tabeli pa klini.");
             return;
         }
-
         Optional<UserEntity> userOpt = userRepo.findById(selectedItem.getUserId());
         if (userOpt.isEmpty()) {
             return;
         }
 
         UserEntity user = userOpt.get();
-        FormUserUpdateController controller = new FormUserUpdateController(teamRepo, new FormUserUpdateController.Data(user.getFirstName(), user.getLastName(), user.getPhone(), user.getGender()));
+        byte[] pictureData = user.getPicture() == null ? null : user.getPicture().getPictureData();
+        FormUserUpdateController controller = new FormUserUpdateController(teamRepo, new FormUserUpdateController.Data(user.getFirstName(), user.getLastName(), user.getPhone(), user.getGender(), pictureData));
         Pane root = loadFxml(FORM_USER_ADD, controller);
         Stage window = createStage("Izmeni korisnika", root, primaryStage);
 
@@ -331,11 +309,7 @@ public class PanelAdminController implements PanelHeader{
 
         if (controller.isFormReady()) {
             FormUserUpdateController.Data data = controller.getData();
-            user.setFirstName(data.getFirstName());
-            user.setLastName(data.getLastName());
-            user.setGender(data.getGender());
-            user.setPhone(data.getPhone());
-            userRepo.updateOne(user);
+            userUpdatePort.update(user.getUserId(), data.getFirstName(), data.getLastName(), data.getGender(), data.getPhone(), data.getPictureData());
         }
 
         loadTableUser();
@@ -369,145 +343,17 @@ public class PanelAdminController implements PanelHeader{
 
         if (controller.isFormReady()) {
             FormUserAddUserToTeamController.Data data = controller.getData();
-
-            Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(data.getBarcode());
-            Optional<UserEntity> userOpt = userRepo.findById(selectedItem.getUserId());
-
-            if (barcodeOpt.isPresent() && userOpt.isPresent()) {
-                BarcodeEntity barcode = barcodeOpt.get();
-                UserEntity user = userOpt.get();
-                TeamEntity team = teamRepo.findByName(data.getTeamName());
-
-                barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
-                user.getBarcodes().add(barcode);
-                userRepo.update(user);
-            }
-
+            userAddToTeamPort.addUserToPort(selectedItem.getUserId(), data.getBarcode(), data.getTeamName());
         }
         loadTableUser();
     }
 
-    // TEAM
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private void configureTabTeam() {
-        tableTeam.setRowFactory(tv -> {
-            TableRow<TeamDetail> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                TeamDetail team = row.getItem();
-                if (team == null) {
-                    return;
-                }
-                TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
-                if (selectedItem == null) {
-
-                }
-            });
-            return row;
-        });
-    }
-
-    void loadTableTeam() {
-        List<TeamDetail> teams = teamRepo.findAllActive().stream().map(en -> new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
-        tableTeam.getItems().setAll(teams);
-    }
-
-    @FXML
-    public void addTeamForm() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FORM_TEAM_ADD));
-        FormTeamAddController controller = new FormTeamAddController(teamRepo);
-
-        fxmlLoader.setController(controller);
-        VBox root = fxmlLoader.load();
-
-        // Create the modal dialog
-        Stage dialogStage = createStage("Kreiraj novi tim", root, primaryStage);
-
-        dialogStage.showAndWait();
-
-        if (controller.isFormReady()) {
-            FormTeamAddController.Data data = controller.getData();
-            TeamEntity team = teamRepo.saveNewTeam(data.getTeamName(), data.getMembershipPaymentFee());
-            ToastView.showModal(String.format("Tim %s je dodat.", team.getName()));
-        }
-        loadTableTeam();
-    }
-
-    @FXML
-    public void updateTeamForm() throws IOException {
-        TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
-        if (selectedItem == null) {
-            ToastView.showModal("Izaberi unos iz tabele pa onda klikni na izmeni.");
-            return;
-        }
-
-        FormTeamUpdateController.Data dto = new FormTeamUpdateController.Data(selectedItem.getFee(), selectedItem.getName());
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FORM_TEAM_UPDATE));
-        FormTeamUpdateController controller = new FormTeamUpdateController(dto, teamRepo);
-        fxmlLoader.setController(controller);
-        VBox root = fxmlLoader.load();
-
-        // Create the modal dialog
-        Stage dialogStage = createStage("Kreiraj novi tim", root, primaryStage);
-
-        dialogStage.showAndWait();
-
-        if (controller.isFormReady()) {
-            FormTeamUpdateController.Data data = controller.getData();
-            Optional<TeamEntity> en = teamRepo.findById(selectedItem.getTeamId());
-            if (en.isEmpty()) {
-                return;
-            }
-            TeamEntity team = en.get();
-            team.setName(data.getTeamName());
-            team.setMembershipPayment(data.getMembershipPaymentFee());
-            teamRepo.updateOne(team);
-            loadTableTeam();
-
-            ToastView.showModal("Team je izmenjen");
+    private void loadTeamsToUserComboBox() {
+        cmbSearchTeam.getItems().clear();
+        cmbSearchTeam.getItems().add(null);
+        for (TeamEntity team : teamRepo.findAllActive()) {
+            cmbSearchTeam.getItems().add(team.getName());
         }
     }
 
-    @FXML
-    void teamDeleteForm() {
-        TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
-        if (selectedItem == null) {
-            ToastView.showModal("Izaberi unos iz tabele pa onda klikni na obrisi.");
-            return;
-        }
-
-        Optional<TeamEntity> teamOpt = teamRepo.findById(selectedItem.getTeamId());
-        if (teamOpt.isEmpty()) {
-            return;
-        }
-
-        TeamEntity team = teamOpt.get();
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Brisanje tima");
-        alert.setHeaderText(String.format("Da li želiš da obrišeš tim %s?", team.getName()));
-        alert.setContentText("Svi barkodovi asocirani sa ovim timom ce biti trajno deaktivirani");
-
-        ButtonType yesButton = new ButtonType("Obriši");
-        ButtonType noButton = new ButtonType("Nemoj da brišeš");
-        alert.getButtonTypes().setAll(yesButton, noButton);
-
-        alert.getDialogPane().getStylesheets().add(getClass().getResource(CSS).toExternalForm());
-        alert.showAndWait().ifPresent(response -> {
-            if (response == yesButton) {
-                List<BarcodeEntity> barcodes = barcodeRepo.findByTeam(team);
-                for (BarcodeEntity barcode : barcodes) {
-                    barcode.setStatus(BarcodeEntity.Status.DELETED);
-                }
-                barcodeRepo.saveMultiple(barcodes);
-                team.setStatus(TeamEntity.Status.DELETED);
-                team.setName(team.getName() + " (Obrisan)");
-                teamRepo.updateOne(team);
-                ToastView.showModal("Tim je obrisan");
-                loadTableTeam();
-            }
-        });
-
-        loadTableTeam();
-    }
 }

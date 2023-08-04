@@ -12,8 +12,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
@@ -49,6 +53,7 @@ public class FormUserUpdateController implements Initializable {
     private String outLastName;
     private String outPhone;
     private UserEntity.Gender outGender;
+    private byte[] outPictureData;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -116,7 +121,7 @@ public class FormUserUpdateController implements Initializable {
     }
 
     public FormUserUpdateController.Data getData() {
-        return new Data(outFirstName, outLastName, outPhone, outGender);
+        return new Data(outFirstName, outLastName, outPhone, outGender, outPictureData);
     }
 
     @FXML
@@ -139,17 +144,29 @@ public class FormUserUpdateController implements Initializable {
         lblErrUserPhone.setText("");
     }
 
+    @FXML
+    private void onAddPicture() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Stack Trace");
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null && file.exists()) {
+            outPictureData = Files.readAllBytes(file.toPath());
+        }
+    }
+
     public static class Data {
         private String firstName;
         private String lastName;
         private String phone;
         private UserEntity.Gender gender;
+        private byte[] pictureData;
 
-        public Data(String firstName, String lastName, String phone, UserEntity.Gender gender) {
+        public Data(String firstName, String lastName, String phone, UserEntity.Gender gender, byte[] pictureData) {
             this.firstName = firstName;
             this.lastName = lastName;
             this.phone = phone;
             this.gender = gender;
+            this.pictureData = pictureData;
         }
 
         public String getFirstName() {
@@ -166,6 +183,10 @@ public class FormUserUpdateController implements Initializable {
 
         public UserEntity.Gender getGender() {
             return gender;
+        }
+
+        public byte[] getPictureData() {
+            return pictureData;
         }
     }
 }

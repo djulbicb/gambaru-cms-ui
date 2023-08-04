@@ -6,6 +6,8 @@ import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
 import com.example.gambarucmsui.database.repo.UserRepository;
 
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.user.AddUserAttendance;
 import com.example.gambarucmsui.util.LayoutUtil;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
@@ -32,6 +34,7 @@ import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET_ATTENDANCE
 
 public class PanelAttendanceController implements PanelHeader {
 
+    private final AddUserAttendance addAttendance;
     ;
     // PAGINATION
     private LocalDate paginationDate = LocalDate.now();
@@ -52,6 +55,8 @@ public class PanelAttendanceController implements PanelHeader {
         this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
         this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
         this.barcodeRepository = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
+
+        addAttendance = Container.getBean(AddUserAttendance.class);
 
     }
 
@@ -99,7 +104,7 @@ public class PanelAttendanceController implements PanelHeader {
         dialogStage.showAndWait();
 
         if (controller.isFormReady()) {
-            addAttendanceForBarcodeId(getDateOfPaginationOrNow(), controller.getBarcodeId());
+            addAttendance.addAttendance(controller.getBarcodeId(), getDateOfPaginationOrNow());
         }
 
     }
@@ -111,7 +116,8 @@ public class PanelAttendanceController implements PanelHeader {
 
     public void onBarcodeRead(String barcodeIdStr) {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        addAttendanceForBarcodeId(getDateOfPaginationOrNow(), barcodeId );
+        addAttendance.addAttendance(barcodeId, getDateOfPaginationOrNow());
+        listPageForDate();
     }
 
     private LocalDateTime getDateOfPaginationOrNow() {
@@ -120,26 +126,5 @@ public class PanelAttendanceController implements PanelHeader {
            return now;
         }
         return paginationDate.atStartOfDay();
-    }
-
-    private void addAttendanceForBarcodeId(LocalDateTime timestamp, Long barcodeId) {
-        Optional<BarcodeEntity> optBarcode = barcodeRepository.findById(barcodeId);
-        if (optBarcode.isPresent()) {
-            BarcodeEntity barcode = optBarcode.get();
-
-            if (barcode.getStatus() != BarcodeEntity.Status.ASSIGNED) {
-                ToastView.showModal("Barkod se trenutno ne koristi.");
-                return;
-            }
-
-            attendanceRepo.saveNew(barcode, timestamp);
-
-            listPageForDate();
-            UserEntity user = barcode.getUser();
-
-            ToastView.showAttendance(user);
-        } else {
-            ToastView.showModal("Barkod ne postoji u sistemu.");
-        }
     }
 }
