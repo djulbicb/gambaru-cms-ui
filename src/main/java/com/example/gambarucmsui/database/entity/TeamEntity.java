@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 @Table(name = "team")
 public class TeamEntity {
 
-
-
     public static enum Status {
         ACTIVE, DELETED;
     }

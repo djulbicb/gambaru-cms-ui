@@ -70,42 +70,56 @@
             </HBox>
          </children>
       </VBox>
-      <VBox prefWidth="400.0">
+      <HBox spacing="5.0">
          <children>
-            <Label maxHeight="1.7976931348623157E308" text="POL:" textFill="#fcfcfc">
-               <font>
-                  <Font size="10.0" />
-               </font>
-            </Label>
-            <ComboBox fx:id="cmbUserGender" maxWidth="1.7976931348623157E308" onAction="#onCmbGenderAction" VBox.vgrow="ALWAYS">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <items>
-                  <FXCollections fx:factory="observableArrayList">
-                     <String fx:value="Muški" />
-                     <String fx:value="Ženski" />
-                  </FXCollections>
-               </items>
-            </ComboBox>
-            <HBox>
+            <VBox prefWidth="100.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label fx:id="lblErrUserGender" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                  <Label maxHeight="1.7976931348623157E308" text="POL:" textFill="#fcfcfc">
                      <font>
                         <Font size="10.0" />
                      </font>
                   </Label>
+                  <ComboBox fx:id="cmbUserGender" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#onCmbGenderAction" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <items>
+                        <FXCollections fx:factory="observableArrayList">
+                           <String fx:value="Muški" />
+                           <String fx:value="Ženski" />
+                        </FXCollections>
+                     </items>
+                  </ComboBox>
+                  <HBox>
+                     <children>
+                        <Label fx:id="lblErrUserGender" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
+            </VBox>
+            <VBox prefWidth="100.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label maxHeight="1.7976931348623157E308" text="SLIKA:" textFill="#fcfcfc">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddPicture" text="DODAJ SLIKU" />
+               </children>
+            </VBox>
          </children>
-      </VBox>
+      </HBox>
       <HBox alignment="TOP_RIGHT" spacing="5.0">
          <children>
             <Button mnemonicParsing="false" onMouseClicked="#onSave" text="SAČUVAJ" />
             <Button mnemonicParsing="false" onMouseClicked="#onClose" text="ZATVORI" />
          </children>
          <VBox.margin>
-            <Insets top="-5.0" />
+            <Insets />
          </VBox.margin>
       </HBox>
    </children>

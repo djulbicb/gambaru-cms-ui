@@ -1,10 +1,12 @@
 package com.example.gambarucmsui.util;
 
+import javafx.scene.image.Image;
+
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -115,4 +117,21 @@ public class DataUtil {
             "Mitić", "Sretenović", "Milanović", "Aleksić", "Ivančić", "Vuković"
             // Add more surnames here
     );
+
+    public static Image loadImageFromResources(String resourceName) {
+        try {
+            // Get the resource stream using the ClassLoader
+            var resourceStream = DataUtil.class.getClassLoader().getResourceAsStream("user-not-found.png");
+
+            if (resourceStream != null) {
+                // Load the Image from the resource stream
+                return new Image(new ByteArrayInputStream(resourceStream.readAllBytes()));
+            } else {
+                System.err.println("Resource not found: " + resourceName);
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading image from resources: " + e.getMessage());
+        }
+        return null;
+    }
 }

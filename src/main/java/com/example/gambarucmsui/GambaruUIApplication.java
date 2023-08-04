@@ -27,7 +27,7 @@ public class GambaruUIApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        database();
+//        database();
         Thread.setDefaultUncaughtExceptionHandler(new GambaruUIAppGlobalExceptionHandler());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gambaru-header-switch.fxml"));

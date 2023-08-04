@@ -2,6 +2,8 @@ package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.*;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.user.UserSavePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
 import com.example.gambarucmsui.util.generators.BarcodeView;
@@ -36,6 +38,7 @@ public class PanelBarcodeController implements PanelHeader {
     private final UserMembershipRepository membershipRepo;
     private final UserAttendanceRepository attendanceRepo;
     private final Stage primaryStage;
+    private final UserSavePort userSavePort;
 
     public PanelBarcodeController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
         this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
@@ -44,6 +47,8 @@ public class PanelBarcodeController implements PanelHeader {
         this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
         this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
         this.primaryStage = primaryStage;
+
+        userSavePort = Container.getBean(UserSavePort.class);
     }
 
     @FXML
@@ -255,11 +260,11 @@ public class PanelBarcodeController implements PanelHeader {
                 List<UserEntity> users = new ArrayList<>();
                 for (int i = 0; i < count; i++) {
                     if (getBoolean()) {
-                        users.add(new UserEntity(getFemaleName(), getSurname(), UserEntity.Gender.FEMALE, getPhone(), getDateTime()));
+                        userSavePort.addToBulkSave(getFemaleName(), getSurname(), UserEntity.Gender.FEMALE, getPhone(), getDateTime());
                     } else {
-                        users.add(new UserEntity(getMaleName(), getSurname(), UserEntity.Gender.MALE, getPhone(), getDateTime()));
+                        userSavePort.addToBulkSave(getMaleName(), getSurname(), UserEntity.Gender.MALE, getPhone(), getDateTime());
                     }
-                    userRepo.saveMultiple(users);
+                    userSavePort.executeBulkSave();
                 }
 
                 Platform.runLater(() -> {

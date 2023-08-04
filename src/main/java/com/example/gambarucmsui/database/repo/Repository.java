@@ -17,14 +17,14 @@ public class Repository<T> {
         this.entityClass = entityClass;
     }
 
-    protected T save(T entity) {
+    public T save(T entity) {
         entityManager.getTransaction().begin();
         entityManager.persist(entity);
         entityManager.getTransaction().commit();
         return entity;
     }
 
-    protected List<T> saveAll(List<T> entities) {
+    public List<T> saveAll(List<T> entities) {
         entityManager.getTransaction().begin();
         for (T entity : entities) {
             entityManager.persist(entity);
@@ -33,7 +33,7 @@ public class Repository<T> {
         return entities;
     }
 
-    protected void update(T entity) {
+    public void update(T entity) {
         entityManager.getTransaction().begin();
         entityManager.merge(entity);
         entityManager.getTransaction().commit();

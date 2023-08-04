@@ -5,6 +5,11 @@ import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.common.DelayedKeyListener;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.user.TeamSavePort;
+import com.example.gambarucmsui.ports.user.TeamUpdatePort;
+import com.example.gambarucmsui.ports.user.UserSavePort;
+import com.example.gambarucmsui.ports.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
 import com.example.gambarucmsui.ui.dto.admin.subtables.AttendanceDetail;
@@ -46,6 +51,10 @@ public class PanelAdminController implements PanelHeader{
     private final UserMembershipRepository membershipRepo;
     private final TeamRepository teamRepo;
     private final BarcodeRepository barcodeRepo;
+    private final UserSavePort userSavePort;
+    private final UserUpdatePort userUpdatePort;
+    private final TeamSavePort teamSavePort;
+    private final TeamUpdatePort teamUpdatePort;
 
     public PanelAdminController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
         this.primaryStage = primaryStage;
@@ -54,6 +63,11 @@ public class PanelAdminController implements PanelHeader{
         this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
         this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
         this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
+
+        userSavePort = Container.getBean(UserSavePort.class);
+        userUpdatePort = Container.getBean(UserUpdatePort.class);
+        teamSavePort = Container.getBean(TeamSavePort.class);
+        teamUpdatePort = Container.getBean(TeamUpdatePort.class);
     }
     @FXML
     public void initialize() {
@@ -69,7 +83,6 @@ public class PanelAdminController implements PanelHeader{
     @FXML
     private void onTeamTabSwitch() {
         loadTableTeam();
-        loadTableUser();
     }
 
     @Override
@@ -288,10 +301,8 @@ public class PanelAdminController implements PanelHeader{
 
         if (controller.isFormReady()) {
             FormUserAddController.Data data = controller.getData();
-
-            UserEntity saved = userRepo.saveOne(data.getFirstName(), data.getLastName(), data.getGender(), data.getPhone(), LocalDateTime.now());
-
-            ToastView.showModal(String.format("Korisnik %s %s je dodat.", saved.getFirstName(), saved.getLastName()));
+            UserEntity user = userSavePort.save(data.getFirstName(), data.getLastName(), data.getGender(), data.getPhone(), LocalDateTime.now(), data.getPictureData());
+            ToastView.showModal(String.format("Korisnik %s %s je dodat.", user.getFirstName(), user.getLastName()));
         }
         loadTableUser();
     }
@@ -369,7 +380,7 @@ public class PanelAdminController implements PanelHeader{
 
                 barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
                 user.getBarcodes().add(barcode);
-                userRepo.saveOne(user);
+                userRepo.update(user);
             }
 
         }

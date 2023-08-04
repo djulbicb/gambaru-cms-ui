@@ -25,6 +25,16 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
+    public UserEntity(String firstName, String lastName, Gender gender, String phone, LocalDateTime createdAt, UserPictureEntity picture) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.phone = phone;
+        this.createdAt = createdAt;
+        this.picture = picture;
+    }
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -48,6 +58,9 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user") // , fetch = FetchType.LAZY
     private List<BarcodeEntity> barcodes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private UserPictureEntity picture;
 
     // Constructors, getters, setters, and other fields/methods ...
 
@@ -108,4 +121,11 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
+    public UserPictureEntity getPicture() {
+        return picture;
+    }
+
+    public void setPicture(UserPictureEntity picture) {
+        this.picture = picture;
+    }
 }

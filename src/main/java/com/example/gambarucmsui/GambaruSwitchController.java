@@ -1,6 +1,9 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.database.repo.*;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.TeamServiceSave;
+import com.example.gambarucmsui.ports.UserServiceSave;
 import com.example.gambarucmsui.ui.panel.*;
 import com.example.gambarucmsui.util.PathUtil;
 import jakarta.persistence.EntityManager;
@@ -76,6 +79,7 @@ public class GambaruSwitchController implements FxmlViewHandler{
         switchToAttendance();
     }
 
+
     private void setPanelHeaderToggleButtonsToIgnoreAction() {
         // Barcode scanning sometimes forced view switching.
         // Because barcode scanner inputs ENTER at the end,
@@ -94,12 +98,22 @@ public class GambaruSwitchController implements FxmlViewHandler{
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("gambaru-entity-manager");
             EntityManager entityManager = emf.createEntityManager();
 
+            UserRepository userRepository = new UserRepository(entityManager);
+            BarcodeRepository barcodeRepository = new BarcodeRepository(entityManager);
+            UserAttendanceRepository userAttendanceRepository = new UserAttendanceRepository(entityManager);
+            UserMembershipRepository userMembershipRepository = new UserMembershipRepository(entityManager);
+            TeamRepository teamRepository = new TeamRepository(entityManager);
+            UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
+
+            Container.addBean(new UserServiceSave(userRepository, userPictureRepository));
+            Container.addBean(new TeamServiceSave(teamRepository));
+
             HashMap<Class, Object> repos = new HashMap<>();
-            repos.put(UserRepository.class, new UserRepository(entityManager));
-            repos.put(BarcodeRepository.class, new BarcodeRepository(entityManager));
-            repos.put(UserAttendanceRepository.class, new UserAttendanceRepository(entityManager));
-            repos.put(UserMembershipRepository.class, new UserMembershipRepository(entityManager));
-            repos.put(TeamRepository.class, new TeamRepository(entityManager));
+            repos.put(UserRepository.class, userRepository);
+            repos.put(BarcodeRepository.class, barcodeRepository);
+            repos.put(UserAttendanceRepository.class, userAttendanceRepository);
+            repos.put(UserMembershipRepository.class, userMembershipRepository);
+            repos.put(TeamRepository.class, teamRepository);
 
             System.out.println("Entity Managment started.");
             return repos;

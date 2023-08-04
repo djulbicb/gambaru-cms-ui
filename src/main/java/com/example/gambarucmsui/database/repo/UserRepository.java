@@ -70,27 +70,8 @@ public class UserRepository extends Repository<UserEntity> {
         return query.getResultList();
     }
 
-
-
-
-
-
-
-    public UserEntity saveOne(String firstName, String lastName, UserEntity.Gender gender, String phone, LocalDateTime now) {
-        UserEntity en = new UserEntity(firstName,lastName, gender, phone, now);
-        return save(en);
-    }
-
     public UserEntity updateOne(UserEntity user) {
         return save(user);
-    }
-
-    public void saveMultiple(List<UserEntity> users) {
-        saveAll(users);
-    }
-
-    public void saveOne(UserEntity user) {
-        save(user);
     }
 
     public boolean isUserAlreadyInThisTeam(Long userId, Long teamId) {

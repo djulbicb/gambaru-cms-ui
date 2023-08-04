@@ -69,6 +69,7 @@ public class PanelAttendanceController implements PanelHeader {
     @Override
     public void viewSwitched() {
         System.out.println("Switched to panel Attendance.");
+
     }
 
     private void listPageForDate() {
@@ -135,7 +136,8 @@ public class PanelAttendanceController implements PanelHeader {
 
             listPageForDate();
             UserEntity user = barcode.getUser();
-            ToastView.showModal(String.format("Prisutnost registrovana za %s %s", user.getFirstName(), user.getLastName()));
+
+            ToastView.showAttendance(user);
         } else {
             ToastView.showModal("Barkod ne postoji u sistemu.");
         }

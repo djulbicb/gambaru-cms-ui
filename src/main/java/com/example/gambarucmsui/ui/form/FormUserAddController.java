@@ -12,8 +12,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
@@ -46,6 +52,7 @@ public class FormUserAddController implements Initializable {
     private String outFirstName;
     private String outLastName;
     private String outPhone;
+    private byte[] outPictureData;
     private UserEntity.Gender outGender;
 
     @Override
@@ -98,6 +105,17 @@ public class FormUserAddController implements Initializable {
         return isFormCorrect;
     }
 
+    @FXML
+    private void onAddPicture() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Stack Trace");
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null && file.exists()) {
+            outPictureData = Files.readAllBytes(file.toPath());
+        }
+
+    }
+
     private void close() {
         root.getScene().getWindow().hide();
     }
@@ -107,7 +125,7 @@ public class FormUserAddController implements Initializable {
     }
 
     public FormUserAddController.Data getData() {
-        return new Data(outFirstName, outLastName, outPhone, outGender);
+        return new Data(outFirstName, outLastName, outPhone, outGender, outPictureData);
     }
 
     @FXML
@@ -135,12 +153,14 @@ public class FormUserAddController implements Initializable {
         private String lastName;
         private String phone;
         private UserEntity.Gender gender;
+        private byte[] pictureData;
 
-        public Data(String firstName, String lastName, String phone, UserEntity.Gender gender) {
+        public Data(String firstName, String lastName, String phone, UserEntity.Gender gender, byte[] pictureData) {
             this.firstName = firstName;
             this.lastName = lastName;
             this.phone = phone;
             this.gender = gender;
+            this.pictureData = pictureData;
         }
 
         public String getFirstName() {
@@ -157,6 +177,10 @@ public class FormUserAddController implements Initializable {
 
         public UserEntity.Gender getGender() {
             return gender;
+        }
+
+        public byte[] getPictureData() {
+            return pictureData;
         }
     }
 }
