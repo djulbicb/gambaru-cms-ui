@@ -1,7 +1,5 @@
 package com.example.gambarucmsui;
 
-import com.example.gambarucmsui.database.repo.*;
-import com.example.gambarucmsui.ports.impl.*;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ui.panel.*;
 import com.example.gambarucmsui.util.PathUtil;
@@ -18,7 +16,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import static com.example.gambarucmsui.util.LayoutUtil.stretchInsideAnchorPance;
 
@@ -111,21 +108,7 @@ public class GambaruSwitchController implements FxmlViewHandler {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("gambaru-entity-manager");
             EntityManager entityManager = emf.createEntityManager();
 
-            UserRepository userRepository = new UserRepository(entityManager);
-            BarcodeRepository barcodeRepository = new BarcodeRepository(entityManager);
-            UserAttendanceRepository userAttendanceRepository = new UserAttendanceRepository(entityManager);
-            UserMembershipRepository userMembershipRepository = new UserMembershipRepository(entityManager);
-            TeamRepository teamRepository = new TeamRepository(entityManager);
-            UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
-
-            Container.addBean(new ImageService());
-
-            Container.addBean(new UserServiceSave(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
-            Container.addBean(new TeamServiceSave(teamRepository));
-            Container.addBean(new AttendanceService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
-            Container.addBean(new BarcodeService(barcodeRepository));
-            Container.addBean(new StatisticsService(userAttendanceRepository, userMembershipRepository));
-            Container.addBean(new MembershipService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
+            Container.initBeans(entityManager);
 
             System.out.println("Entity Managment started.");
         } catch (Exception e) {

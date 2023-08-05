@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.interfaces.team.IsTeamExists;
+import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,7 +19,7 @@ import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class FormTeamUpdateController implements Initializable {
-    private final IsTeamExists isTeamExists;
+    private final TeamIfExists teamIfExists;
     private TeamInputValidator validator = new TeamInputValidator();
     // FXML
     //////////////////////////////////////////
@@ -39,7 +39,7 @@ public class FormTeamUpdateController implements Initializable {
         this.teamName = teamName;
         this.membershipPayment = fee;
 
-        isTeamExists = Container.getBean(IsTeamExists.class);
+        teamIfExists = Container.getBean(TeamIfExists.class);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class FormTeamUpdateController implements Initializable {
             lblErrTeamName.setText(validator.errTeamName());
             isFormCorrect = false;
         }
-        if (!teamNameStr.equals(teamName) && isTeamExists.ifTeamNameExists(teamNameStr)) {
+        if (!teamNameStr.equals(teamName) && teamIfExists.ifTeamNameExists(teamNameStr)) {
             lblErrTeamName.setText(validator.errTeamNameExists());
             isFormCorrect = false;
         }

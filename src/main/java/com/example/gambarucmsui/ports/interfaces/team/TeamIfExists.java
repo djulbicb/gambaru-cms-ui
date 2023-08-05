@@ -1,5 +1,5 @@
 package com.example.gambarucmsui.ports.interfaces.team;
 
-public interface IsTeamExists {
+public interface TeamIfExists {
     boolean ifTeamNameExists(String teamName);
 }

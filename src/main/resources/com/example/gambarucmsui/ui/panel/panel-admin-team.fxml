@@ -33,7 +33,7 @@
                               <PropertyValueFactory property="name" />
                            </cellValueFactory>
                         </TableColumn>
-                        <TableColumn text="Mese">
+                        <TableColumn text="Mesečna rata">
                            <cellValueFactory>
                               <PropertyValueFactory property="fee" />
                            </cellValueFactory>

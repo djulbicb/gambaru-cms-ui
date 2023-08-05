@@ -3,30 +3,47 @@ package com.example.gambarucmsui.ports.impl;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.repo.TeamRepository;
 import com.example.gambarucmsui.ports.Response;
-import com.example.gambarucmsui.ports.interfaces.team.IsTeamExists;
+import com.example.gambarucmsui.ports.ValidatorResponse;
+import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
+import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-public class TeamServiceSave implements TeamLoadPort, TeamSavePort, TeamUpdatePort, IsTeamExists {
+public class TeamServiceSaveIf implements TeamLoadPort, TeamSavePort, TeamUpdatePort, TeamIfExists {
 
     private final TeamRepository teamRepository;
+    private final TeamInputValidator teamValidator = new TeamInputValidator();
 
-    public TeamServiceSave(TeamRepository teamRepository) {
+    public TeamServiceSaveIf(TeamRepository teamRepository) {
         this.teamRepository = teamRepository;
     }
 
     @Override
-    public Response<TeamEntity> save(String teamName, BigDecimal membershipFee) {
-        if (teamRepository.ifTeamNameExists(teamName)) {
-            return Response.bad(String.format("Tim sa imenom %s već postoji.", teamName));
+    public ValidatorResponse verifySaveTeam(String teamName, String fee) {
+        Map<String, String> errors = new HashMap<>();
+        if (!teamValidator.isTeamNameValid(teamName)) {
+            errors.put("name", TeamInputValidator.errTeamName());
         }
+        if (!teamValidator.isFeeValid(fee)) {
+            errors.put("membershipPayment", TeamInputValidator.errTeamFee());
+        }
+        if (ifTeamNameExists(teamName)) {
+            errors.put("name", TeamInputValidator.errTeamNameExists());
+        }
+        return new ValidatorResponse(errors);
+    }
+
+    @Override
+    public TeamEntity save(String teamName, BigDecimal membershipFee) {
         TeamEntity en = new TeamEntity(teamName, TeamEntity.Status.ACTIVE, membershipFee);
-        return Response.ok(String.format("Tim %s je uspešno sačuvan.", teamName), teamRepository.save(en));
+        return teamRepository.save(en);
     }
 
     @Override

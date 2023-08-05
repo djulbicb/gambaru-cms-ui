@@ -5,6 +5,7 @@ import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
+import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.*;
 
 public class PanelAdminTeamController implements PanelHeader {
@@ -35,6 +36,7 @@ public class PanelAdminTeamController implements PanelHeader {
     private final UserUpdatePort userUpdatePort;
     private final TeamSavePort teamSavePort;
     private final TeamLoadPort teamLoadPort;
+    private final TeamIfExists teamIfExists;
     private final TeamUpdatePort teamUpdatePort;
     private final BarcodeLoadPort barcodeLoadPort;
     private final BarcodeUpdatePort barcodeUpdatePort;
@@ -48,6 +50,8 @@ public class PanelAdminTeamController implements PanelHeader {
         teamLoadPort = Container.getBean(TeamLoadPort.class);
         barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
         barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
+
+        teamIfExists = Container.getBean(TeamIfExists.class);
     }
     @FXML
     public void initialize() {
@@ -75,6 +79,8 @@ public class PanelAdminTeamController implements PanelHeader {
             });
             return row;
         });
+
+        stretchColumnsToEqualSize(tableTeam);
     }
 
     void loadTableTeam() {

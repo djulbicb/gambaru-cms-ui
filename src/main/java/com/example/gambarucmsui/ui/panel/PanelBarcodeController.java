@@ -223,8 +223,7 @@ public class PanelBarcodeController implements PanelHeader {
     @FXML
     void onAddTeams(MouseEvent event) {
         System.out.println("Kreiranje novog tima");
-        Response<TeamEntity> save = teamSavePort.save(getTeamName(), getDecimal());
-        ToastView.showModal(save.getMessage());
+        teamSavePort.save(getTeamName(), getDecimal());
     }
 
     @FXML

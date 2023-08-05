@@ -8,18 +8,22 @@ public class TeamInputValidator {
     }
 
     public boolean isFeeValid(String paymentFeeStr) {
-        return !paymentFeeStr.isBlank() && isDecimal(paymentFeeStr);
+        return paymentFeeStr != null && !paymentFeeStr.isBlank() && isDecimal(paymentFeeStr);
     }
 
-    public String errTeamName() {
+    public static String errTeamName() {
         return "Upiši ime tima";
     }
 
-    public String errTeamNameExists() {
+    public static String errTeamNameExists() {
         return "Takvo ime tima već postoji. Upiši drugačije ime.";
     }
 
-    public String errTeamFee() {
+    public static String errTeamFee() {
         return "Upiši cenu članarine. Npr 4000";
+    }
+
+    public static String msgTeamIsCreated(String teamName) {
+        return String.format("Tim %s je kreiran", teamName);
     }
 }

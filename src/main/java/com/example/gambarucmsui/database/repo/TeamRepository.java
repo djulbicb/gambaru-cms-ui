@@ -18,7 +18,7 @@ public class TeamRepository extends Repository<TeamEntity> {
         query.setParameter("teamName", teamName);
 
         Long count = query.getSingleResult();
-        return count > 0;
+        return count == 1;
     }
 
     public List<TeamEntity> findAllActive() {

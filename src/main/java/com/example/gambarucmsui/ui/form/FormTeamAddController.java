@@ -3,7 +3,8 @@ package com.example.gambarucmsui.ui.form;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.Response;
-import com.example.gambarucmsui.ports.interfaces.team.IsTeamExists;
+import com.example.gambarucmsui.ports.ValidatorResponse;
+import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
@@ -17,13 +18,16 @@ import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
+
+import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class FormTeamAddController implements Initializable {
     // Repo
     //////////////////////////////////////////
     private TeamInputValidator validator = new TeamInputValidator();
-    private final IsTeamExists isTeamExists;
+    private final TeamIfExists teamIfExists;
     private final TeamSavePort teamSavePort;
     // FXML
     //////////////////////////////////////////
@@ -33,14 +37,8 @@ public class FormTeamAddController implements Initializable {
     @FXML private TextField txtMembershipFee;
     @FXML private TextField txtTeamName;
 
-    // OUTPUT DATA
-    /////////////////////////////////////////
-    private boolean isFormReady = false;
-    private BigDecimal outMembershipPayment;
-    private String outTeamName;
-
     public FormTeamAddController() {
-        isTeamExists = Container.getBean(IsTeamExists.class);
+        teamIfExists = Container.getBean(TeamIfExists.class);
         teamSavePort = Container.getBean(TeamSavePort.class);
     }
 
@@ -61,35 +59,36 @@ public class FormTeamAddController implements Initializable {
 
     @FXML
     void onSave(MouseEvent event) {
-        String paymentFeeStr = txtMembershipFee.getText().trim();
-        String teamNameStr = txtTeamName.getText().trim();
+        String paymentFeeStr = getOr(txtMembershipFee, "");
+        String teamNameStr = getOr(txtTeamName, "");
 
-        if (validate(teamNameStr, paymentFeeStr)) {
-            isFormReady = true;
-            outMembershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
-            outTeamName = teamNameStr;
+        ValidatorResponse save = save(teamNameStr, paymentFeeStr);
 
-            Response<TeamEntity> save = teamSavePort.save(outTeamName, outMembershipPayment);
-            ToastView.showModal(save.getMessage());
-            close();
+        if (save.hasErrors()) {
+            Map<String, String> errors = save.getErrors();
+            if (errors.containsKey("name")) {
+                lblErrTeamName.setText(errors.get("name"));
+            }
+            if (errors.containsKey("membershipPayment")) {
+                lblErrMembershipFee.setText(errors.get("membershipPayment"));
+            }
+            return;
         }
+
+        ToastView.showModal(save.getMessage());
+        close();
     }
 
-    private boolean validate(String teamNameStr, String paymentFeeStr) {
-        boolean isFormCorrect = true;
-        if (!validator.isTeamNameValid(teamNameStr)) {
-            lblErrTeamName.setText(validator.errTeamName());
-            isFormCorrect = false;
+    public ValidatorResponse save(String teamNameStr, String paymentFeeStr) {
+        ValidatorResponse verifySaveTeam = teamSavePort.verifySaveTeam(teamNameStr, paymentFeeStr);
+        if (verifySaveTeam.isOk()) {
+            String outTeamName = teamNameStr.trim();
+            BigDecimal outMembershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr.trim()));
+
+            TeamEntity team = teamSavePort.save(outTeamName, outMembershipPayment);
+            return new ValidatorResponse(TeamInputValidator.msgTeamIsCreated(team.getName()));
         }
-        if (isTeamExists.ifTeamNameExists(teamNameStr)) {
-            lblErrTeamName.setText(validator.errTeamNameExists());
-            isFormCorrect = false;
-        }
-        if (!validator.isFeeValid(paymentFeeStr)) {
-            lblErrMembershipFee.setText(validator.errTeamFee());
-            isFormCorrect = false;
-        }
-        return isFormCorrect;
+        return verifySaveTeam;
     }
 
     private void close() {
