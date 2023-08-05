@@ -29,12 +29,12 @@
     </persistence-unit>
 
     <persistence-unit name="gambaru-entity-manager-test" transaction-type="RESOURCE_LOCAL">
-        <class>com.example.gambarucmsui.database.entity.UserEntity</class>
-        <class>com.example.gambarucmsui.database.entity.BarcodeEntity</class>
         <class>com.example.gambarucmsui.database.entity.TeamEntity</class>
+        <class>com.example.gambarucmsui.database.entity.UserEntity</class>
+        <class>com.example.gambarucmsui.database.entity.UserPictureEntity</class>
+        <class>com.example.gambarucmsui.database.entity.BarcodeEntity</class>
         <class>com.example.gambarucmsui.database.entity.UserAttendanceEntity</class>
         <class>com.example.gambarucmsui.database.entity.UserMembershipPaymentEntity</class>
-        <class>com.example.gambarucmsui.database.entity.UserPictureEntity</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
@@ -49,7 +49,6 @@
             <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
             <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
             <property name="javax.persistence.schema-generation.scripts.action" value="none"/>
-
 
         </properties>
     </persistence-unit>

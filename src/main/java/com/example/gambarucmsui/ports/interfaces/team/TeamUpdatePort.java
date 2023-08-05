@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 
 public interface TeamUpdatePort {
     public ValidatorResponse verifyUpdateTeam (Long teamId, String team, String fee);
-    default Response<TeamEntity> updateTeam(Long teamId, String teamName, BigDecimal membershipFee) {
+    default TeamEntity updateTeam(Long teamId, String teamName, BigDecimal membershipFee) {
         return updateTeam(teamId, teamName, membershipFee, null);
     }
-    Response<TeamEntity> updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status);
+    TeamEntity updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status);
 }

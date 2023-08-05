@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.ports.impl;
 
-import com.example.gambarucmsui.H2Database;
+import com.example.gambarucmsui.H2DatabaseConfig;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TeamServiceSaveTest extends H2Database {
+class IfTeamNameExistsTest extends H2DatabaseConfig {
 
     private TeamIfExists teamIfExists;
     private TeamSavePort teamSavePort;

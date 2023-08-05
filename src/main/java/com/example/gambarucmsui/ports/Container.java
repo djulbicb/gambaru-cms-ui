@@ -35,8 +35,8 @@ public class Container {
 
         Container.addBean(new UserServiceSave(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
         Container.addBean(new TeamServiceSaveIf(teamRepository));
-        Container.addBean(new AttendanceService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
-        Container.addBean(new BarcodeService(barcodeRepository));
+        Container.addBean(new AttendanceServiceLoadPortPort(barcodeRepository, userAttendanceRepository, userMembershipRepository));
+        Container.addBean(new BarcodeServiceFetchOrGeneratePort(barcodeRepository));
         Container.addBean(new StatisticsService(userAttendanceRepository, userMembershipRepository));
         Container.addBean(new MembershipService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
 

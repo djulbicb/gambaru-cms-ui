@@ -2,10 +2,9 @@ package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.Response;
-import com.example.gambarucmsui.ports.interfaces.attendance.AddUserAttendancePort;
+import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
-import com.example.gambarucmsui.ports.interfaces.barcode.FetchOrGenerateBarcode;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeFetchOrGeneratePort;
 import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
@@ -43,25 +42,25 @@ public class PanelBarcodeController implements PanelHeader {
     private final UserSavePort userSavePort;
 
     private final TeamSavePort teamSavePort;
-    private final AddUserAttendancePort addAttendance;
+    private final AttendanceAddForUserPort addAttendance;
     private final AddUserMembership addMembership;
     private final UserAddToTeamPort userAddToTeamPort;
     private final TeamLoadPort teamLoadPort;
     private final UserLoadPort userLoadPort;
     private final BarcodeLoadPort barcodeLoadPort;
-    private final FetchOrGenerateBarcode fetchOrGenerateBarcode;
+    private final BarcodeFetchOrGeneratePort barcodeFetchOrGeneratePort;
 
     public PanelBarcodeController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.teamSavePort = Container.getBean(TeamSavePort.class);
         this.userSavePort = Container.getBean(UserSavePort.class);
-        this.addAttendance = Container.getBean(AddUserAttendancePort.class);
+        this.addAttendance = Container.getBean(AttendanceAddForUserPort.class);
         this.addMembership = Container.getBean(AddUserMembership.class);
         this.userAddToTeamPort = Container.getBean(UserAddToTeamPort.class);
         this.teamLoadPort = Container.getBean(TeamLoadPort.class);
         this.userLoadPort = Container.getBean(UserLoadPort.class);
         this.barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
-        this.fetchOrGenerateBarcode = Container.getBean(FetchOrGenerateBarcode.class);
+        this.barcodeFetchOrGeneratePort = Container.getBean(BarcodeFetchOrGeneratePort.class);
     }
 
     @FXML
@@ -85,7 +84,7 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     public void fetchBarcodes() {
-        List<BarcodeEntity> barcodeEntities = fetchOrGenerateBarcode.fetchOrGenerateBarcodes(100, BarcodeEntity.Status.NOT_USED);
+        List<BarcodeEntity> barcodeEntities = barcodeFetchOrGeneratePort.fetchOrGenerateBarcodes(100, BarcodeEntity.Status.NOT_USED);
         List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
         String csv = listToCsv(ids);
         txtBarcodes.setText(csv);
@@ -101,7 +100,7 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     private void fetchNewBarcodes() {
-        List<BarcodeEntity> barcodeEntities = fetchOrGenerateBarcode.generateNewBarcodes(100);
+        List<BarcodeEntity> barcodeEntities = barcodeFetchOrGeneratePort.generateNewBarcodes(100);
         List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
         String csv = listToCsv(ids);
         txtBarcodes.setText(csv);
@@ -237,7 +236,7 @@ public class PanelBarcodeController implements PanelHeader {
                 List<TeamEntity> teams = teamLoadPort.findAllActive();
                 List<BarcodeEntity> barcodes = new ArrayList<>();
                 for (UserEntity user : users) {
-                    BarcodeEntity barcode = fetchOrGenerateBarcode.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
+                    BarcodeEntity barcode = barcodeFetchOrGeneratePort.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
                     TeamEntity team = pickRandom(teams);
                     userAddToTeamPort.addUserToPort(user.getUserId(), barcode.getBarcodeId(), team.getName());
                 }

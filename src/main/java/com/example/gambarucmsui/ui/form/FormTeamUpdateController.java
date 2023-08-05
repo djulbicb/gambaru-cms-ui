@@ -1,8 +1,11 @@
 package com.example.gambarucmsui.ui.form;
 
+import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
+import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,6 +17,7 @@ import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
@@ -70,12 +74,33 @@ public class FormTeamUpdateController implements Initializable {
         String teamNameStr = getOr(txtTeamName, "");
         String paymentFeeStr = getOr(txtMembershipFee, "");
 
-        if (validate(teamNameStr, paymentFeeStr)) {
-            BigDecimal membershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
-            String teamName = teamNameStr.trim();
-            teamUpdate.updateTeam(inTeamId, teamName, membershipPayment);
-            close();
+        ValidatorResponse res = updateOrReturnErrors(inTeamId, teamNameStr, paymentFeeStr);
+
+        if (res.hasErrors()) {
+            Map<String, String> errors = res.getErrors();
+            if (errors.containsKey("name")) {
+                lblErrTeamName.setText(errors.get("name"));
+            }
+            if (errors.containsKey("membershipPayment")) {
+                lblErrMembershipFee.setText(errors.get("membershipPayment"));
+            }
+            return;
         }
+
+        ToastView.showModal(res.getMessage());
+        close();
+    }
+
+    public ValidatorResponse updateOrReturnErrors(Long teamId, String teamNameStr, String paymentFeeStr) {
+        ValidatorResponse verifySaveTeam = teamUpdate.verifyUpdateTeam(teamId, teamNameStr, paymentFeeStr);
+        if (verifySaveTeam.isOk()) {
+            String outTeamName = teamNameStr.trim();
+            BigDecimal outMembershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr.trim()));
+
+            TeamEntity team = teamUpdate.updateTeam(teamId, outTeamName, outMembershipPayment);
+            return new ValidatorResponse(TeamInputValidator.msgTeamIsUpdated(team.getName()));
+        }
+        return verifySaveTeam;
     }
 
     private void close() {

@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface UserLoadPort {
     Optional<UserEntity> loadUserByUserId(Long userId);
+    Optional<UserEntity> findUserByBarcodeId(Long barcodeId);
     List<UserEntity> findAll();
     List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive);
 }

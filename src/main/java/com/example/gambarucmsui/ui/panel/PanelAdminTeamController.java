@@ -107,10 +107,9 @@ public class PanelAdminTeamController implements PanelHeader {
         }
 
         FormTeamUpdateController controller = new FormTeamUpdateController(selectedItem.getTeamId(), selectedItem.getName(), selectedItem.getFee());
-        Pane root = loadFxml(FORM_TEAM_UPDATE, controller);
+        createStage("Kreiraj novi tim", loadFxml(FORM_TEAM_UPDATE, controller), primaryStage).showAndWait();
 
-        Stage dialogStage = createStage("Kreiraj novi tim", root, primaryStage);
-        dialogStage.showAndWait();
+        loadTableTeam();
     }
 
     @FXML

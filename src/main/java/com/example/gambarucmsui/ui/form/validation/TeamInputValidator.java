@@ -1,8 +1,12 @@
 package com.example.gambarucmsui.ui.form.validation;
 
+import java.util.Map;
+
 import static com.example.gambarucmsui.util.FormatUtil.isDecimal;
 
 public class TeamInputValidator {
+
+
     public boolean isTeamNameValid(String teamName) {
         return teamName!= null && !teamName.isBlank();
     }
@@ -26,4 +30,8 @@ public class TeamInputValidator {
     public static String msgTeamIsCreated(String teamName) {
         return String.format("Tim %s je kreiran", teamName);
     }
+    public static String msgTeamIsUpdated(String name) {
+        return String.format("Tim %s je updejtovan", name);
+    }
+
 }

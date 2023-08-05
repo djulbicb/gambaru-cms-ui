@@ -5,7 +5,7 @@ import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.interfaces.attendance.LoadAttendanceForUser;
+import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
 import com.example.gambarucmsui.ports.interfaces.membership.LoadMembership;
@@ -54,7 +54,7 @@ public class PanelAdminUserController implements PanelHeader {
     private final IsUserAlreadyInThisTeamPort isUserAlreadyInThisTeamPort;
     private final BarcodeLoadPort barcodeLoadPort;
     private final LoadMembership loadMembership;
-    private final LoadAttendanceForUser loadAttendance;
+    private final AttendanceLoadForUserPort loadAttendance;
     private final BarcodeUpdatePort barcodeUpdatePort;
 
     // FXML
@@ -176,7 +176,7 @@ public class PanelAdminUserController implements PanelHeader {
         isUserAlreadyInThisTeamPort = Container.getBean(IsUserAlreadyInThisTeamPort.class);
         barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
         loadMembership = Container.getBean(LoadMembership.class);
-        loadAttendance = Container.getBean(LoadAttendanceForUser.class);
+        loadAttendance = Container.getBean(AttendanceLoadForUserPort.class);
         barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
     }
 

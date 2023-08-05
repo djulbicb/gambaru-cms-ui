@@ -4,16 +4,16 @@ import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
-import com.example.gambarucmsui.ports.interfaces.barcode.FetchOrGenerateBarcode;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeFetchOrGeneratePort;
 
 import java.util.List;
 import java.util.Optional;
 
-public class BarcodeService implements BarcodeLoadPort, FetchOrGenerateBarcode, BarcodeUpdatePort {
+public class BarcodeServiceFetchOrGeneratePort implements BarcodeLoadPort, BarcodeFetchOrGeneratePort, BarcodeUpdatePort {
 
     private final BarcodeRepository barcodeRepo;
 
-    public BarcodeService(BarcodeRepository barcodeRepo) {
+    public BarcodeServiceFetchOrGeneratePort(BarcodeRepository barcodeRepo) {
         this.barcodeRepo = barcodeRepo;
     }
 
@@ -49,7 +49,7 @@ public class BarcodeService implements BarcodeLoadPort, FetchOrGenerateBarcode, 
 
     @Override
     public BarcodeEntity fetchOneOrGenerate(BarcodeEntity.Status status) {
-        return fetchOneOrGenerate(status);
+        return barcodeRepo.fetchOneOrGenerate(status);
     }
 
     @Override

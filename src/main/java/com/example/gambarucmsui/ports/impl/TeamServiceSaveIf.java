@@ -48,6 +48,9 @@ public class TeamServiceSaveIf implements TeamLoadPort, TeamSavePort, TeamUpdate
 
     @Override
     public ValidatorResponse verifyUpdateTeam(Long teamId, String teamName, String fee) {
+        Optional<TeamEntity> byId = findById(teamId);
+        TeamEntity team = byId.get();
+
         Map<String, String> errors = new HashMap<>();
         if (!teamValidator.isTeamNameValid(teamName)) {
             errors.put("name", TeamInputValidator.errTeamName());
@@ -55,38 +58,19 @@ public class TeamServiceSaveIf implements TeamLoadPort, TeamSavePort, TeamUpdate
         if (!teamValidator.isFeeValid(fee)) {
             errors.put("membershipPayment", TeamInputValidator.errTeamFee());
         }
-        if (ifTeamNameExists(teamName)) {
+
+        if (!team.getName().equals(teamName) && ifTeamNameExists(teamName)) {
             errors.put("name", TeamInputValidator.errTeamNameExists());
         }
-//        boolean isFormCorrect = true;
-//        if (!validator.isTeamNameValid(teamNameStr)) {
-//            lblErrTeamName.setText(validator.errTeamName());
-//            isFormCorrect = false;
-//        }
-//        if (!teamNameStr.equals(inTeamName) && teamIfExists.ifTeamNameExists(teamNameStr)) {
-//            lblErrTeamName.setText(validator.errTeamNameExists());
-//            isFormCorrect = false;
-//        }
-//        if (!validator.isFeeValid(paymentFeeStr)) {
-//            lblErrMembershipFee.setText(validator.errTeamFee());
-//            isFormCorrect = false;
-//        }
-//
-//        return isFormCorrect;
 
         return new ValidatorResponse(errors);
     }
 
     @Override
-    public Response<TeamEntity> updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status) {
+    public TeamEntity updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status) {
         Optional<TeamEntity> byId = teamRepository.findById(teamId);
         if (byId.isPresent()) {
             TeamEntity en = byId.get();
-
-            // team name was changed, check if new name already exists
-            if (!en.getName().equals(teamName) && teamRepository.ifTeamNameExists(teamName)) {
-                return Response.bad("Tim sa tim imenom već postoji.");
-            }
 
             if (teamName != null) {
                 en.setName(teamName);
@@ -100,11 +84,9 @@ public class TeamServiceSaveIf implements TeamLoadPort, TeamSavePort, TeamUpdate
             if (status != null) {
                 en.setStatus(status);
             }
-            teamRepository.save(en);
-
-            return Response.ok(String.format("Tim %s je uspešno updejtovan.", teamName), teamRepository.save(en));
+            return teamRepository.save(en);
         }
-        return Response.bad("Došlo je do neočekivane situacije. Navedeni tim ne postoji.");
+        throw new RuntimeException("No such team with id:" + teamId);
     }
 
     @Override

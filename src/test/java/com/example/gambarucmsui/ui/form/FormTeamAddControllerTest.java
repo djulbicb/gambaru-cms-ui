@@ -1,10 +1,12 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.H2Database;
+import com.example.gambarucmsui.H2DatabaseConfig;
+import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,7 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FormTeamAddControllerTest extends H2Database {
+class FormTeamAddControllerTest extends H2DatabaseConfig {
 
     private FormTeamAddController formTeamAddController;
     private TeamSavePort teamSavePort;
@@ -22,6 +24,11 @@ class FormTeamAddControllerTest extends H2Database {
         formTeamAddController = new FormTeamAddController();
         teamSavePort = Container.getBean(TeamSavePort.class);
     }
+    @AfterEach()
+    public void purge(){
+        delete(TeamEntity.class);
+    }
+
     @Test
     public void shouldSaveTeam() {
         // when

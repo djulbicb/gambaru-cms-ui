@@ -4,7 +4,7 @@ import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
-import com.example.gambarucmsui.ports.interfaces.attendance.AddUserAttendancePort;
+import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.*;
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
@@ -24,7 +25,7 @@ public class FormBarcodeGetAttendance {
 
     // REPO
     //////////////////////////////////////////
-    private final AddUserAttendancePort addAttendance;
+    private final AttendanceAddForUserPort addAttendance;
     private final BarcodeLoadPort barcodeLoadPort;
     private final LocalDateTime timestamp;
 
@@ -39,7 +40,7 @@ public class FormBarcodeGetAttendance {
     public FormBarcodeGetAttendance(LocalDateTime timestamp) {
         this.timestamp = timestamp;
         barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
-        addAttendance = Container.getBean(AddUserAttendancePort.class);
+        addAttendance = Container.getBean(AttendanceAddForUserPort.class);
     }
 
     @FXML void onOk(MouseEvent event) {
@@ -47,7 +48,7 @@ public class FormBarcodeGetAttendance {
 
         if (validate(barcodeIdStr)) {
             Long barcodeId = parseBarcodeStr(getOr(txtBarcodeId, ""));
-            addAttendance.addAttendance(barcodeId, timestamp);
+            addAttendance.verifyAndAddAttendance(barcodeId, timestamp);
             close();
         }
     }
@@ -56,8 +57,8 @@ public class FormBarcodeGetAttendance {
         ValidatorResponse validator = addAttendance.verifyAddAttendance(barcodeIdStr);
         if (validator.hasErrors()) {
             Map<String, String> errors = validator.getErrors();
-            if (errors.containsKey("barcodeId")) {
-                lblErrBarcodeId.setText(errors.get("barcodeId"));
+            if (errors.containsKey(BARCODE_ID)) {
+                lblErrBarcodeId.setText(errors.get(BARCODE_ID));
                 return false;
             }
         }

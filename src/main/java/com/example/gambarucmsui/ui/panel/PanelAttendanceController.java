@@ -1,8 +1,12 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.ports.interfaces.attendance.LoadAttendanceForUser;
+import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.ports.ValidatorResponse;
+import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.interfaces.attendance.AddUserAttendancePort;
+import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
+import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
+import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.FormBarcodeGetAttendance;
 import com.example.gambarucmsui.util.FormatUtil;
@@ -18,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize;
@@ -34,13 +39,15 @@ public class PanelAttendanceController implements PanelHeader {
 
     //  INIT
     //////////////////////////////////////////////////////////////////
-    private final AddUserAttendancePort addAttendance;
-    private final LoadAttendanceForUser loadAttendanceForUser;
+    private final UserLoadPort barcodeLoadPort;
+    private final AttendanceAddForUserPort attendanceAddForUserPort;
+    private final AttendanceLoadForUserPort attendanceLoadForUserPort;
 
     public PanelAttendanceController(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        addAttendance = Container.getBean(AddUserAttendancePort.class);
-        loadAttendanceForUser = Container.getBean(LoadAttendanceForUser.class);
+        attendanceAddForUserPort = Container.getBean(AttendanceAddForUserPort.class);
+        attendanceLoadForUserPort = Container.getBean(AttendanceLoadForUserPort.class);
+        barcodeLoadPort = Container.getBean(UserLoadPort.class);
     }
 
     @FXML
@@ -87,7 +94,7 @@ public class PanelAttendanceController implements PanelHeader {
     ///////////////////////////////////////////////////////////////
 
     private void listPageForDate() {
-        List<UserDetail> collect = loadAttendanceForUser.findAllForAttendanceDate(paginationDate)
+        List<UserDetail> collect = attendanceLoadForUserPort.findAllForAttendanceDate(paginationDate)
                 .stream().map(o -> UserDetail.fromEntityToFull(o.getBarcode(), FormatUtil.toDateTimeFormat(o.getTimestamp()))).collect(Collectors.toList());
         table.getItems().setAll(collect);
     }
@@ -100,7 +107,13 @@ public class PanelAttendanceController implements PanelHeader {
 
     public void onBarcodeRead(String barcodeIdStr) {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        addAttendance.addAttendance(barcodeId, getDateTimeOfPaginationOrNow());
+        ValidatorResponse res = attendanceAddForUserPort.verifyAndAddAttendance(barcodeId, getDateTimeOfPaginationOrNow());
+        if (res.hasErrors()) {
+            ToastView.showModal(res.getErrors().get(BARCODE_ID));
+        } else {
+            UserEntity user = barcodeLoadPort.findUserByBarcodeId(parseBarcodeStr(barcodeIdStr)).get();
+            ToastView.showAttendance(user);
+        }
         listPageForDate();
     }
 

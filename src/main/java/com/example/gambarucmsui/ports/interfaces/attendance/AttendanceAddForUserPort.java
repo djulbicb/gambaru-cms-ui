@@ -5,9 +5,9 @@ import com.example.gambarucmsui.ports.ValidatorResponse;
 
 import java.time.LocalDateTime;
 
-public interface AddUserAttendancePort {
+public interface AttendanceAddForUserPort {
     public ValidatorResponse verifyAddAttendance(String barcodeId);
-    public void addAttendance(Long barcodeId, LocalDateTime timestamp);
+    public ValidatorResponse verifyAndAddAttendance(Long barcodeId, LocalDateTime timestamp);
 
     void addToSaveBulk(BarcodeEntity barcode, LocalDateTime dateTime);
 

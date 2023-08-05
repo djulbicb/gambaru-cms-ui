@@ -1,29 +1,23 @@
 package com.example.gambarucmsui;
 
-import com.example.gambarucmsui.database.entity.TeamEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.ports.Container;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceUnitUtil;
-import jakarta.persistence.metamodel.EntityType;
 import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Set;
 
-public class H2Database {
+public class H2DatabaseConfig {
     private static Server server;
     private static Connection connection;
     protected static EntityManagerFactory entityManagerFactory;
-    private static EntityManager entityManager;
+    protected static EntityManager entityManager;
     @BeforeAll
     public static void setUps() throws SQLException {
         server = Server.createTcpServer().start();
@@ -46,6 +40,7 @@ public class H2Database {
 
     @AfterAll
     public static void tearDownAll() throws SQLException {
+        entityManager.clear();
         connection.close();
         server.stop();
     }

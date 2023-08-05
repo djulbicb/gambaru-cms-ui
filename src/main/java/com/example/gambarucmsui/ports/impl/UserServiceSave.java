@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isBarcodeString;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
@@ -121,7 +122,7 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
         Map<String, String> errors = new HashMap<>();
 
         if (!isBarcodeString(barcodeIdStr)) {
-            errors.put("barcodeId", "Skeniraj barkod.");
+            errors.put(BARCODE_ID, "Skeniraj barkod.");
             return new ValidatorResponse(errors);
         }
 
@@ -129,13 +130,13 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
         Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(barcodeId);
 
         if (barcodeOpt.isEmpty()) {
-            errors.put("barcodeId", "Taj barkod ne postoji u sistemu. Kreiraj ga prvo.");
+            errors.put(BARCODE_ID, "Taj barkod ne postoji u sistemu. Kreiraj ga prvo.");
             return new ValidatorResponse(errors);
         }
 
         BarcodeEntity barcode = barcodeOpt.get();
         if (barcode.getStatus() != BarcodeEntity.Status.NOT_USED) {
-            errors.put("barcodeId", "Taj barkod postoji, ali je već u upotrebi. Koristi drugi.");
+            errors.put(BARCODE_ID, "Taj barkod postoji, ali je već u upotrebi. Koristi drugi.");
             return new ValidatorResponse(errors);
         }
 
@@ -155,6 +156,11 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     @Override
     public Optional<UserEntity> loadUserByUserId(Long userId) {
         return userRepo.findById(userId);
+    }
+
+    @Override
+    public Optional<UserEntity> findUserByBarcodeId(Long barcodeId) {
+        return userRepo.findUserByBarcodeId(barcodeId);
     }
 
     @Override

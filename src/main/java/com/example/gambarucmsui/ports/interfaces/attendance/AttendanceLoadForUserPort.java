@@ -6,7 +6,7 @@ import com.example.gambarucmsui.database.entity.UserAttendanceEntity;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface LoadAttendanceForUser {
+public interface AttendanceLoadForUserPort {
     List<UserAttendanceEntity> findAllForAttendanceDate(LocalDate forDate);
     List<UserAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count);
 }

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
@@ -74,8 +75,8 @@ public class FormUserAddUserToTeamController implements Initializable {
 
         if (validator.hasErrors()) {
             Map<String, String> errors = validator.getErrors();
-            if (errors.containsKey("barcodeId")) {
-                lblErrUserBarcodeId.setText(errors.get("barcodeId"));
+            if (errors.containsKey(BARCODE_ID)) {
+                lblErrUserBarcodeId.setText(errors.get(BARCODE_ID));
             }
             if (errors.containsKey("teamName")) {
                 lblErrUserTeamName.setText(errors.get("teamName"));
