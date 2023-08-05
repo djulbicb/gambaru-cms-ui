@@ -16,6 +16,6 @@ public class Container {
                 return beanClass.cast(bean);
             }
         }
-        throw new RuntimeException("No bean with that class");
+        throw new RuntimeException(String.format("No bean with class: ", beanClass.getName()));
     }
 }

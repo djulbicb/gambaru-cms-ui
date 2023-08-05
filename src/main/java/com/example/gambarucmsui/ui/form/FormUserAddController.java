@@ -62,7 +62,7 @@ public class FormUserAddController implements Initializable {
     }
 
     @FXML
-    void onSave(MouseEvent event) {
+    void onSave(MouseEvent event) throws IOException {
         String firstNameStr = getOr(txtUserFirstName, "");
         String lastNameStr = getOr(txtUserLastName, "");
         String phoneStr = getOr(txtUserPhone, "");

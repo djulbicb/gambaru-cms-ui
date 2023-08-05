@@ -2,11 +2,15 @@ package com.example.gambarucmsui.ports.impl;
 
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.*;
+import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.user.*;
+import com.example.gambarucmsui.ports.interfaces.utility.ResizedAndOptimizedImagePort;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import com.example.gambarucmsui.ui.form.validation.UserInputValidator;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -21,6 +25,7 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     private final UserInputValidator userVal = new UserInputValidator();
     private final TeamInputValidator teamVal = new TeamInputValidator();
     private final UserAttendanceRepository userAttendanceRepo;
+    private final ResizedAndOptimizedImagePort resizedAndOptimizedImagePort;
 
     public UserServiceSave(
             BarcodeRepository barcodeRepo,
@@ -33,6 +38,7 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
         this.teamRepo = teamRepo;
         this.userPictureRepo = userPictureRepo;
         this.userAttendanceRepo = userAttendanceRepo;
+        resizedAndOptimizedImagePort = Container.getBean(ResizedAndOptimizedImagePort.class);
     }
 
     @Override
@@ -54,10 +60,11 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     }
 
     @Override
-    public UserEntity save (String firstName, String lastName, UserEntity.Gender gender, String phone, byte[] pictureData) {
+    public UserEntity save (String firstName, String lastName, UserEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
         UserEntity user = userRepo.save(new UserEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
         if (pictureData != null) {
-            UserPictureEntity picture = userPictureRepo.save(new UserPictureEntity(pictureData, user));
+            ByteArrayInputStream byteArrayInputStream = resizedAndOptimizedImagePort.resizeAndOptimizeImage(pictureData, 300);
+            UserPictureEntity picture = userPictureRepo.save(new UserPictureEntity(byteArrayInputStream.readAllBytes(), user));
             user.setPicture(picture);
         }
         return user;

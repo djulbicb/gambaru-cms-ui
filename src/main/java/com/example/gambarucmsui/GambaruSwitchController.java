@@ -118,6 +118,8 @@ public class GambaruSwitchController implements FxmlViewHandler {
             TeamRepository teamRepository = new TeamRepository(entityManager);
             UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
 
+            Container.addBean(new ImageService());
+
             Container.addBean(new UserServiceSave(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
             Container.addBean(new TeamServiceSave(teamRepository));
             Container.addBean(new AttendanceService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
