@@ -47,6 +47,37 @@ public class TeamServiceSaveIf implements TeamLoadPort, TeamSavePort, TeamUpdate
     }
 
     @Override
+    public ValidatorResponse verifyUpdateTeam(Long teamId, String teamName, String fee) {
+        Map<String, String> errors = new HashMap<>();
+        if (!teamValidator.isTeamNameValid(teamName)) {
+            errors.put("name", TeamInputValidator.errTeamName());
+        }
+        if (!teamValidator.isFeeValid(fee)) {
+            errors.put("membershipPayment", TeamInputValidator.errTeamFee());
+        }
+        if (ifTeamNameExists(teamName)) {
+            errors.put("name", TeamInputValidator.errTeamNameExists());
+        }
+//        boolean isFormCorrect = true;
+//        if (!validator.isTeamNameValid(teamNameStr)) {
+//            lblErrTeamName.setText(validator.errTeamName());
+//            isFormCorrect = false;
+//        }
+//        if (!teamNameStr.equals(inTeamName) && teamIfExists.ifTeamNameExists(teamNameStr)) {
+//            lblErrTeamName.setText(validator.errTeamNameExists());
+//            isFormCorrect = false;
+//        }
+//        if (!validator.isFeeValid(paymentFeeStr)) {
+//            lblErrMembershipFee.setText(validator.errTeamFee());
+//            isFormCorrect = false;
+//        }
+//
+//        return isFormCorrect;
+
+        return new ValidatorResponse(errors);
+    }
+
+    @Override
     public Response<TeamEntity> updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status) {
         Optional<TeamEntity> byId = teamRepository.findById(teamId);
         if (byId.isPresent()) {

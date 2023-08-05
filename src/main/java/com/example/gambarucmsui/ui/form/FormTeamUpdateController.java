@@ -2,6 +2,7 @@ package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
+import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +21,10 @@ import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class FormTeamUpdateController implements Initializable {
     private final TeamIfExists teamIfExists;
+    private final TeamUpdatePort teamUpdate;
+    private final Long inTeamId;
+    private final String inTeamName;
+    private final BigDecimal inMembershipPayment;
     private TeamInputValidator validator = new TeamInputValidator();
     // FXML
     //////////////////////////////////////////
@@ -29,23 +34,19 @@ public class FormTeamUpdateController implements Initializable {
     @FXML private TextField txtMembershipFee;
     @FXML private TextField txtTeamName;
 
-    // OUTPUT DATA
-    /////////////////////////////////////////
-    private boolean isFormReady = false;
-    private BigDecimal membershipPayment;
-    private String teamName;
-
-    public FormTeamUpdateController(String teamName, BigDecimal fee) {
-        this.teamName = teamName;
-        this.membershipPayment = fee;
+    public FormTeamUpdateController(Long inTeamId, String inTeamName, BigDecimal inMembershipPayment) {
+        this.inTeamId = inTeamId;
+        this.inTeamName = inTeamName;
+        this.inMembershipPayment = inMembershipPayment;
 
         teamIfExists = Container.getBean(TeamIfExists.class);
+        teamUpdate = Container.getBean(TeamUpdatePort.class);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        txtTeamName.setText(teamName);
-        txtMembershipFee.setText(String.valueOf(membershipPayment));
+        txtTeamName.setText(inTeamName);
+        txtMembershipFee.setText(String.valueOf(inMembershipPayment));
     }
 
     @FXML
@@ -70,67 +71,14 @@ public class FormTeamUpdateController implements Initializable {
         String paymentFeeStr = getOr(txtMembershipFee, "");
 
         if (validate(teamNameStr, paymentFeeStr)) {
-            isFormReady = true;
-            membershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
-            teamName = teamNameStr;
+            BigDecimal membershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
+            String teamName = teamNameStr.trim();
+            teamUpdate.updateTeam(inTeamId, teamName, membershipPayment);
             close();
         }
     }
 
-    private boolean validate(String teamNameStr, String paymentFeeStr) {
-        boolean isFormCorrect = true;
-        if (!validator.isTeamNameValid(teamNameStr)) {
-            lblErrTeamName.setText(validator.errTeamName());
-            isFormCorrect = false;
-        }
-        if (!teamNameStr.equals(teamName) && teamIfExists.ifTeamNameExists(teamNameStr)) {
-            lblErrTeamName.setText(validator.errTeamNameExists());
-            isFormCorrect = false;
-        }
-        if (!validator.isFeeValid(paymentFeeStr)) {
-            lblErrMembershipFee.setText(validator.errTeamFee());
-            isFormCorrect = false;
-        }
-
-        return isFormCorrect;
-    }
-
     private void close() {
         root.getScene().getWindow().hide();
-    }
-
-    public boolean isFormReady() {
-        return isFormReady;
-    }
-
-    public FormTeamUpdateController.Data getData () {
-        return new Data( membershipPayment, teamName);
-    }
-
-    public static class Data {
-        private BigDecimal membershipPaymentFee;
-        private String teamName;
-
-        public Data(BigDecimal membershipPaymentFee, String teamName) {
-            this.membershipPaymentFee = membershipPaymentFee;
-            this.teamName = teamName;
-        }
-
-        public BigDecimal getMembershipPaymentFee() {
-            return membershipPaymentFee;
-        }
-
-        public String getTeamName() {
-            return teamName;
-        }
-
-
-        @Override
-        public String toString() {
-            return "Data{" +
-                    ", membershipPaymentFee=" + membershipPaymentFee +
-                    ", teamName='" + teamName + '\'' +
-                    '}';
-        }
     }
 }
