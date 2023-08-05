@@ -25,7 +25,7 @@ class FormTeamAddControllerTest extends H2Database {
     @Test
     public void shouldSaveTeam() {
         // when
-        ValidatorResponse save = formTeamAddController.save("Lowe", "123");
+        ValidatorResponse save = formTeamAddController.saveOrReturnErrors("Lowe", "123");
 
         // then
         assertTrue(save.isOk());
@@ -36,7 +36,7 @@ class FormTeamAddControllerTest extends H2Database {
     public void shouldNotSaveTeamCauseDuplicateTeamName() {
         teamSavePort.save("Star", BigDecimal.valueOf(123));
         // when
-        ValidatorResponse save = formTeamAddController.save("Star", "123");
+        ValidatorResponse save = formTeamAddController.saveOrReturnErrors("Star", "123");
 
         // then
         assertTrue(save.hasErrors());
@@ -46,9 +46,9 @@ class FormTeamAddControllerTest extends H2Database {
     @Test
     public void shouldNotSaveTeamCauseWrongName() {
         // when
-        ValidatorResponse save1 = formTeamAddController.save(null, "123");
-        ValidatorResponse save2 = formTeamAddController.save("  ", "123");
-        ValidatorResponse save3 = formTeamAddController.save("", "123");
+        ValidatorResponse save1 = formTeamAddController.saveOrReturnErrors(null, "123");
+        ValidatorResponse save2 = formTeamAddController.saveOrReturnErrors("  ", "123");
+        ValidatorResponse save3 = formTeamAddController.saveOrReturnErrors("", "123");
 
         // then
         assertTrue(save1.hasErrors());
@@ -63,9 +63,9 @@ class FormTeamAddControllerTest extends H2Database {
     @Test
     public void shouldNotSaveTeamCauseWrongMembershipFee() {
         // when
-        ValidatorResponse save1 = formTeamAddController.save("Star", null);
-        ValidatorResponse save2 = formTeamAddController.save("Star", "   ");
-        ValidatorResponse save3 = formTeamAddController.save("Star", "");
+        ValidatorResponse save1 = formTeamAddController.saveOrReturnErrors("Star", null);
+        ValidatorResponse save2 = formTeamAddController.saveOrReturnErrors("Star", "   ");
+        ValidatorResponse save3 = formTeamAddController.saveOrReturnErrors("Star", "");
 
         // then
         assertTrue(save1.hasErrors());

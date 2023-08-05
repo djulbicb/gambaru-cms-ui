@@ -2,7 +2,6 @@ package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.Response;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
@@ -62,10 +61,10 @@ public class FormTeamAddController implements Initializable {
         String paymentFeeStr = getOr(txtMembershipFee, "");
         String teamNameStr = getOr(txtTeamName, "");
 
-        ValidatorResponse save = save(teamNameStr, paymentFeeStr);
+        ValidatorResponse res = saveOrReturnErrors(teamNameStr, paymentFeeStr);
 
-        if (save.hasErrors()) {
-            Map<String, String> errors = save.getErrors();
+        if (res.hasErrors()) {
+            Map<String, String> errors = res.getErrors();
             if (errors.containsKey("name")) {
                 lblErrTeamName.setText(errors.get("name"));
             }
@@ -75,11 +74,11 @@ public class FormTeamAddController implements Initializable {
             return;
         }
 
-        ToastView.showModal(save.getMessage());
+        ToastView.showModal(res.getMessage());
         close();
     }
 
-    public ValidatorResponse save(String teamNameStr, String paymentFeeStr) {
+    public ValidatorResponse saveOrReturnErrors(String teamNameStr, String paymentFeeStr) {
         ValidatorResponse verifySaveTeam = teamSavePort.verifySaveTeam(teamNameStr, paymentFeeStr);
         if (verifySaveTeam.isOk()) {
             String outTeamName = teamNameStr.trim();
