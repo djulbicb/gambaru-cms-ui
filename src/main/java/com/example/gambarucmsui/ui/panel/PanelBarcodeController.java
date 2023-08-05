@@ -1,10 +1,17 @@
 package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.database.entity.*;
-import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.Response;
-import com.example.gambarucmsui.ports.user.*;
+import com.example.gambarucmsui.ports.interfaces.attendance.AddUserAttendancePort;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.barcode.FetchOrGenerateBarcode;
+import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
+import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
+import com.example.gambarucmsui.ports.interfaces.user.UserAddToTeamPort;
+import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
+import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
 import com.example.gambarucmsui.util.generators.BarcodeView;
@@ -32,11 +39,6 @@ import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class PanelBarcodeController implements PanelHeader {
-    private final BarcodeRepository barcodeRepo;
-    private final TeamRepository teamRepo;
-    private final UserRepository userRepo;
-    private final UserMembershipRepository membershipRepo;
-    private final UserAttendanceRepository attendanceRepo;
     private final Stage primaryStage;
     private final UserSavePort userSavePort;
 
@@ -44,19 +46,22 @@ public class PanelBarcodeController implements PanelHeader {
     private final AddUserAttendancePort addAttendance;
     private final AddUserMembership addMembership;
     private final UserAddToTeamPort userAddToTeamPort;
-    public PanelBarcodeController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
-        this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
-        this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
-        this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
-        this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
-        this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
-        this.primaryStage = primaryStage;
+    private final TeamLoadPort teamLoadPort;
+    private final UserLoadPort userLoadPort;
+    private final BarcodeLoadPort barcodeLoadPort;
+    private final FetchOrGenerateBarcode fetchOrGenerateBarcode;
 
-        teamSavePort = Container.getBean(TeamSavePort.class);
-        userSavePort = Container.getBean(UserSavePort.class);
-        addAttendance = Container.getBean(AddUserAttendancePort.class);
-        addMembership = Container.getBean(AddUserMembership.class);
-        userAddToTeamPort = Container.getBean(UserAddToTeamPort.class);
+    public PanelBarcodeController(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.teamSavePort = Container.getBean(TeamSavePort.class);
+        this.userSavePort = Container.getBean(UserSavePort.class);
+        this.addAttendance = Container.getBean(AddUserAttendancePort.class);
+        this.addMembership = Container.getBean(AddUserMembership.class);
+        this.userAddToTeamPort = Container.getBean(UserAddToTeamPort.class);
+        this.teamLoadPort = Container.getBean(TeamLoadPort.class);
+        this.userLoadPort = Container.getBean(UserLoadPort.class);
+        this.barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
+        this.fetchOrGenerateBarcode = Container.getBean(FetchOrGenerateBarcode.class);
     }
 
     @FXML
@@ -80,7 +85,7 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     public void fetchBarcodes() {
-        List<BarcodeEntity> barcodeEntities = barcodeRepo.fetchOrGenerateBarcodes(100, BarcodeEntity.Status.NOT_USED);
+        List<BarcodeEntity> barcodeEntities = fetchOrGenerateBarcode.fetchOrGenerateBarcodes(100, BarcodeEntity.Status.NOT_USED);
         List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
         String csv = listToCsv(ids);
         txtBarcodes.setText(csv);
@@ -96,7 +101,7 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     private void fetchNewBarcodes() {
-        List<BarcodeEntity> barcodeEntities = barcodeRepo.generateNewBarcodes(100);
+        List<BarcodeEntity> barcodeEntities = fetchOrGenerateBarcode.generateNewBarcodes(100);
         List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
         String csv = listToCsv(ids);
         txtBarcodes.setText(csv);
@@ -129,7 +134,7 @@ public class PanelBarcodeController implements PanelHeader {
         if (file == null) {
             return;
         }
-        List<BarcodeEntity> barcodeId = barcodeRepo.findByIds("barcodeId", collect);
+        List<BarcodeEntity> barcodeId = barcodeLoadPort.findByIds(collect);
 
         for (BarcodeEntity barcodeEntity : barcodeId) {
             BarcodeView barcodeView = BarcodeGenerator.generateBarcodeImage(barcodeEntity.getBarcodeId(), 300, 100);
@@ -170,7 +175,7 @@ public class PanelBarcodeController implements PanelHeader {
             protected Void call() throws Exception {
                 int count = getCount();
                 for (int i = 0; i < count; i++) {
-                    List<BarcodeEntity> barcodes = barcodeRepo.findAllByStatus(BarcodeEntity.Status.ASSIGNED);
+                    List<BarcodeEntity> barcodes = barcodeLoadPort.findAllByStatus(BarcodeEntity.Status.ASSIGNED);
                     for (BarcodeEntity barcode : barcodes) {
                         addAttendance.addToSaveBulk(barcode, getDateTime());
                     }
@@ -198,7 +203,7 @@ public class PanelBarcodeController implements PanelHeader {
             protected Void call() throws Exception {
                 int count = getCount();
                 for (int i = 0; i < count; i++) {
-                    List<BarcodeEntity> barcodes = barcodeRepo.findAllByStatus(BarcodeEntity.Status.ASSIGNED);
+                    List<BarcodeEntity> barcodes = barcodeLoadPort.findAllByStatus(BarcodeEntity.Status.ASSIGNED);
                     for (BarcodeEntity barcode : barcodes) {
                         addMembership.addToSaveBulkMembership(barcode, getDateTime(), getDecimal());
                     }
@@ -229,16 +234,15 @@ public class PanelBarcodeController implements PanelHeader {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                List<UserEntity> users = userRepo.findAll();
-                List<TeamEntity> teams = teamRepo.findAllActive();
+                List<UserEntity> users = userLoadPort.findAll();
+                List<TeamEntity> teams = teamLoadPort.findAllActive();
                 List<BarcodeEntity> barcodes = new ArrayList<>();
                 for (UserEntity user : users) {
-                    BarcodeEntity barcode = barcodeRepo.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
+                    BarcodeEntity barcode = fetchOrGenerateBarcode.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
                     TeamEntity team = pickRandom(teams);
-
                     userAddToTeamPort.addUserToPort(user.getUserId(), barcode.getBarcodeId(), team.getName());
                 }
-                barcodeRepo.saveMultiple(barcodes);
+//                barcodeRepo.saveMultiple(barcodes); TODO
                 Platform.runLater(() -> {
                     closeAlertDialog();
                 });

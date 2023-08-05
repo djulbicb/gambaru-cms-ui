@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ports.user;
+package com.example.gambarucmsui.ports.interfaces.user;
 
 public interface IsUserAlreadyInThisTeamPort {
     boolean isUserAlreadyInThisTeam(Long userId, Long teamId);

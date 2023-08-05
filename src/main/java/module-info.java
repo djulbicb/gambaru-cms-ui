@@ -31,4 +31,11 @@ module com.example.gambarucmsui {
     opens com.example.gambarucmsui.util to javafx.controls;
     exports com.example.gambarucmsui.ui.panel;
     opens com.example.gambarucmsui.ui.panel to javafx.fxml;
+    opens com.example.gambarucmsui.ports.interfaces.user to org.hibernate.orm.core;
+    opens com.example.gambarucmsui.ports.interfaces.team to org.hibernate.orm.core;
+    opens com.example.gambarucmsui.ports.interfaces.stats to org.hibernate.orm.core;
+    opens com.example.gambarucmsui.ports.interfaces.barcode to org.hibernate.orm.core;
+    opens com.example.gambarucmsui.ports.interfaces.membership to org.hibernate.orm.core;
+    opens com.example.gambarucmsui.ports.interfaces.attendance to org.hibernate.orm.core;
+    opens com.example.gambarucmsui.ports.interfaces.utility to org.hibernate.orm.core;
 }

@@ -5,11 +5,10 @@ import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
 import com.example.gambarucmsui.database.repo.UserMembershipRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
-import com.example.gambarucmsui.ports.user.AddUserAttendancePort;
-import com.example.gambarucmsui.ports.user.AddUserMembership;
+import com.example.gambarucmsui.ports.interfaces.attendance.AddUserAttendancePort;
+import com.example.gambarucmsui.ports.interfaces.attendance.LoadAttendanceForUser;
 import com.example.gambarucmsui.ui.ToastView;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,13 +16,13 @@ import java.util.*;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
-public class AttendanceAndMembershipServicePort implements AddUserAttendancePort, AddUserMembership, LoadAttendanceForUser {
+public class AttendanceService implements AddUserAttendancePort, LoadAttendanceForUser {
 
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
     private final BarcodeRepository barcodeRepo;
 
-    public AttendanceAndMembershipServicePort(
+    public AttendanceService(
             BarcodeRepository barcodeRepo,
             UserAttendanceRepository attendanceRepo,
             UserMembershipRepository membershipRepo) {
@@ -33,7 +32,7 @@ public class AttendanceAndMembershipServicePort implements AddUserAttendancePort
     }
 
     @Override
-    public ValidatorResponse verifyForAttendance(String barcodeIdStr) {
+    public ValidatorResponse verifyAddAttendance(String barcodeIdStr) {
         Map<String, String> errors = new HashMap<>();
         if (!isLong(barcodeIdStr)) {
             if (barcodeIdStr.isBlank()) {
@@ -90,33 +89,12 @@ public class AttendanceAndMembershipServicePort implements AddUserAttendancePort
     }
 
     @Override
-    public void addMembership(Long barcodeId, int month, int year, BigDecimal membershipPayment) {
-        Optional<BarcodeEntity> byId = barcodeRepo.findById(barcodeId);
-        if (byId.isPresent()) {
-            BarcodeEntity barcode = byId.get();
-
-            LocalDateTime now = LocalDateTime.now();
-            UserMembershipPaymentEntity entity = new UserMembershipPaymentEntity(barcode, month, year, now, membershipPayment);
-            barcode.setLastMembershipPaymentTimestamp(now);
-
-            membershipRepo.save(entity);
-        }
-    }
-
-    List<UserMembershipPaymentEntity> membershipPaymentEntities = new ArrayList<>();
-    @Override
-    public void addToSaveBulkMembership(BarcodeEntity barcode,LocalDateTime timestamp, BigDecimal membershipPayment) {
-        membershipPaymentEntities.add(new UserMembershipPaymentEntity(barcode, timestamp.getMonthValue(), timestamp.getYear(), LocalDateTime.now(), membershipPayment));
-    }
-
-    @Override
-    public void executeBulkMembership() {
-        membershipRepo.saveAll(membershipPaymentEntities);
-        membershipPaymentEntities.clear();
-    }
-
-    @Override
     public List<UserAttendanceEntity> findAllForAttendanceDate(LocalDate forDate) {
         return attendanceRepo.findAllForAttendanceDate(forDate);
+    }
+
+    @Override
+    public List<UserAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count) {
+        return attendanceRepo.fetchLastNEntriesForUserAttendance(barcodeIds, count);
     }
 }

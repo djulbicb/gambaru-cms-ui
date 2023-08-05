@@ -1,7 +1,8 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
-import com.example.gambarucmsui.database.repo.UserMembershipRepository;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.interfaces.stats.StaticticsAttendance;
+import com.example.gambarucmsui.ports.interfaces.stats.StatisticsMembership;
 import com.example.gambarucmsui.ui.dto.statistics.AttendanceCount;
 import com.example.gambarucmsui.ui.dto.statistics.MembershipCount;
 import javafx.fxml.FXML;
@@ -13,18 +14,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.example.gambarucmsui.util.LayoutUtil.stretchInsideAnchorPance;
 
 public class PanelStatisticsController implements PanelHeader{
-    private final UserAttendanceRepository attendanceRepo;
-    private final UserMembershipRepository membershipRepo;
+    private final StaticticsAttendance attendanceStat;
+    private final StatisticsMembership membershipStat;
 
-    public PanelStatisticsController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
-        attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
-        membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
+    public PanelStatisticsController(Stage primaryStage) {
+        attendanceStat = Container.getBean(StaticticsAttendance.class);
+        membershipStat = Container.getBean(StatisticsMembership.class);
     }
 
     @FXML private AnchorPane graphAttendancePane;
@@ -39,8 +39,8 @@ public class PanelStatisticsController implements PanelHeader{
     public void viewSwitched() {
         System.out.println("Switched to panel Statistic.");
 
-        List<AttendanceCount> attendanceData = attendanceRepo.getAttendanceDataLast60Days();
-        List<MembershipCount> membershipData = membershipRepo.getMembershipCountByMonthLastYear();
+        List<AttendanceCount> attendanceData = attendanceStat.getAttendanceDataLast60Days();
+        List<MembershipCount> membershipData = membershipStat.getMembershipCountByMonthLastYear();
 
         populateAttendanceGraph(attendanceData);
         populateMembershipGraph(membershipData);

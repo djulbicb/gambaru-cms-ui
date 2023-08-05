@@ -20,24 +20,6 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         return fetchOrGenerateBarcodes(1, BarcodeEntity.Status.NOT_USED).get(0);
     }
 
-    public List<UserMembershipPaymentEntity> findAllMembershipsForMonthAndYear(int month, int year) {
-        String fetchBarcodesFromMembershipQuery = "SELECT um FROM UserMembershipPaymentEntity um WHERE um.year = :year AND um.month = :month ORDER BY um.timestamp DESC";
-        TypedQuery<UserMembershipPaymentEntity> query = entityManager.createQuery(fetchBarcodesFromMembershipQuery, UserMembershipPaymentEntity.class);
-        query.setParameter("year", year);
-        query.setParameter("month", month);
-        return query.getResultList();
-    }
-
-    public boolean isMembershipAlreadyPayedByBarcodeAndMonthAndYear(Long barcodeId, int month, int year) {
-        String fetchMembershipsQuery = "SELECT um FROM UserMembershipPaymentEntity um WHERE um.barcode.barcodeId = :barcodeId AND um.year = :year AND um.month = :month";
-        TypedQuery<UserMembershipPaymentEntity> query = entityManager.createQuery(fetchMembershipsQuery, UserMembershipPaymentEntity.class);
-        query.setParameter("barcodeId", barcodeId);
-        query.setParameter("year", year);
-        query.setParameter("month", month);
-        List<UserMembershipPaymentEntity> memberships = query.getResultList();
-        return !memberships.isEmpty();
-    }
-
     public List<BarcodeEntity> fetchOrGenerateBarcodes(int count, BarcodeEntity.Status status) {
         List<BarcodeEntity> barcodes = findBarcodesByStatus(count, status);
 
@@ -93,10 +75,10 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         saveAll(barcodes);
     }
 
-    public List<BarcodeEntity> findByTeam(TeamEntity team) {
-        String jpql = "SELECT b FROM BarcodeEntity b WHERE b.team = :team";
+    public List<BarcodeEntity> findByTeam(Long teamId) {
+        String jpql = "SELECT b FROM BarcodeEntity b WHERE b.team.teamId = :teamId";
         TypedQuery<BarcodeEntity> query = entityManager.createQuery(jpql, BarcodeEntity.class);
-        query.setParameter("team", team);
+        query.setParameter("teamId", teamId);
         return query.getResultList();
     }
 

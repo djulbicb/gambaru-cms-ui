@@ -2,8 +2,8 @@ package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.UserEntity;
-import com.example.gambarucmsui.database.repo.BarcodeRepository;
-import com.example.gambarucmsui.database.repo.TeamRepository;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,11 +16,10 @@ import java.util.Optional;
 import static com.example.gambarucmsui.util.FormatUtil.*;
 
 public class FormBarcodeGetMembership {
+    private final BarcodeLoadPort barcodeLoadPort;
 
-    // REPO
+    // PORTS
     //////////////////////////////////////////
-    private final BarcodeRepository barcodeRepo;
-    private final TeamRepository teamRepo;
 
     // FXML
     //////////////////////////////////////////
@@ -39,9 +38,8 @@ public class FormBarcodeGetMembership {
     private boolean isFormReady = false;
     private Long outBarcodeId;
 
-    public FormBarcodeGetMembership(BarcodeRepository barcodeRepo, TeamRepository teamRepo) {
-        this.barcodeRepo = barcodeRepo;
-        this.teamRepo = teamRepo;
+    public FormBarcodeGetMembership() {
+        barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
     }
 
     @FXML void onOk(MouseEvent event) {
@@ -74,7 +72,7 @@ public class FormBarcodeGetMembership {
         }
 
         Long barcode = parseBarcodeStr(barcodeIdStr);
-        Optional<BarcodeEntity> barcodeEntityOptional = barcodeRepo.findById(barcode);
+        Optional<BarcodeEntity> barcodeEntityOptional = barcodeLoadPort.findById(barcode);
         if (barcodeEntityOptional.isEmpty()) {
             lblErrBarcodeId.setText("Taj barkod ne postoji u bazi.");
             return;

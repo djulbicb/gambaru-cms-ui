@@ -1,6 +1,7 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.database.repo.TeamRepository;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.interfaces.team.IsTeamExists;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,14 +15,11 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static com.example.gambarucmsui.util.FormatUtil.isDecimal;
+import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class FormTeamUpdateController implements Initializable {
-    // Input
-    //////////////////////////////////////////
-    private final TeamRepository teamRepo;
-    private final Data inputData;
+    private final IsTeamExists isTeamExists;
     private TeamInputValidator validator = new TeamInputValidator();
     // FXML
     //////////////////////////////////////////
@@ -37,15 +35,17 @@ public class FormTeamUpdateController implements Initializable {
     private BigDecimal membershipPayment;
     private String teamName;
 
-    public FormTeamUpdateController(FormTeamUpdateController.Data inputFormData, TeamRepository teamRepo) {
-        this.teamRepo = teamRepo;
-        this.inputData = inputFormData;
+    public FormTeamUpdateController(String teamName, BigDecimal fee) {
+        this.teamName = teamName;
+        this.membershipPayment = fee;
+
+        isTeamExists = Container.getBean(IsTeamExists.class);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        txtTeamName.setText(inputData.getTeamName());
-        txtMembershipFee.setText(inputData.getMembershipPaymentFee().toString());
+        txtTeamName.setText(teamName);
+        txtMembershipFee.setText(String.valueOf(membershipPayment));
     }
 
     @FXML
@@ -83,7 +83,7 @@ public class FormTeamUpdateController implements Initializable {
             lblErrTeamName.setText(validator.errTeamName());
             isFormCorrect = false;
         }
-        if (!teamNameStr.equals(inputData.getTeamName()) && teamRepo.ifTeamNameExists(teamNameStr)) {
+        if (!teamNameStr.equals(teamName) && isTeamExists.ifTeamNameExists(teamNameStr)) {
             lblErrTeamName.setText(validator.errTeamNameExists());
             isFormCorrect = false;
         }

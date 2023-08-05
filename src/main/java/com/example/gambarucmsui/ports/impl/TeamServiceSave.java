@@ -3,15 +3,16 @@ package com.example.gambarucmsui.ports.impl;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.repo.TeamRepository;
 import com.example.gambarucmsui.ports.Response;
-import com.example.gambarucmsui.ports.user.TeamLoadPort;
-import com.example.gambarucmsui.ports.user.TeamSavePort;
-import com.example.gambarucmsui.ports.user.TeamUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.team.IsTeamExists;
+import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public class TeamServiceSave implements TeamLoadPort, TeamSavePort, TeamUpdatePort {
+public class TeamServiceSave implements TeamLoadPort, TeamSavePort, TeamUpdatePort, IsTeamExists {
 
     private final TeamRepository teamRepository;
 
@@ -27,9 +28,9 @@ public class TeamServiceSave implements TeamLoadPort, TeamSavePort, TeamUpdatePo
         TeamEntity en = new TeamEntity(teamName, TeamEntity.Status.ACTIVE, membershipFee);
         return Response.ok(String.format("Tim %s je uspešno sačuvan.", teamName), teamRepository.save(en));
     }
-    
+
     @Override
-    public Response<TeamEntity> updateTeam(Long teamId, String teamName, BigDecimal membershipFee) {
+    public Response<TeamEntity> updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status) {
         Optional<TeamEntity> byId = teamRepository.findById(teamId);
         if (byId.isPresent()) {
             TeamEntity en = byId.get();
@@ -39,8 +40,18 @@ public class TeamServiceSave implements TeamLoadPort, TeamSavePort, TeamUpdatePo
                 return Response.bad("Tim sa tim imenom već postoji.");
             }
 
-            en.setName(teamName);
-            en.setMembershipPayment(membershipFee);
+            if (teamName != null) {
+                en.setName(teamName);
+            }
+            if (membershipFee != null) {
+                en.setMembershipPayment(membershipFee);
+            }
+            if (teamName != null) {
+                en.setName(teamName);
+            }
+            if (status != null) {
+                en.setStatus(status);
+            }
             teamRepository.save(en);
 
             return Response.ok(String.format("Tim %s je uspešno updejtovan.", teamName), teamRepository.save(en));
@@ -56,6 +67,16 @@ public class TeamServiceSave implements TeamLoadPort, TeamSavePort, TeamUpdatePo
     @Override
     public TeamEntity findByName(String teamName) {
         return teamRepository.findByName(teamName);
+    }
+
+    @Override
+    public Optional<TeamEntity> findById(Long teamId) {
+        return teamRepository.findById(teamId);
+    }
+
+    @Override
+    public boolean ifTeamNameExists(String teamName) {
+        return teamRepository.ifTeamNameExists(teamName);
     }
 }
 

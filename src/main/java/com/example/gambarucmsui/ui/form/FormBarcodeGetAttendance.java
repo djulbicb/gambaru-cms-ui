@@ -4,8 +4,8 @@ import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
-import com.example.gambarucmsui.ports.user.AddUserAttendancePort;
-import com.example.gambarucmsui.ports.user.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.attendance.AddUserAttendancePort;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -53,7 +53,7 @@ public class FormBarcodeGetAttendance {
     }
 
     boolean validate(String barcodeIdStr) {
-        ValidatorResponse validator = addAttendance.verifyForAttendance(barcodeIdStr);
+        ValidatorResponse validator = addAttendance.verifyAddAttendance(barcodeIdStr);
         if (validator.hasErrors()) {
             Map<String, String> errors = validator.getErrors();
             if (errors.containsKey("barcodeId")) {

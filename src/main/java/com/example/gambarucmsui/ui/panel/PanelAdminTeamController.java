@@ -2,25 +2,23 @@ package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
-import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.Response;
-import com.example.gambarucmsui.ports.user.TeamSavePort;
-import com.example.gambarucmsui.ports.user.TeamUpdatePort;
-import com.example.gambarucmsui.ports.user.UserSavePort;
-import com.example.gambarucmsui.ports.user.UserUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
+import com.example.gambarucmsui.ports.interfaces.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
 import com.example.gambarucmsui.ui.form.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,28 +31,23 @@ public class PanelAdminTeamController implements PanelHeader {
     private TableView<TeamDetail> tableTeam;
 
     private final Stage primaryStage;
-    private final UserRepository userRepo;
-    private final UserAttendanceRepository attendanceRepo;
-    private final UserMembershipRepository membershipRepo;
-    private final TeamRepository teamRepo;
-    private final BarcodeRepository barcodeRepo;
     private final UserSavePort userSavePort;
     private final UserUpdatePort userUpdatePort;
     private final TeamSavePort teamSavePort;
+    private final TeamLoadPort teamLoadPort;
     private final TeamUpdatePort teamUpdatePort;
+    private final BarcodeLoadPort barcodeLoadPort;
+    private final BarcodeUpdatePort barcodeUpdatePort;
 
-    public PanelAdminTeamController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
+    public PanelAdminTeamController(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.userRepo = (UserRepository) repositoryMap.get(UserRepository.class);
-        this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
-        this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
-        this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
-        this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
-
         userSavePort = Container.getBean(UserSavePort.class);
         userUpdatePort = Container.getBean(UserUpdatePort.class);
         teamSavePort = Container.getBean(TeamSavePort.class);
         teamUpdatePort = Container.getBean(TeamUpdatePort.class);
+        teamLoadPort = Container.getBean(TeamLoadPort.class);
+        barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
+        barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
     }
     @FXML
     public void initialize() {
@@ -85,27 +78,17 @@ public class PanelAdminTeamController implements PanelHeader {
     }
 
     void loadTableTeam() {
-        List<TeamDetail> teams = teamRepo.findAllActive().stream().map(en -> new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
+        List<TeamDetail> teams = teamLoadPort.findAllActive().stream().map(en -> new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
         tableTeam.getItems().setAll(teams);
     }
 
     @FXML
     public void addTeamForm() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FORM_TEAM_ADD));
-        FormTeamAddController controller = new FormTeamAddController(teamRepo);
+        FormTeamAddController controller = new FormTeamAddController();
 
-        fxmlLoader.setController(controller);
-        VBox root = fxmlLoader.load();
+        Pane root = loadFxml(FORM_TEAM_ADD, controller);
+        createStage("Kreiraj novi tim", root, primaryStage).showAndWait();
 
-        // Create the modal dialog
-        Stage dialogStage = createStage("Kreiraj novi tim", root, primaryStage);
-        dialogStage.showAndWait();
-
-        if (controller.isFormReady()) {
-            FormTeamAddController.Data data = controller.getData();
-            Response<TeamEntity> save = teamSavePort.save(data.getTeamName(), data.getMembershipPaymentFee());
-            ToastView.showModal(save.getMessage());
-        }
         loadTableTeam();
     }
 
@@ -117,20 +100,11 @@ public class PanelAdminTeamController implements PanelHeader {
             return;
         }
 
-        FormTeamUpdateController.Data inputDto = new FormTeamUpdateController.Data(selectedItem.getFee(), selectedItem.getName());
-        FormTeamUpdateController controller = new FormTeamUpdateController(inputDto, teamRepo);
+        FormTeamUpdateController controller = new FormTeamUpdateController(selectedItem.getName(), selectedItem.getFee());
         Pane root = loadFxml(FORM_TEAM_UPDATE, controller);
 
         Stage dialogStage = createStage("Kreiraj novi tim", root, primaryStage);
         dialogStage.showAndWait();
-
-        if (controller.isFormReady()) {
-            FormTeamUpdateController.Data data = controller.getData();
-            Response<TeamEntity> teamEntityResponse = teamUpdatePort.updateTeam(selectedItem.getTeamId(), data.getTeamName(), data.getMembershipPaymentFee());
-            loadTableTeam();
-            ToastView.showModal(teamEntityResponse.getMessage());
-
-        }
     }
 
     @FXML
@@ -141,7 +115,7 @@ public class PanelAdminTeamController implements PanelHeader {
             return;
         }
 
-        Optional<TeamEntity> teamOpt = teamRepo.findById(selectedItem.getTeamId());
+        Optional<TeamEntity> teamOpt = teamLoadPort.findById(selectedItem.getTeamId());
         if (teamOpt.isEmpty()) {
             return;
         }
@@ -160,14 +134,11 @@ public class PanelAdminTeamController implements PanelHeader {
         alert.getDialogPane().getStylesheets().add(getClass().getResource(CSS).toExternalForm());
         alert.showAndWait().ifPresent(response -> {
             if (response == yesButton) {
-                List<BarcodeEntity> barcodes = barcodeRepo.findByTeam(team);
+                List<BarcodeEntity> barcodes = barcodeLoadPort.findByTeam(team.getTeamId());
                 for (BarcodeEntity barcode : barcodes) {
-                    barcode.setStatus(BarcodeEntity.Status.DELETED);
+                    barcodeUpdatePort.updateBarcode(barcode.getBarcodeId(), BarcodeEntity.Status.DELETED);
                 }
-                barcodeRepo.saveMultiple(barcodes);
-                team.setStatus(TeamEntity.Status.DELETED);
-                team.setName(team.getName() + " (Obrisan)");
-                teamRepo.updateOne(team);
+                teamUpdatePort.updateTeam(team.getTeamId(), team.getName() + " (Obrisan)", team.getMembershipPayment(), TeamEntity.Status.DELETED);
                 ToastView.showModal("Tim je obrisan");
                 loadTableTeam();
             }

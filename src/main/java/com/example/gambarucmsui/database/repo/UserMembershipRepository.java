@@ -6,9 +6,7 @@ import com.example.gambarucmsui.ui.dto.statistics.MembershipCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +44,7 @@ public class UserMembershipRepository extends Repository<UserMembershipPaymentEn
         return membershipCounts;
     }
 
-    public List<UserMembershipPaymentEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count) {
+    public List<UserMembershipPaymentEntity> fetchLastNEntriesForUserMembership(List<BarcodeEntity> barcodeIds, int count) {
         String jpql = "SELECT um FROM UserMembershipPaymentEntity um " +
                 "WHERE um.barcode IN :barcodeIds " +
                 "ORDER BY um.timestamp DESC";
@@ -55,5 +53,24 @@ public class UserMembershipRepository extends Repository<UserMembershipPaymentEn
                 .setParameter("barcodeIds", barcodeIds)
                 .setMaxResults(count)
                 .getResultList();
+    }
+
+
+    public List<UserMembershipPaymentEntity> findAllMembershipsForMonthAndYear(int month, int year) {
+        String fetchBarcodesFromMembershipQuery = "SELECT um FROM UserMembershipPaymentEntity um WHERE um.year = :year AND um.month = :month ORDER BY um.timestamp DESC";
+        TypedQuery<UserMembershipPaymentEntity> query = entityManager.createQuery(fetchBarcodesFromMembershipQuery, UserMembershipPaymentEntity.class);
+        query.setParameter("year", year);
+        query.setParameter("month", month);
+        return query.getResultList();
+    }
+
+    public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, int month, int year) {
+        String fetchMembershipsQuery = "SELECT um FROM UserMembershipPaymentEntity um WHERE um.barcode.barcodeId = :barcodeId AND um.year = :year AND um.month = :month";
+        TypedQuery<UserMembershipPaymentEntity> query = entityManager.createQuery(fetchMembershipsQuery, UserMembershipPaymentEntity.class);
+        query.setParameter("barcodeId", barcodeId);
+        query.setParameter("year", year);
+        query.setParameter("month", month);
+        List<UserMembershipPaymentEntity> memberships = query.getResultList();
+        return !memberships.isEmpty();
     }
 }

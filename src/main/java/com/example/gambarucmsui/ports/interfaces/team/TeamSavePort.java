@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ports.user;
+package com.example.gambarucmsui.ports.interfaces.team;
 
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Response;

@@ -1,11 +1,8 @@
 package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.database.repo.*;
-import com.example.gambarucmsui.ports.impl.AttendanceAndMembershipServicePort;
+import com.example.gambarucmsui.ports.impl.*;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.impl.BarcodeService;
-import com.example.gambarucmsui.ports.impl.TeamServiceSave;
-import com.example.gambarucmsui.ports.impl.UserServiceSave;
 import com.example.gambarucmsui.ui.panel.*;
 import com.example.gambarucmsui.util.PathUtil;
 import jakarta.persistence.EntityManager;
@@ -71,24 +68,24 @@ public class GambaruSwitchController implements FxmlViewHandler {
 
     @FXML
     private void initialize() throws IOException {
-        HashMap<Class, Object> repositoryMap = loadEntityManagementSystem();
+        loadEntityManagementSystem();
 
         panelAttendanceController = new PanelAttendanceController(primaryStage);
         panelAttendance = loadFxml(PathUtil.PANEL_ATTENDANCE, panelAttendanceController);
 
-        panelMembershipController = new PanelMembershipController(primaryStage, repositoryMap);
+        panelMembershipController = new PanelMembershipController(primaryStage);
         panelMembership = loadFxml(PathUtil.PANEL_MEMBERSHIP, panelMembershipController);
 
-        panelStatisticsController = new PanelStatisticsController(primaryStage, repositoryMap);
+        panelStatisticsController = new PanelStatisticsController(primaryStage);
         panelStatistics = loadFxml(PathUtil.PANEL_STATISTICS, panelStatisticsController);
 
-        panelAdminUserController = new PanelAdminUserController(primaryStage, repositoryMap);
+        panelAdminUserController = new PanelAdminUserController(primaryStage);
         panelAdminUser = loadFxml(PathUtil.PANEL_ADMIN_USER, panelAdminUserController);
 
-        panelAdminTeamController = new PanelAdminTeamController(primaryStage, repositoryMap);
+        panelAdminTeamController = new PanelAdminTeamController(primaryStage);
         panelAdminTeam = loadFxml(PathUtil.PANEL_ADMIN_TEAM, panelAdminTeamController);
 
-        panelBarcodeController = new PanelBarcodeController(primaryStage, repositoryMap);
+        panelBarcodeController = new PanelBarcodeController(primaryStage);
         panelBarcode = loadFxml(PathUtil.PANEL_BARCODE, panelBarcodeController);
 
         setPanelHeaderToggleButtonsToIgnoreAction();
@@ -97,9 +94,9 @@ public class GambaruSwitchController implements FxmlViewHandler {
 
 
     private void setPanelHeaderToggleButtonsToIgnoreAction() {
-        // Barcode scanning sometimes forced view switching.
+        // Barcode scanning sometimes forces view switching.
         // Because barcode scanner inputs ENTER at the end,
-        // and if toggle button view was "selected" its going to trigger toggle
+        // and if toggle button view was "in-focus" its going to trigger toggle
         for (Toggle toggle : headerToggleBtns.getToggles()) {
             ToggleButton button = (ToggleButton) toggle;
             button.setOnAction(actionEvent -> {
@@ -108,7 +105,7 @@ public class GambaruSwitchController implements FxmlViewHandler {
         }
     }
 
-    HashMap<Class, Object> loadEntityManagementSystem() {
+    void loadEntityManagementSystem() {
         System.out.println("Entity Managment starting.");
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("gambaru-entity-manager");
@@ -123,19 +120,12 @@ public class GambaruSwitchController implements FxmlViewHandler {
 
             Container.addBean(new UserServiceSave(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
             Container.addBean(new TeamServiceSave(teamRepository));
-            Container.addBean(new AttendanceAndMembershipServicePort(barcodeRepository, userAttendanceRepository, userMembershipRepository));
+            Container.addBean(new AttendanceService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
             Container.addBean(new BarcodeService(barcodeRepository));
-
-            HashMap<Class, Object> repos = new HashMap<>();
-            repos.put(UserRepository.class, userRepository);
-            repos.put(BarcodeRepository.class, barcodeRepository);
-            repos.put(UserAttendanceRepository.class, userAttendanceRepository);
-            repos.put(UserMembershipRepository.class, userMembershipRepository);
-            repos.put(TeamRepository.class, teamRepository);
+            Container.addBean(new StatisticsService(userAttendanceRepository, userMembershipRepository));
+            Container.addBean(new MembershipService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
 
             System.out.println("Entity Managment started.");
-            return repos;
-
         } catch (Exception e) {
             System.out.println(String.format("There was an error starting entity system", e));
 

@@ -3,11 +3,10 @@ package com.example.gambarucmsui.ports.impl;
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ports.ValidatorResponse;
-import com.example.gambarucmsui.ports.user.*;
+import com.example.gambarucmsui.ports.interfaces.user.*;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import com.example.gambarucmsui.ui.form.validation.UserInputValidator;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -152,9 +151,16 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     }
 
     @Override
+    public List<UserEntity> findAll() {
+        return userRepo.findAll();
+    }
+
+    @Override
     public List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
         return userRepo.findAll(page, pageSize, sortColumn, teamName, firstName, lastName, barcode, isOnlyActive);
     }
+
+
 
     @Override
     public boolean isUserAlreadyInThisTeam(Long userId, Long teamId) {

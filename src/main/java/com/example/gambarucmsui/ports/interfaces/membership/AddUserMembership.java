@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ports.user;
+package com.example.gambarucmsui.ports.interfaces.membership;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 

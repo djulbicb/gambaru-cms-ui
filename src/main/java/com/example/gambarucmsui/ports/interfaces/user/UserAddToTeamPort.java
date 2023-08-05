@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ports.user;
+package com.example.gambarucmsui.ports.interfaces.user;
 
 import com.example.gambarucmsui.ports.ValidatorResponse;
 

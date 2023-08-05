@@ -3,7 +3,7 @@ package com.example.gambarucmsui.ui.form;
 import com.example.gambarucmsui.database.entity.UserEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
-import com.example.gambarucmsui.ports.user.UserSavePort;
+import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ui.form.validation.UserInputValidator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,9 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Map;

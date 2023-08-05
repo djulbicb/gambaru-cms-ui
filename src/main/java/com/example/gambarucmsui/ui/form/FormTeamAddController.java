@@ -1,6 +1,11 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.database.repo.TeamRepository;
+import com.example.gambarucmsui.database.entity.TeamEntity;
+import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.Response;
+import com.example.gambarucmsui.ports.interfaces.team.IsTeamExists;
+import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
+import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,8 +22,9 @@ import java.util.ResourceBundle;
 public class FormTeamAddController implements Initializable {
     // Repo
     //////////////////////////////////////////
-    private final TeamRepository teamRepo;
     private TeamInputValidator validator = new TeamInputValidator();
+    private final IsTeamExists isTeamExists;
+    private final TeamSavePort teamSavePort;
     // FXML
     //////////////////////////////////////////
     @FXML private VBox root;
@@ -33,8 +39,9 @@ public class FormTeamAddController implements Initializable {
     private BigDecimal outMembershipPayment;
     private String outTeamName;
 
-    public FormTeamAddController(TeamRepository teamRepo) {
-        this.teamRepo = teamRepo;
+    public FormTeamAddController() {
+        isTeamExists = Container.getBean(IsTeamExists.class);
+        teamSavePort = Container.getBean(TeamSavePort.class);
     }
 
     @FXML
@@ -61,6 +68,9 @@ public class FormTeamAddController implements Initializable {
             isFormReady = true;
             outMembershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr));
             outTeamName = teamNameStr;
+
+            Response<TeamEntity> save = teamSavePort.save(outTeamName, outMembershipPayment);
+            ToastView.showModal(save.getMessage());
             close();
         }
     }
@@ -71,7 +81,7 @@ public class FormTeamAddController implements Initializable {
             lblErrTeamName.setText(validator.errTeamName());
             isFormCorrect = false;
         }
-        if (teamRepo.ifTeamNameExists(teamNameStr)) {
+        if (isTeamExists.ifTeamNameExists(teamNameStr)) {
             lblErrTeamName.setText(validator.errTeamNameExists());
             isFormCorrect = false;
         }
@@ -79,7 +89,6 @@ public class FormTeamAddController implements Initializable {
             lblErrMembershipFee.setText(validator.errTeamFee());
             isFormCorrect = false;
         }
-
         return isFormCorrect;
     }
 
@@ -90,39 +99,5 @@ public class FormTeamAddController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-    }
-
-    public boolean isFormReady() {
-        return isFormReady;
-    }
-
-    public FormTeamAddController.Data getData () {
-        return new Data(outMembershipPayment, outTeamName);
-    }
-
-    public static class Data {
-        private BigDecimal membershipPaymentFee;
-        private String teamName;
-
-        public Data(BigDecimal membershipPaymentFee, String teamName) {
-            this.membershipPaymentFee = membershipPaymentFee;
-            this.teamName = teamName;
-        }
-
-        public BigDecimal getMembershipPaymentFee() {
-            return membershipPaymentFee;
-        }
-
-        public String getTeamName() {
-            return teamName;
-        }
-
-        @Override
-        public String toString() {
-            return "Data{" +
-                    "membershipPaymentFee=" + membershipPaymentFee +
-                    ", teamName='" + teamName + '\'' +
-                    '}';
-        }
     }
 }

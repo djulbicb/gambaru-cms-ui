@@ -3,10 +3,16 @@ package com.example.gambarucmsui.ui.panel;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.entity.UserEntity;
-import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.user.*;
+import com.example.gambarucmsui.ports.interfaces.attendance.LoadAttendanceForUser;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.membership.LoadMembership;
+import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.user.*;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.admin.subtables.AttendanceDetail;
 import com.example.gambarucmsui.ui.dto.admin.subtables.BarcodeDetail;
@@ -27,7 +33,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,10 +44,6 @@ import static com.example.gambarucmsui.util.PathUtil.*;
 
 public class PanelAdminUserController implements PanelHeader {
     private final Stage primaryStage;
-    private final UserAttendanceRepository attendanceRepo;
-    private final UserMembershipRepository membershipRepo;
-    private final TeamRepository teamRepo;
-    private final BarcodeRepository barcodeRepo;
     private final UserSavePort userSavePort;
     private final UserUpdatePort userUpdatePort;
     private final TeamSavePort teamSavePort;
@@ -52,6 +53,9 @@ public class PanelAdminUserController implements PanelHeader {
     private final TeamLoadPort teamLoadPort;
     private final IsUserAlreadyInThisTeamPort isUserAlreadyInThisTeamPort;
     private final BarcodeLoadPort barcodeLoadPort;
+    private final LoadMembership loadMembership;
+    private final LoadAttendanceForUser loadAttendance;
+    private final BarcodeUpdatePort barcodeUpdatePort;
 
     // FXML
     ///////////////////////////////////////////////////
@@ -108,7 +112,7 @@ public class PanelAdminUserController implements PanelHeader {
     private void loadTeamsToUserComboBox() {
         cmbSearchTeam.getItems().clear();
         cmbSearchTeam.getItems().add(null);
-        for (TeamEntity team : teamRepo.findAllActive()) {
+        for (TeamEntity team : teamLoadPort.findAllActive()) {
             cmbSearchTeam.getItems().add(team.getName());
         }
     }
@@ -159,12 +163,8 @@ public class PanelAdminUserController implements PanelHeader {
     @FXML
     private TableView<BarcodeDetail> tableUserBarcode;
 
-    public PanelAdminUserController(Stage primaryStage, HashMap<Class, Object> repositoryMap) {
+    public PanelAdminUserController(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.attendanceRepo = (UserAttendanceRepository) repositoryMap.get(UserAttendanceRepository.class);
-        this.membershipRepo = (UserMembershipRepository) repositoryMap.get(UserMembershipRepository.class);
-        this.teamRepo = (TeamRepository) repositoryMap.get(TeamRepository.class);
-        this.barcodeRepo = (BarcodeRepository) repositoryMap.get(BarcodeRepository.class);
 
         loadUserPort = Container.getBean(UserLoadPort.class);
         userSavePort = Container.getBean(UserSavePort.class);
@@ -175,16 +175,19 @@ public class PanelAdminUserController implements PanelHeader {
         teamLoadPort = Container.getBean(TeamLoadPort.class);
         isUserAlreadyInThisTeamPort = Container.getBean(IsUserAlreadyInThisTeamPort.class);
         barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
+        loadMembership = Container.getBean(LoadMembership.class);
+        loadAttendance = Container.getBean(LoadAttendanceForUser.class);
+        barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
     }
 
     private void loadTableUserMembership(UserEntity user) {
-        List<MembershipDetail> userMembershipPaymentEntities = membershipRepo.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e -> new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
+        List<MembershipDetail> userMembershipPaymentEntities = loadMembership.fetchLastNEntriesForUserMembership(user.getBarcodes(), 100).stream().map(e -> new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
         ;
         tableUserMembership.getItems().setAll(userMembershipPaymentEntities);
     }
 
     private void loadTableUserAttendance(UserEntity user) {
-        List<AttendanceDetail> userAttendanceEntities = attendanceRepo.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e -> new AttendanceDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
+        List<AttendanceDetail> userAttendanceEntities = loadAttendance.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e -> new AttendanceDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
         tableUserAttendance.getItems().setAll(userAttendanceEntities);
     }
 
@@ -222,15 +225,15 @@ public class PanelAdminUserController implements PanelHeader {
                             BarcodeDetail selectedItem = getTableView().getItems().get(getIndex());
                             System.out.println("Akcije");
                             if (selectedItem != null) {
-                                Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(selectedItem.getBarcode()));
+                                Optional<BarcodeEntity> byId = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcode()));
                                 if (byId.isPresent()) {
                                     BarcodeEntity barcode = byId.get();
                                     if (barcode.getTeam().getStatus() == TeamEntity.Status.DELETED) {
                                         ToastView.showModal("Tim je obrisan. Barkod se ne moze aktivirati.");
                                         return;
                                     }
-                                    barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
-                                    barcodeRepo.updateOne(barcode);
+
+                                    barcodeUpdatePort.updateBarcode(barcode.getBarcodeId(), BarcodeEntity.Status.ASSIGNED);
 
                                     loadTableUserBarcode(barcode.getUser());
                                     loadTableUser();
@@ -241,16 +244,11 @@ public class PanelAdminUserController implements PanelHeader {
                             BarcodeDetail selectedItem = getTableView().getItems().get(getIndex());
                             System.out.println("qqq");
                             if (selectedItem != null) {
-                                Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(selectedItem.getBarcode()));
+                                Optional<BarcodeEntity> byId = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcode()));
                                 if (byId.isPresent()) {
                                     BarcodeEntity barcode = byId.get();
-                                    if (barcode.getTeam().getStatus() == TeamEntity.Status.DELETED) {
-                                        ToastView.showModal("Tim je obrisan. Barkod se ne moze aktivirati.");
-                                        return;
-                                    }
 
-                                    barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
-                                    barcodeRepo.updateOne(barcode);
+                                    barcodeUpdatePort.updateBarcode(barcode.getBarcodeId(), BarcodeEntity.Status.DEACTIVATED);
 
                                     loadTableUserBarcode(barcode.getUser());
                                     loadTableUser();
