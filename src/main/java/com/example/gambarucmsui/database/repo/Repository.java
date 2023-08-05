@@ -46,7 +46,6 @@ public class Repository<T> {
     public void delete(T entity) {
         entityManager.getTransaction().begin();
         entityManager.remove(entity);
-        entityManager.flush();
         entityManager.getTransaction().commit();
     }
 

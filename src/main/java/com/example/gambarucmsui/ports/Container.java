@@ -30,9 +30,9 @@ public class Container {
         UserMembershipRepository userMembershipRepository = new UserMembershipRepository(entityManager);
         TeamRepository teamRepository = new TeamRepository(entityManager);
         UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
+        PersonPictureRepository personPictureRepository = new PersonPictureRepository(entityManager);
 
-        Container.addBean(new ImageService());
-
+        Container.addBean(new ImageService(personPictureRepository));
         Container.addBean(new UserService(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
         Container.addBean(new TeamService(teamRepository));
         Container.addBean(new AttendanceServiceLoadPortPort(barcodeRepository, userAttendanceRepository, userMembershipRepository));

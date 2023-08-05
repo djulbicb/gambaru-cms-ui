@@ -7,12 +7,13 @@ import com.example.gambarucmsui.database.repo.UserMembershipRepository;
 import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
 import com.example.gambarucmsui.ports.interfaces.membership.IsMembershipPayed;
 import com.example.gambarucmsui.ports.interfaces.membership.LoadMembership;
+import com.example.gambarucmsui.ports.interfaces.membership.MembershipPurgePort;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class MembershipService implements AddUserMembership, LoadMembership, IsMembershipPayed {
+public class MembershipService implements AddUserMembership, LoadMembership, IsMembershipPayed, MembershipPurgePort {
 
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
@@ -67,5 +68,10 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
     @Override
     public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, int month, int year) {
         return membershipRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, month, year);
+    }
+
+    @Override
+    public void purge() {
+        membershipRepo.deleteAll();
     }
 }

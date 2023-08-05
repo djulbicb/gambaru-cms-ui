@@ -12,7 +12,7 @@ import java.io.IOException;
 @Table(name = "person_picture")
 public class PersonPictureEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "picture_id")
     private Long pictureId;
 

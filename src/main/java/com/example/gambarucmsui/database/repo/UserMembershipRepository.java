@@ -20,11 +20,11 @@ public class UserMembershipRepository extends Repository<PersonMembershipPayment
         LocalDate startDate = endDate.minusYears(1);
 
         String queryString = """
-        SELECT m.year, m.month, COUNT(m)
+        SELECT m.paymentYear, m.paymentMonth, COUNT(m)
         FROM PersonMembershipPaymentEntity m 
-        WHERE   m.year >= :startYear AND m.year <= :endYear
-        GROUP BY m.year, m.month
-        ORDER BY m.year, m.month
+        WHERE   m.paymentYear >= :startYear AND m.paymentYear <= :endYear
+        GROUP BY m.paymentYear, m.paymentMonth
+        ORDER BY m.paymentYear, m.paymentMonth
         """;
         TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
         query.setParameter("startYear", startDate.getYear());
@@ -57,7 +57,7 @@ public class UserMembershipRepository extends Repository<PersonMembershipPayment
 
 
     public List<PersonMembershipPaymentEntity> findAllMembershipsForMonthAndYear(int month, int year) {
-        String fetchBarcodesFromMembershipQuery = "SELECT um FROM PersonMembershipPaymentEntity um WHERE um.year = :year AND um.month = :month ORDER BY um.timestamp DESC";
+        String fetchBarcodesFromMembershipQuery = "SELECT um FROM PersonMembershipPaymentEntity um WHERE um.paymentYear = :year AND um.paymentMonth = :month ORDER BY um.timestamp DESC";
         TypedQuery<PersonMembershipPaymentEntity> query = entityManager.createQuery(fetchBarcodesFromMembershipQuery, PersonMembershipPaymentEntity.class);
         query.setParameter("year", year);
         query.setParameter("month", month);
@@ -65,7 +65,7 @@ public class UserMembershipRepository extends Repository<PersonMembershipPayment
     }
 
     public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, int month, int year) {
-        String fetchMembershipsQuery = "SELECT um FROM PersonMembershipPaymentEntity um WHERE um.barcode.barcodeId = :barcodeId AND um.year = :year AND um.month = :month";
+        String fetchMembershipsQuery = "SELECT um FROM PersonMembershipPaymentEntity um WHERE um.barcode.barcodeId = :barcodeId AND um.paymentYear = :year AND um.paymentMonth = :month";
         TypedQuery<PersonMembershipPaymentEntity> query = entityManager.createQuery(fetchMembershipsQuery, PersonMembershipPaymentEntity.class);
         query.setParameter("barcodeId", barcodeId);
         query.setParameter("year", year);

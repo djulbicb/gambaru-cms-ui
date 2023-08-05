@@ -8,31 +8,30 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "person_membership_payment")
 public class PersonMembershipPaymentEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "membership_payment_id")
-    private Long membershipPaymentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "barcode_id")
     private BarcodeEntity barcode;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "membership_payment_id")
+    private Long membershipPaymentId;
 
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
-
-    private int month;
-    private int year;
+    private int paymentMonth;
+    private int paymentYear;
     private BigDecimal money;
 
     public PersonMembershipPaymentEntity() {
     }
 
-    public PersonMembershipPaymentEntity(BarcodeEntity barcode, int month, int year, LocalDateTime timestamp, BigDecimal fee) {
+    public PersonMembershipPaymentEntity(BarcodeEntity barcode, int paymentMonth, int paymentYear, LocalDateTime timestamp, BigDecimal fee) {
         this.barcode = barcode;
         this.timestamp = timestamp;
         this.money = fee;
-        this.month = month;
-        this.year = year;
+        this.paymentMonth = paymentMonth;
+        this.paymentYear = paymentYear;
     }
 
     public Long getMembershipPaymentId() {
@@ -67,19 +66,19 @@ public class PersonMembershipPaymentEntity {
         this.money = money;
     }
 
-    public int getMonth() {
-        return month;
+    public int getPaymentMonth() {
+        return paymentMonth;
     }
 
-    public void setMonth(int month) {
-        this.month = month;
+    public void setPaymentMonth(int paymentMonth) {
+        this.paymentMonth = paymentMonth;
     }
 
-    public int getYear() {
-        return year;
+    public int getPaymentYear() {
+        return paymentYear;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setPaymentYear(int paymentYear) {
+        this.paymentYear = paymentYear;
     }
 }

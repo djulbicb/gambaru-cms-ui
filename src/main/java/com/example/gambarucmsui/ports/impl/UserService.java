@@ -5,7 +5,6 @@ import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.user.*;
-import com.example.gambarucmsui.ports.interfaces.utility.ResizedAndOptimizedImagePort;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import com.example.gambarucmsui.ui.form.validation.UserInputValidator;
 
@@ -17,6 +16,7 @@ import java.util.*;
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isBarcodeString;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
+import static com.example.gambarucmsui.util.ImageUtil.resizeAndOptimizeImage;
 
 public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, UserAddToTeamPort, IsUserAlreadyInThisTeamPort, UserPurgePort {
     private final UserRepository userRepo;
@@ -26,7 +26,6 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     private final UserInputValidator userVal = new UserInputValidator();
     private final TeamInputValidator teamVal = new TeamInputValidator();
     private final UserAttendanceRepository userAttendanceRepo;
-    private final ResizedAndOptimizedImagePort resizedAndOptimizedImagePort;
 
     public UserService(
             BarcodeRepository barcodeRepo,
@@ -39,7 +38,6 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
         this.teamRepo = teamRepo;
         this.userPictureRepo = userPictureRepo;
         this.userAttendanceRepo = userAttendanceRepo;
-        resizedAndOptimizedImagePort = Container.getBean(ResizedAndOptimizedImagePort.class);
     }
 
     @Override
@@ -64,7 +62,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     public PersonEntity save (String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
         PersonEntity user = userRepo.save(new PersonEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
         if (pictureData != null) {
-            ByteArrayInputStream byteArrayInputStream = resizedAndOptimizedImagePort.resizeAndOptimizeImage(pictureData, 300);
+            ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 300);
             PersonPictureEntity picture = userPictureRepo.save(new PersonPictureEntity(byteArrayInputStream.readAllBytes(), user));
             user.setPicture(picture);
         }

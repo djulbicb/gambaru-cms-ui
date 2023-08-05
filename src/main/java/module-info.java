@@ -37,5 +37,4 @@ module com.example.gambarucmsui {
     opens com.example.gambarucmsui.ports.interfaces.barcode to org.hibernate.orm.core;
     opens com.example.gambarucmsui.ports.interfaces.membership to org.hibernate.orm.core;
     opens com.example.gambarucmsui.ports.interfaces.attendance to org.hibernate.orm.core;
-    opens com.example.gambarucmsui.ports.interfaces.utility to org.hibernate.orm.core;
 }

@@ -7,6 +7,7 @@ import com.example.gambarucmsui.database.repo.UserMembershipRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
+import com.example.gambarucmsui.ports.interfaces.attendance.AttendancePurgePort;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
-public class AttendanceServiceLoadPortPort implements AttendanceAddForUserPort, AttendanceLoadForUserPort {
+public class AttendanceServiceLoadPortPort implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort {
 
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
@@ -91,5 +92,10 @@ public class AttendanceServiceLoadPortPort implements AttendanceAddForUserPort, 
     @Override
     public List<PersonAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count) {
         return attendanceRepo.fetchLastNEntriesForUserAttendance(barcodeIds, count);
+    }
+
+    @Override
+    public void purge() {
+        attendanceRepo.deleteAll();
     }
 }

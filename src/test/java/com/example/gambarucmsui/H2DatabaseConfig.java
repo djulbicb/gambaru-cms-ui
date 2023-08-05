@@ -2,8 +2,11 @@ package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.interfaces.attendance.AttendancePurgePort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodePurgePort;
+import com.example.gambarucmsui.ports.interfaces.membership.MembershipPurgePort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamPurgePort;
+import com.example.gambarucmsui.ports.interfaces.user.PersonPictureBarcodePurgePort;
 import com.example.gambarucmsui.ports.interfaces.user.UserPurgePort;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -42,14 +45,12 @@ public class H2DatabaseConfig {
 
     @AfterEach
     public void purge() {
-//        delete(PersonMembershipPaymentEntity.class);
-//        delete(PersonAttendanceEntity.class);
-//        delete(BarcodeEntity.class);
-//        delete(PersonEntity.class);
         Container.getBean(BarcodePurgePort.class).purge();
         Container.getBean(TeamPurgePort.class).purge();
         Container.getBean(UserPurgePort.class).purge();
-//        delete(BarcodeEntity.class);
+        Container.getBean(AttendancePurgePort.class).purge();
+        Container.getBean(PersonPictureBarcodePurgePort.class).purge();
+        Container.getBean(MembershipPurgePort.class).purge();
     }
 
     @AfterAll

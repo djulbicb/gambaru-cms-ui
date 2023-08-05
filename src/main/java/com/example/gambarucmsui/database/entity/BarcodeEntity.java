@@ -14,7 +14,7 @@ public class BarcodeEntity {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "barcode_id")
     private Long barcodeId;
     public static final String BARCODE_ID = "barcodeId";
