@@ -1,6 +1,7 @@
 package com.example.gambarucmsui.database.repo;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -20,6 +21,7 @@ public class Repository<T> {
     public T save(T entity) {
         entityManager.getTransaction().begin();
         entityManager.persist(entity);
+//        entityManager.flush();
         entityManager.getTransaction().commit();
         return entity;
     }
@@ -29,6 +31,7 @@ public class Repository<T> {
         for (T entity : entities) {
             entityManager.persist(entity);
         }
+//        entityManager.flush();
         entityManager.getTransaction().commit();
         return entities;
     }
@@ -36,12 +39,14 @@ public class Repository<T> {
     public void update(T entity) {
         entityManager.getTransaction().begin();
         entityManager.merge(entity);
+//        entityManager.flush();
         entityManager.getTransaction().commit();
     }
 
     public void delete(T entity) {
         entityManager.getTransaction().begin();
         entityManager.remove(entity);
+        entityManager.flush();
         entityManager.getTransaction().commit();
     }
 
@@ -80,5 +85,16 @@ public class Repository<T> {
                 .setFirstResult(offset)
                 .setMaxResults(pageSize)
                 .getResultList();
+    }
+
+    public void deleteAll() {
+        entityManager.getTransaction().begin();
+        String jpql = "DELETE FROM " + entityClass.getSimpleName();
+        Query query = entityManager.createQuery(jpql);
+
+        int deletedCount = query.executeUpdate();
+        entityManager.getTransaction().commit();
+
+        System.out.println("Deleted " + deletedCount + " records from " + entityClass.getSimpleName() + " table.");
     }
 }

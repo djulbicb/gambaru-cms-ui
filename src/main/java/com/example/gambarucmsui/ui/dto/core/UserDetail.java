@@ -2,7 +2,7 @@ package com.example.gambarucmsui.ui.dto.core;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 
 import java.util.StringJoiner;
 
@@ -31,7 +31,7 @@ public class UserDetail {
     }
 
     public static UserDetail fromEntityToFull(BarcodeEntity b, String timestamp) {
-        UserEntity user = b.getUser();
+        PersonEntity user = b.getPerson();
         TeamEntity team = b.getTeam();
 //        for (BarcodeEntity barcode : o.getBarcodes()) {
 //            barcodeCsv.add(barcode.getBarcodeId().toString());
@@ -49,7 +49,7 @@ public class UserDetail {
         }
 
         return new UserDetail(
-                user.getUserId(),
+                user.getPersonId(),
                 formatBarcode(b.getBarcodeId()),
                 user.getFirstName(),
                 user.getLastName(),
@@ -60,7 +60,7 @@ public class UserDetail {
                 timestamp);
     }
 
-    public static UserDetail fromEntityToFull(UserEntity user) {
+    public static UserDetail fromEntityToFull(PersonEntity user) {
         StringJoiner barcodeCsv = new StringJoiner(",");
         StringJoiner teamCsv = new StringJoiner(",");
 
@@ -70,7 +70,7 @@ public class UserDetail {
 
 
         return new UserDetail(
-                user.getUserId(),
+                user.getPersonId(),
                 "barcode",
                 user.getFirstName(),
                 user.getLastName(),

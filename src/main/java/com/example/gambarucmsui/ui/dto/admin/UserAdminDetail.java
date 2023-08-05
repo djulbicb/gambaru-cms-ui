@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.dto.admin;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 
 import java.util.StringJoiner;
 
@@ -25,7 +25,7 @@ public class UserAdminDetail {
         this.createdAt = createdAt;
     }
 
-    public static UserAdminDetail fromEntityToFull(UserEntity user) {
+    public static UserAdminDetail fromEntityToFull(PersonEntity user) {
         StringJoiner barcodeTeamCsv = new StringJoiner(",");
 
         for (BarcodeEntity barcode : user.getBarcodes()) {
@@ -38,7 +38,7 @@ public class UserAdminDetail {
 
 
         return new UserAdminDetail(
-                user.getUserId(),
+                user.getPersonId(),
                 barcodeTeamCsv.toString(),
                 user.getFirstName(),
                 user.getLastName(),

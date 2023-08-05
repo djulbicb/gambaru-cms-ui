@@ -1,6 +1,8 @@
 package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.H2DatabaseConfig;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
@@ -31,10 +33,6 @@ class FormTeamUpdateControllerTest extends H2DatabaseConfig {
         teamUpdatePort = Container.getBean(TeamUpdatePort.class);
         teamSavePort = Container.getBean(TeamSavePort.class);
         teamLoadPort = Container.getBean(TeamLoadPort.class);
-    }
-    @AfterEach()
-    public void purge(){
-        delete(TeamEntity.class);
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
 import com.example.gambarucmsui.ports.Container;
@@ -111,7 +111,7 @@ public class PanelAttendanceController implements PanelHeader {
         if (res.hasErrors()) {
             ToastView.showModal(res.getErrors().get(BARCODE_ID));
         } else {
-            UserEntity user = barcodeLoadPort.findUserByBarcodeId(parseBarcodeStr(barcodeIdStr)).get();
+            PersonEntity user = barcodeLoadPort.findUserByBarcodeId(parseBarcodeStr(barcodeIdStr)).get();
             ToastView.showAttendance(user);
         }
         listPageForDate();

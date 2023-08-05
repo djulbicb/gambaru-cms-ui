@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
@@ -118,7 +118,7 @@ public class PanelMembershipController implements PanelHeader {
             }
 
             System.out.println("Adding membership payment " + barcodeId);
-            UserEntity user = barcode.getUser();
+            PersonEntity user = barcode.getPerson();
 
             addUserMembership.addMembership(barcode.getBarcodeId(), month, year, barcode.getTeam().getMembershipPayment());
 

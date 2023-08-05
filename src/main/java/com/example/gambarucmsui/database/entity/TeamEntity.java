@@ -3,6 +3,7 @@ package com.example.gambarucmsui.database.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(name = "team")
@@ -13,7 +14,7 @@ public class TeamEntity {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "team_id")
     private Long teamId;
 

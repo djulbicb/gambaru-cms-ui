@@ -36,9 +36,9 @@ public class FormTeamAddController implements Initializable {
     @FXML private TextField txtMembershipFee;
     @FXML private TextField txtTeamName;
 
-    public FormTeamAddController() {
-        teamIfExists = Container.getBean(TeamIfExists.class);
-        teamSavePort = Container.getBean(TeamSavePort.class);
+    public FormTeamAddController(TeamIfExists teamIfExists, TeamSavePort teamSavePort) {
+        this.teamIfExists = teamIfExists;
+        this.teamSavePort = teamSavePort;
     }
 
     @FXML

@@ -2,7 +2,7 @@ package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
@@ -124,9 +124,9 @@ public class PanelAdminUserController implements PanelHeader {
             row.setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
                     UserAdminDetail rowData = row.getItem();
-                    Optional<UserEntity> userOpt = loadUserPort.loadUserByUserId(rowData.getUserId());
+                    Optional<PersonEntity> userOpt = loadUserPort.loadUserByUserId(rowData.getUserId());
                     if (userOpt.isPresent()) {
-                        UserEntity user = userOpt.get();
+                        PersonEntity user = userOpt.get();
                         loadTableUserAttendance(user);
                         loadTableUserMembership(user);
                         loadTableUserBarcode(user);
@@ -180,18 +180,18 @@ public class PanelAdminUserController implements PanelHeader {
         barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
     }
 
-    private void loadTableUserMembership(UserEntity user) {
+    private void loadTableUserMembership(PersonEntity user) {
         List<MembershipDetail> userMembershipPaymentEntities = loadMembership.fetchLastNEntriesForUserMembership(user.getBarcodes(), 100).stream().map(e -> new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
         ;
         tableUserMembership.getItems().setAll(userMembershipPaymentEntities);
     }
 
-    private void loadTableUserAttendance(UserEntity user) {
+    private void loadTableUserAttendance(PersonEntity user) {
         List<AttendanceDetail> userAttendanceEntities = loadAttendance.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e -> new AttendanceDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
         tableUserAttendance.getItems().setAll(userAttendanceEntities);
     }
 
-    private void loadTableUserBarcode(UserEntity user) {
+    private void loadTableUserBarcode(PersonEntity user) {
         List<BarcodeDetail> barcodeDetails = new ArrayList<>();
         for (BarcodeEntity barcode : user.getBarcodes()) {
             TeamEntity team = barcode.getTeam();
@@ -235,7 +235,7 @@ public class PanelAdminUserController implements PanelHeader {
 
                                     barcodeUpdatePort.updateBarcode(barcode.getBarcodeId(), BarcodeEntity.Status.ASSIGNED);
 
-                                    loadTableUserBarcode(barcode.getUser());
+                                    loadTableUserBarcode(barcode.getPerson());
                                     loadTableUser();
                                 }
                             }
@@ -250,7 +250,7 @@ public class PanelAdminUserController implements PanelHeader {
 
                                     barcodeUpdatePort.updateBarcode(barcode.getBarcodeId(), BarcodeEntity.Status.DEACTIVATED);
 
-                                    loadTableUserBarcode(barcode.getUser());
+                                    loadTableUserBarcode(barcode.getPerson());
                                     loadTableUser();
                                 }
 

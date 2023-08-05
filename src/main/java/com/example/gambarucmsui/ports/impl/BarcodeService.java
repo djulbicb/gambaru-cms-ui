@@ -3,17 +3,18 @@ package com.example.gambarucmsui.ports.impl;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodePurgePort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeFetchOrGeneratePort;
 
 import java.util.List;
 import java.util.Optional;
 
-public class BarcodeServiceFetchOrGeneratePort implements BarcodeLoadPort, BarcodeFetchOrGeneratePort, BarcodeUpdatePort {
+public class BarcodeService implements BarcodeLoadPort, BarcodeFetchOrGeneratePort, BarcodeUpdatePort, BarcodePurgePort {
 
     private final BarcodeRepository barcodeRepo;
 
-    public BarcodeServiceFetchOrGeneratePort(BarcodeRepository barcodeRepo) {
+    public BarcodeService(BarcodeRepository barcodeRepo) {
         this.barcodeRepo = barcodeRepo;
     }
 
@@ -68,5 +69,10 @@ public class BarcodeServiceFetchOrGeneratePort implements BarcodeLoadPort, Barco
         barcodeEntity.setStatus(status);
         barcodeRepo.update(barcodeEntity);
         return Optional.of(barcodeEntity);
+    }
+
+    @Override
+    public void purge() {
+        barcodeRepo.deleteAll();
     }
 }

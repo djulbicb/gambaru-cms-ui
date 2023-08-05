@@ -36,10 +36,10 @@ public class TeamRepository extends Repository<TeamEntity> {
         return query.getSingleResult();
     }
 
-    public List<TeamEntity> findAllByUserId(Long userId) {
-        String jpql = "SELECT b.team FROM BarcodeEntity b WHERE b.user.userId = :userId";
+    public List<TeamEntity> findAllByUserId(Long personId) {
+        String jpql = "SELECT b.team FROM BarcodeEntity b WHERE b.person.personId = :userId";
         TypedQuery<TeamEntity> query = entityManager.createQuery(jpql, TeamEntity.class);
-        query.setParameter("userId", userId);
+        query.setParameter("personId", personId);
 
         return query.getResultList();
     }

@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import javafx.fxml.FXML;
@@ -84,7 +84,7 @@ public class FormBarcodeGetMembership {
             return;
         }
 
-        UserEntity user = b.getUser();
+        PersonEntity user = b.getPerson();
         lblResult.setText(String.format("Korisnik nađen: %s %s.", user.getFirstName(), user.getLastName()));
 
         txtTeam.setText(b.getTeam().getName());

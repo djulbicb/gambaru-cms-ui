@@ -68,14 +68,14 @@ public class AttendanceServiceLoadPortPort implements AttendanceAddForUserPort, 
         }
 
         BarcodeEntity barcode = barcodeRepo.findById(barcodeId).get();
-        attendanceRepo.save(new UserAttendanceEntity(barcode, timestamp));
+        attendanceRepo.save(new PersonAttendanceEntity(barcode, timestamp));
         return new ValidatorResponse("Barkod je kreiran");
     }
 
-    List<UserAttendanceEntity> attendanceEntityList = new ArrayList<>();
+    List<PersonAttendanceEntity> attendanceEntityList = new ArrayList<>();
     @Override
     public void addToSaveBulk(BarcodeEntity barcode, LocalDateTime timestamp) {
-        attendanceEntityList.add(new UserAttendanceEntity(barcode, timestamp));
+        attendanceEntityList.add(new PersonAttendanceEntity(barcode, timestamp));
     }
     @Override
     public void executeBulk() {
@@ -84,12 +84,12 @@ public class AttendanceServiceLoadPortPort implements AttendanceAddForUserPort, 
     }
 
     @Override
-    public List<UserAttendanceEntity> findAllForAttendanceDate(LocalDate forDate) {
+    public List<PersonAttendanceEntity> findAllForAttendanceDate(LocalDate forDate) {
         return attendanceRepo.findAllForAttendanceDate(forDate);
     }
 
     @Override
-    public List<UserAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count) {
+    public List<PersonAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count) {
         return attendanceRepo.fetchLastNEntriesForUserAttendance(barcodeIds, count);
     }
 }

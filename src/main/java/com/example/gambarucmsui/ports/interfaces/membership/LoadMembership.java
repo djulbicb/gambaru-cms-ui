@@ -1,11 +1,11 @@
 package com.example.gambarucmsui.ports.interfaces.membership;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.UserMembershipPaymentEntity;
+import com.example.gambarucmsui.database.entity.PersonMembershipPaymentEntity;
 
 import java.util.List;
 
 public interface LoadMembership {
-    public List<UserMembershipPaymentEntity> findAllMembershipsForMonthAndYear(int month, int year);
-    List<UserMembershipPaymentEntity> fetchLastNEntriesForUserMembership(List<BarcodeEntity> barcodeIds, int count);
+    public List<PersonMembershipPaymentEntity> findAllMembershipsForMonthAndYear(int month, int year);
+    List<PersonMembershipPaymentEntity> fetchLastNEntriesForUserMembership(List<BarcodeEntity> barcodeIds, int count);
 }

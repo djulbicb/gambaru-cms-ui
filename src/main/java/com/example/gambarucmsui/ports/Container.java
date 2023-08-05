@@ -20,7 +20,7 @@ public class Container {
                 return beanClass.cast(bean);
             }
         }
-        throw new RuntimeException(String.format("No bean with class: ", beanClass.getName()));
+        throw new RuntimeException("No bean with class: " + beanClass.getSimpleName());
     }
 
     public static Set<Object> initBeans(EntityManager entityManager) {
@@ -33,10 +33,10 @@ public class Container {
 
         Container.addBean(new ImageService());
 
-        Container.addBean(new UserServiceSave(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
-        Container.addBean(new TeamServiceSaveIf(teamRepository));
+        Container.addBean(new UserService(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
+        Container.addBean(new TeamService(teamRepository));
         Container.addBean(new AttendanceServiceLoadPortPort(barcodeRepository, userAttendanceRepository, userMembershipRepository));
-        Container.addBean(new BarcodeServiceFetchOrGeneratePort(barcodeRepository));
+        Container.addBean(new BarcodeService(barcodeRepository));
         Container.addBean(new StatisticsService(userAttendanceRepository, userMembershipRepository));
         Container.addBean(new MembershipService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
 

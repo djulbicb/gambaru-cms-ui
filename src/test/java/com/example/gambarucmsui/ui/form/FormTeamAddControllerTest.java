@@ -4,7 +4,13 @@ import com.example.gambarucmsui.H2DatabaseConfig;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeFetchOrGeneratePort;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
+import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
+import com.example.gambarucmsui.ports.interfaces.user.UserAddToTeamPort;
+import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,15 +24,13 @@ class FormTeamAddControllerTest extends H2DatabaseConfig {
 
     private FormTeamAddController formTeamAddController;
     private TeamSavePort teamSavePort;
+    private TeamIfExists teamIfExists;
 
     @BeforeEach
     public void set() {
-        formTeamAddController = new FormTeamAddController();
         teamSavePort = Container.getBean(TeamSavePort.class);
-    }
-    @AfterEach()
-    public void purge(){
-        delete(TeamEntity.class);
+        teamIfExists = Container.getBean(TeamIfExists.class);
+        formTeamAddController = new FormTeamAddController(teamIfExists, teamSavePort);
     }
 
     @Test

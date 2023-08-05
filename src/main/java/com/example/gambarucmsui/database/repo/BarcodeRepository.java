@@ -7,7 +7,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +39,7 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
             BarcodeEntity barcode = new BarcodeEntity();
             barcode.setStatus( BarcodeEntity.Status.NOT_USED);
             BarcodeEntity save = save(barcode);
+            barcode.setAssignedTimestamp(LocalDateTime.now());
             toBeSaved.add(save);
         }
         return saveAll(toBeSaved);
@@ -59,20 +60,11 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         return typedQuery.getResultList();
     }
 
-    public void updateOne(BarcodeEntity barcode) {
-        save(barcode);
-    }
-
-    public void updateBarcodeWithUserAndTeam(BarcodeEntity barcode, UserEntity user, TeamEntity team) {
+    public void updateBarcodeWithUserAndTeam(BarcodeEntity barcode, PersonEntity user, TeamEntity team) {
         barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
         barcode.setTeam(team);
-        barcode.setUser(user);
-
-        save(barcode);
-    }
-
-    public void saveMultiple(List<BarcodeEntity> barcodes) {
-        saveAll(barcodes);
+        barcode.setPerson(user);
+        update(barcode);
     }
 
     public List<BarcodeEntity> findByTeam(Long teamId) {

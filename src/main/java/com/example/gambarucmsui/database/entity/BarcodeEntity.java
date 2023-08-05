@@ -3,6 +3,7 @@ package com.example.gambarucmsui.database.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "barcode")
@@ -13,7 +14,7 @@ public class BarcodeEntity {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "barcode_id")
     private Long barcodeId;
     public static final String BARCODE_ID = "barcodeId";
@@ -22,8 +23,8 @@ public class BarcodeEntity {
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @JoinColumn(name = "person_id")
+    private PersonEntity person;
 
     @ManyToOne
     @JoinColumn(name = "team_id")
@@ -60,12 +61,12 @@ public class BarcodeEntity {
         this.status = status;
     }
 
-    public UserEntity getUser() {
-        return user;
+    public PersonEntity getPerson() {
+        return person;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setPerson(PersonEntity person) {
+        this.person = person;
     }
 
     public TeamEntity getTeam() {
@@ -102,6 +103,32 @@ public class BarcodeEntity {
 
     public void setAssignedTimestamp(LocalDateTime assignedTimestamp) {
         this.assignedTimestamp = assignedTimestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "BarcodeEntity{" +
+                "barcodeId=" + barcodeId +
+                ", status=" + status +
+                ", person=" + person +
+                ", team=" + team +
+                ", assignedTimestamp=" + assignedTimestamp +
+                ", lastAttendanceTimestamp=" + lastAttendanceTimestamp +
+                ", lastMembershipPaymentTimestamp=" + lastMembershipPaymentTimestamp +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        BarcodeEntity barcode = (BarcodeEntity) object;
+        return Objects.equals(barcodeId, barcode.barcodeId) && status == barcode.status && Objects.equals(person, barcode.person) && Objects.equals(team, barcode.team) && Objects.equals(assignedTimestamp, barcode.assignedTimestamp) && Objects.equals(lastAttendanceTimestamp, barcode.lastAttendanceTimestamp) && Objects.equals(lastMembershipPaymentTimestamp, barcode.lastMembershipPaymentTimestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(barcodeId, status, person, team, assignedTimestamp, lastAttendanceTimestamp, lastMembershipPaymentTimestamp);
     }
 }
 

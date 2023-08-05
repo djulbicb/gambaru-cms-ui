@@ -18,7 +18,7 @@ import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isBarcodeString;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
-public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPort, UserAddToTeamPort, IsUserAlreadyInThisTeamPort {
+public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, UserAddToTeamPort, IsUserAlreadyInThisTeamPort, UserPurgePort {
     private final UserRepository userRepo;
     private final UserPictureRepository userPictureRepo;
     private final BarcodeRepository barcodeRepo;
@@ -28,7 +28,7 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     private final UserAttendanceRepository userAttendanceRepo;
     private final ResizedAndOptimizedImagePort resizedAndOptimizedImagePort;
 
-    public UserServiceSave(
+    public UserService(
             BarcodeRepository barcodeRepo,
             TeamRepository teamRepo,
             UserRepository userRepo,
@@ -61,20 +61,20 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     }
 
     @Override
-    public UserEntity save (String firstName, String lastName, UserEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
-        UserEntity user = userRepo.save(new UserEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
+    public PersonEntity save (String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
+        PersonEntity user = userRepo.save(new PersonEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
         if (pictureData != null) {
             ByteArrayInputStream byteArrayInputStream = resizedAndOptimizedImagePort.resizeAndOptimizeImage(pictureData, 300);
-            UserPictureEntity picture = userPictureRepo.save(new UserPictureEntity(byteArrayInputStream.readAllBytes(), user));
+            PersonPictureEntity picture = userPictureRepo.save(new PersonPictureEntity(byteArrayInputStream.readAllBytes(), user));
             user.setPicture(picture);
         }
         return user;
     }
 
-    private List<UserEntity> userEntities = new ArrayList<>();
+    private List<PersonEntity> userEntities = new ArrayList<>();
     @Override
-    public void addToBulkSave(String firstName, String lastName, UserEntity.Gender gender, String phone, byte[] pictureData) {
-        userEntities.add(new UserEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
+    public void addToBulkSave(String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) {
+        userEntities.add(new PersonEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
     }
 
     @Override
@@ -84,10 +84,10 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     }
 
     @Override
-    public boolean update(Long userId, String firstName, String lastName, UserEntity.Gender gender, String phone, byte[] pictureData) {
-        Optional<UserEntity> byId = userRepo.findById(userId);
+    public boolean update(Long userId, String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) {
+        Optional<PersonEntity> byId = userRepo.findById(userId);
         if (byId.isPresent()) {
-            UserEntity user = byId.get();
+            PersonEntity user = byId.get();
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setGender(gender);
@@ -104,16 +104,16 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     @Override
     public void addUserToPort(Long userId, Long barcodeId, String teamName) {
         Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(barcodeId);
-        Optional<UserEntity> userOpt = userRepo.findById(userId);
+        Optional<PersonEntity> userOpt = userRepo.findById(userId);
 
         if (barcodeOpt.isPresent() && userOpt.isPresent()) {
             BarcodeEntity barcode = barcodeOpt.get();
-            UserEntity user = userOpt.get();
+            PersonEntity user = userOpt.get();
             TeamEntity team = teamRepo.findByName(teamName);
 
             barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
-            user.getBarcodes().add(barcode);
             userRepo.update(user);
+            user.getBarcodes().add(barcode);
         }
     }
 
@@ -154,22 +154,22 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     }
 
     @Override
-    public Optional<UserEntity> loadUserByUserId(Long userId) {
+    public Optional<PersonEntity> loadUserByUserId(Long userId) {
         return userRepo.findById(userId);
     }
 
     @Override
-    public Optional<UserEntity> findUserByBarcodeId(Long barcodeId) {
+    public Optional<PersonEntity> findUserByBarcodeId(Long barcodeId) {
         return userRepo.findUserByBarcodeId(barcodeId);
     }
 
     @Override
-    public List<UserEntity> findAll() {
+    public List<PersonEntity> findAll() {
         return userRepo.findAll();
     }
 
     @Override
-    public List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
+    public List<PersonEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
         return userRepo.findAll(page, pageSize, sortColumn, teamName, firstName, lastName, barcode, isOnlyActive);
     }
 
@@ -182,5 +182,10 @@ public class UserServiceSave implements UserSavePort, UserUpdatePort, UserLoadPo
     @Override
     public boolean isUserAlreadyInThisTeam(Long userId, String teamName) {
         return userRepo.isUserAlreadyInThisTeam(userId, teamName);
+    }
+
+    @Override
+    public void purge() {
+        userRepo.deleteAll();
     }
 }

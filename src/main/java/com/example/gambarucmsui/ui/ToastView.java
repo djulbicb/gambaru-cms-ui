@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.ui;
 
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.util.DataUtil;
 import com.example.gambarucmsui.util.PathUtil;
 import javafx.geometry.Pos;
@@ -63,7 +63,7 @@ public class ToastView {
         fadeOutTransition.play();
     }
 
-    public static void showAttendance(UserEntity user) {
+    public static void showAttendance(PersonEntity user) {
         HBox box = new HBox(10);
 
         Image userPicture;

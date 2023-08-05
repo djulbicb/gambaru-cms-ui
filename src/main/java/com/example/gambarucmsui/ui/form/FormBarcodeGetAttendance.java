@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.form;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
@@ -69,7 +69,7 @@ public class FormBarcodeGetAttendance {
         }
 
         BarcodeEntity barcode = byId.get();
-        UserEntity user = barcode.getUser();
+        PersonEntity user = barcode.getPerson();
         lblResult.setText(String.format("Polaznik: %s %s", user.getFirstName(), user.getLastName()));
         return true;
     }

@@ -9,10 +9,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @Entity
-@Table(name = "user_picture")
-public class UserPictureEntity {
+@Table(name = "person_picture")
+public class PersonPictureEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "picture_id")
     private Long pictureId;
 
@@ -22,15 +22,15 @@ public class UserPictureEntity {
     private byte[] pictureData;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @JoinColumn(name = "person_id")
+    private PersonEntity person;
 
-    public UserPictureEntity() {
+    public PersonPictureEntity() {
     }
 
-    public UserPictureEntity(byte[] pictureData, UserEntity user) {
+    public PersonPictureEntity(byte[] pictureData, PersonEntity person) {
         this.pictureData = pictureData;
-        this.user = user;
+        this.person = person;
     }
 
     public BufferedImage getPicture() {

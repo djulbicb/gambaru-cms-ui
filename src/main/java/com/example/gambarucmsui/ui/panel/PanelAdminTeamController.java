@@ -90,7 +90,7 @@ public class PanelAdminTeamController implements PanelHeader {
 
     @FXML
     public void addTeamForm() throws IOException {
-        FormTeamAddController controller = new FormTeamAddController();
+        FormTeamAddController controller = new FormTeamAddController(teamIfExists, teamSavePort);
 
         Pane root = loadFxml(FORM_TEAM_ADD, controller);
         createStage("Kreiraj novi tim", root, primaryStage).showAndWait();

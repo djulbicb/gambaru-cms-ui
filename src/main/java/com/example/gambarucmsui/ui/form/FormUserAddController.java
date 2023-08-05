@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
@@ -69,7 +69,7 @@ public class FormUserAddController implements Initializable {
         String genderStr = getOr(cmbUserGender, "");
 
         if (validate(firstNameStr, lastNameStr, phoneStr, genderStr)) {
-            UserEntity.Gender gender = genderStr.equals("Muški") ? UserEntity.Gender.MALE : UserEntity.Gender.FEMALE;
+            PersonEntity.Gender gender = genderStr.equals("Muški") ? PersonEntity.Gender.MALE : PersonEntity.Gender.FEMALE;
             port.save(firstNameStr, lastNameStr, gender, phoneStr, outPictureData);
             close();
         }

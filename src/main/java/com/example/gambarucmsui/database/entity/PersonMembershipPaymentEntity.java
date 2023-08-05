@@ -6,10 +6,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_membership_payments")
-public class UserMembershipPaymentEntity {
+@Table(name = "person_membership_payment")
+public class PersonMembershipPaymentEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "membership_payment_id")
     private Long membershipPaymentId;
 
@@ -24,10 +24,10 @@ public class UserMembershipPaymentEntity {
     private int year;
     private BigDecimal money;
 
-    public UserMembershipPaymentEntity() {
+    public PersonMembershipPaymentEntity() {
     }
 
-    public UserMembershipPaymentEntity(BarcodeEntity barcode, int month, int year, LocalDateTime timestamp, BigDecimal fee) {
+    public PersonMembershipPaymentEntity(BarcodeEntity barcode, int month, int year, LocalDateTime timestamp, BigDecimal fee) {
         this.barcode = barcode;
         this.timestamp = timestamp;
         this.money = fee;

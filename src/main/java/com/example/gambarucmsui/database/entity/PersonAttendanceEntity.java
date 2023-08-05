@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_attendance")
-public class UserAttendanceEntity {
+@Table(name = "person_attendance")
+public class PersonAttendanceEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "attendance_id")
     private Long attendanceId;
 
@@ -18,10 +18,10 @@ public class UserAttendanceEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
 
-    public UserAttendanceEntity() {
+    public PersonAttendanceEntity() {
     }
 
-    public UserAttendanceEntity(BarcodeEntity barcode, LocalDateTime timestamp) {
+    public PersonAttendanceEntity(BarcodeEntity barcode, LocalDateTime timestamp) {
         this.barcode = barcode;
         this.timestamp = timestamp;
     }

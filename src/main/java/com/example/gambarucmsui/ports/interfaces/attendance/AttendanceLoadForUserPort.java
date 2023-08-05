@@ -1,12 +1,12 @@
 package com.example.gambarucmsui.ports.interfaces.attendance;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.UserAttendanceEntity;
+import com.example.gambarucmsui.database.entity.PersonAttendanceEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface AttendanceLoadForUserPort {
-    List<UserAttendanceEntity> findAllForAttendanceDate(LocalDate forDate);
-    List<UserAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count);
+    List<PersonAttendanceEntity> findAllForAttendanceDate(LocalDate forDate);
+    List<PersonAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count);
 }

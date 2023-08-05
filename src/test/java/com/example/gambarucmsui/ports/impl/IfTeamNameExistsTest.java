@@ -25,20 +25,14 @@ class IfTeamNameExistsTest extends H2DatabaseConfig {
         teamSavePort = Container.getBean(TeamSavePort.class);
     }
 
-    @AfterEach()
-    public void purge(){
-        delete(TeamEntity.class);
-    }
-
     @Test
     void shouldCheckIfTeamNameExists() {
         // given
         teamSavePort.save("Team 1", BigDecimal.ONE);
-        teamSavePort.save("Team 2", BigDecimal.ONE);
 
         // then
         assertTrue(teamIfExists.ifTeamNameExists("Team 1"));
-        assertFalse(teamIfExists.ifTeamNameExists("Team 3"));
+        assertFalse(teamIfExists.ifTeamNameExists("Team 2"));
     }
     @Test
     void shouldCheckIfTeamDoesntExist() {

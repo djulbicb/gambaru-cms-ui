@@ -34,17 +34,17 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
             BarcodeEntity barcode = byId.get();
 
             LocalDateTime now = LocalDateTime.now();
-            UserMembershipPaymentEntity entity = new UserMembershipPaymentEntity(barcode, month, year, now, membershipPayment);
+            PersonMembershipPaymentEntity entity = new PersonMembershipPaymentEntity(barcode, month, year, now, membershipPayment);
             barcode.setLastMembershipPaymentTimestamp(now);
 
             membershipRepo.save(entity);
         }
     }
 
-    List<UserMembershipPaymentEntity> membershipPaymentEntities = new ArrayList<>();
+    List<PersonMembershipPaymentEntity> membershipPaymentEntities = new ArrayList<>();
     @Override
     public void addToSaveBulkMembership(BarcodeEntity barcode,LocalDateTime timestamp, BigDecimal membershipPayment) {
-        membershipPaymentEntities.add(new UserMembershipPaymentEntity(barcode, timestamp.getMonthValue(), timestamp.getYear(), LocalDateTime.now(), membershipPayment));
+        membershipPaymentEntities.add(new PersonMembershipPaymentEntity(barcode, timestamp.getMonthValue(), timestamp.getYear(), LocalDateTime.now(), membershipPayment));
     }
 
     @Override
@@ -55,12 +55,12 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
 
 
     @Override
-    public List<UserMembershipPaymentEntity> findAllMembershipsForMonthAndYear(int month, int year) {
+    public List<PersonMembershipPaymentEntity> findAllMembershipsForMonthAndYear(int month, int year) {
         return membershipRepo.findAllMembershipsForMonthAndYear(month, year);
     }
 
     @Override
-    public List<UserMembershipPaymentEntity> fetchLastNEntriesForUserMembership(List<BarcodeEntity> barcodeIds, int count) {
+    public List<PersonMembershipPaymentEntity> fetchLastNEntriesForUserMembership(List<BarcodeEntity> barcodeIds, int count) {
         return membershipRepo.fetchLastNEntriesForUserMembership(barcodeIds, count);
     }
 

@@ -2,12 +2,8 @@ package com.example.gambarucmsui.ports.impl;
 
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.repo.TeamRepository;
-import com.example.gambarucmsui.ports.Response;
 import com.example.gambarucmsui.ports.ValidatorResponse;
-import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
-import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
-import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
-import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.team.*;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 
 import java.math.BigDecimal;
@@ -16,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class TeamServiceSaveIf implements TeamLoadPort, TeamSavePort, TeamUpdatePort, TeamIfExists {
+public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, TeamIfExists, TeamPurgePort {
 
     private final TeamRepository teamRepository;
     private final TeamInputValidator teamValidator = new TeamInputValidator();
 
-    public TeamServiceSaveIf(TeamRepository teamRepository) {
+    public TeamService(TeamRepository teamRepository) {
         this.teamRepository = teamRepository;
     }
 
@@ -107,6 +103,11 @@ public class TeamServiceSaveIf implements TeamLoadPort, TeamSavePort, TeamUpdate
     @Override
     public boolean ifTeamNameExists(String teamName) {
         return teamRepository.ifTeamNameExists(teamName);
+    }
+
+    @Override
+    public void purge() {
+        teamRepository.deleteAll();
     }
 }
 

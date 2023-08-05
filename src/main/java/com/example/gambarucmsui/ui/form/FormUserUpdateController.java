@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
@@ -59,19 +59,19 @@ public class FormUserUpdateController implements Initializable {
     private String outFirstName;
     private String outLastName;
     private String outPhone;
-    private UserEntity.Gender outGender;
+    private PersonEntity.Gender outGender;
     private byte[] pictureData;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Optional<UserEntity> userOpt = userLoadPort.loadUserByUserId(userId);
+        Optional<PersonEntity> userOpt = userLoadPort.loadUserByUserId(userId);
         if (userOpt.isPresent()) {
-            UserEntity user = userOpt.get();
+            PersonEntity user = userOpt.get();
 
             txtUserFirstName.setText(user.getFirstName());
             txtUserLastName.setText(user.getLastName());
             txtUserPhone.setText(user.getPhone());
-            if (user.getGender() == UserEntity.Gender.MALE) {
+            if (user.getGender() == PersonEntity.Gender.MALE) {
                 cmbUserGender.getSelectionModel().selectFirst();
             } else {
                 cmbUserGender.getSelectionModel().selectLast();
@@ -94,7 +94,7 @@ public class FormUserUpdateController implements Initializable {
         String genderStr = getOr(cmbUserGender, "");
 
         if (validate(firstNameStr, lastNameStr, phoneStr, genderStr)) {
-            UserEntity.Gender gender = genderStr.equals("Muški") ? UserEntity.Gender.MALE : UserEntity.Gender.FEMALE;
+            PersonEntity.Gender gender = genderStr.equals("Muški") ? PersonEntity.Gender.MALE : PersonEntity.Gender.FEMALE;
             userUpdatePort.update(userId, firstNameStr, lastNameStr, gender, phoneStr, pictureData);
             close();
         }

@@ -232,13 +232,13 @@ public class PanelBarcodeController implements PanelHeader {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                List<UserEntity> users = userLoadPort.findAll();
+                List<PersonEntity> users = userLoadPort.findAll();
                 List<TeamEntity> teams = teamLoadPort.findAllActive();
                 List<BarcodeEntity> barcodes = new ArrayList<>();
-                for (UserEntity user : users) {
+                for (PersonEntity user : users) {
                     BarcodeEntity barcode = barcodeFetchOrGeneratePort.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
                     TeamEntity team = pickRandom(teams);
-                    userAddToTeamPort.addUserToPort(user.getUserId(), barcode.getBarcodeId(), team.getName());
+                    userAddToTeamPort.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName());
                 }
 //                barcodeRepo.saveMultiple(barcodes); TODO
                 Platform.runLater(() -> {
@@ -261,12 +261,12 @@ public class PanelBarcodeController implements PanelHeader {
             protected Void call() throws Exception {
 
                 int count = getCount();
-                List<UserEntity> users = new ArrayList<>();
+                List<PersonEntity> users = new ArrayList<>();
                 for (int i = 0; i < count; i++) {
                     if (getBoolean()) {
-                        userSavePort.addToBulkSave(getFemaleName(), getSurname(), UserEntity.Gender.FEMALE, getPhone());
+                        userSavePort.addToBulkSave(getFemaleName(), getSurname(), PersonEntity.Gender.FEMALE, getPhone());
                     } else {
-                        userSavePort.addToBulkSave(getMaleName(), getSurname(), UserEntity.Gender.MALE, getPhone());
+                        userSavePort.addToBulkSave(getMaleName(), getSurname(), PersonEntity.Gender.MALE, getPhone());
                     }
                     userSavePort.executeBulkSave();
                 }

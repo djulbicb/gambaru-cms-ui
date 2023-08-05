@@ -5,19 +5,20 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Table(name = "user")
-public class UserEntity {
+@Table(name = "person")
+public class PersonEntity {
 
     public static enum Gender {
         MALE, FEMALE;
     }
 
-    public UserEntity() {
+    public PersonEntity() {
     }
 
-    public UserEntity(String firstName, String lastName, Gender gender, String phone,LocalDateTime createdAt) {
+    public PersonEntity(String firstName, String lastName, Gender gender, String phone, LocalDateTime createdAt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
@@ -25,7 +26,7 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
-    public UserEntity(String firstName, String lastName, Gender gender, String phone, LocalDateTime createdAt, UserPictureEntity picture) {
+    public PersonEntity(String firstName, String lastName, Gender gender, String phone, LocalDateTime createdAt, PersonPictureEntity picture) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
@@ -36,9 +37,9 @@ public class UserEntity {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "person_id")
+    private Long personId;
 
     @Column(name = "first_name", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
     private String firstName;
@@ -56,11 +57,11 @@ public class UserEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "user") // , fetch = FetchType.LAZY
+    @OneToMany(mappedBy = "person") // , fetch = FetchType.LAZY
     private List<BarcodeEntity> barcodes = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private UserPictureEntity picture;
+    @OneToOne(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private PersonPictureEntity picture;
 
     // Constructors, getters, setters, and other fields/methods ...
 
@@ -73,12 +74,12 @@ public class UserEntity {
         this.barcodes = barcodes;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getPersonId() {
+        return personId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setPersonId(Long personId) {
+        this.personId = personId;
     }
 
     public String getFirstName() {
@@ -121,11 +122,24 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
-    public UserPictureEntity getPicture() {
+    public PersonPictureEntity getPicture() {
         return picture;
     }
 
-    public void setPicture(UserPictureEntity picture) {
+    public void setPicture(PersonPictureEntity picture) {
         this.picture = picture;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        PersonEntity that = (PersonEntity) object;
+        return Objects.equals(personId, that.personId) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && gender == that.gender && Objects.equals(phone, that.phone) && Objects.equals(createdAt, that.createdAt) && Objects.equals(barcodes, that.barcodes) && Objects.equals(picture, that.picture);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(personId, firstName, lastName, gender, phone, createdAt, barcodes, picture);
     }
 }

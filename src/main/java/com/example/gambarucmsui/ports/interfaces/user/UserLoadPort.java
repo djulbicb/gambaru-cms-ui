@@ -1,13 +1,13 @@
 package com.example.gambarucmsui.ports.interfaces.user;
 
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserLoadPort {
-    Optional<UserEntity> loadUserByUserId(Long userId);
-    Optional<UserEntity> findUserByBarcodeId(Long barcodeId);
-    List<UserEntity> findAll();
-    List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive);
+    Optional<PersonEntity> loadUserByUserId(Long userId);
+    Optional<PersonEntity> findUserByBarcodeId(Long barcodeId);
+    List<PersonEntity> findAll();
+    List<PersonEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive);
 }

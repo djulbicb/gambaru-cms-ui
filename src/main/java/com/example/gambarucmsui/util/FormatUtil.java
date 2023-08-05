@@ -1,6 +1,6 @@
 package com.example.gambarucmsui.util;
 
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -61,12 +61,12 @@ public class FormatUtil {
         return monthYearFormatter.format(time);
     }
 
-    public static String genderToSerbianAbbr(UserEntity.Gender gender) {
+    public static String genderToSerbianAbbr(PersonEntity.Gender gender) {
         return genderToSerbian(gender).substring(0, 1);
     }
 
-    public static String genderToSerbian(UserEntity.Gender gender) {
-        if (gender.equals(UserEntity.Gender.MALE)) {
+    public static String genderToSerbian(PersonEntity.Gender gender) {
+        if (gender.equals(PersonEntity.Gender.MALE)) {
             return "Muški";
         } else {
             return "Ženski";

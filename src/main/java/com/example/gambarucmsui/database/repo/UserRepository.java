@@ -1,28 +1,27 @@
 package com.example.gambarucmsui.database.repo;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.UserEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class UserRepository extends Repository<UserEntity> {
+public class UserRepository extends Repository<PersonEntity> {
     public UserRepository(EntityManager entityManager) {
-        super(entityManager, UserEntity.class);
+        super(entityManager, PersonEntity.class);
     }
-    public Optional<UserEntity> findUserByBarcodeId(Long barcodeId) {
-        String queryString = "SELECT u FROM UserEntity u JOIN u.barcodes b WHERE b.barcodeId = :barcodeId";
-        return entityManager.createQuery(queryString, UserEntity.class)
+    public Optional<PersonEntity> findUserByBarcodeId(Long barcodeId) {
+        String queryString = "SELECT u FROM PersonEntity u JOIN u.barcodes b WHERE b.barcodeId = :barcodeId";
+        return entityManager.createQuery(queryString, PersonEntity.class)
                 .setParameter("barcodeId", barcodeId)
                 .getResultStream()
                 .findFirst();
     }
 
-    public List<UserEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
-        String jpql = "SELECT u FROM UserEntity u LEFT JOIN u.barcodes b LEFT JOIN b.team t WHERE 1=1";
+    public List<PersonEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
+        String jpql = "SELECT u FROM PersonEntity u LEFT JOIN u.barcodes b LEFT JOIN b.team t WHERE 1=1";
 
         if (firstName != null && !firstName.isBlank()) {
             jpql += " AND u.firstName LIKE :firstName";
@@ -41,7 +40,7 @@ public class UserRepository extends Repository<UserEntity> {
         }
         jpql += " ORDER BY u." + sortColumn + " DESC";
 
-        TypedQuery<UserEntity> query = entityManager.createQuery(jpql, UserEntity.class);
+        TypedQuery<PersonEntity> query = entityManager.createQuery(jpql, PersonEntity.class);
 
         if (firstName != null && !firstName.isBlank()) {
             query.setParameter("firstName", firstName + "%");
@@ -70,23 +69,23 @@ public class UserRepository extends Repository<UserEntity> {
         return query.getResultList();
     }
 
-    public UserEntity updateOne(UserEntity user) {
+    public PersonEntity updateOne(PersonEntity user) {
         return save(user);
     }
 
-    public boolean isUserAlreadyInThisTeam(Long userId, Long teamId) {
-        String jpql = "SELECT COUNT(b) FROM BarcodeEntity b WHERE b.user.userId = :userId AND b.team.teamId = :teamId";
+    public boolean isUserAlreadyInThisTeam(Long personId, Long teamId) {
+        String jpql = "SELECT COUNT(b) FROM BarcodeEntity b WHERE b.person.personId = :personId AND b.team.teamId = :teamId";
         TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
-        query.setParameter("userId", userId);
+        query.setParameter("personId", personId);
         query.setParameter("teamId", teamId);
         Long count = query.getSingleResult();
         return count > 0;
     }
 
-    public boolean isUserAlreadyInThisTeam(Long userId, String teamName) {
-        String jpql = "SELECT COUNT(b) FROM BarcodeEntity b WHERE b.user.userId = :userId AND b.team.name = :teamName";
+    public boolean isUserAlreadyInThisTeam(Long personId, String teamName) {
+        String jpql = "SELECT COUNT(b) FROM BarcodeEntity b WHERE b.person.personId = :personId AND b.team.name = :teamName";
         TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
-        query.setParameter("userId", userId);
+        query.setParameter("personId", personId);
         query.setParameter("teamName", teamName);
         Long count = query.getSingleResult();
         return count > 0;
