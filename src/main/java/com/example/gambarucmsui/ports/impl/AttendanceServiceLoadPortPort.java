@@ -33,7 +33,7 @@ public class AttendanceServiceLoadPortPort implements AttendanceAddForUserPort, 
     }
 
     @Override
-    public ValidatorResponse verifyAddAttendance(String barcodeIdStr) {
+    public ValidatorResponse velidateAddAttendance(String barcodeIdStr) {
         Map<String, String> errors = new HashMap<>();
         if (!isLong(barcodeIdStr)) {
             if (barcodeIdStr.isBlank()) {
@@ -62,8 +62,8 @@ public class AttendanceServiceLoadPortPort implements AttendanceAddForUserPort, 
     }
 
     @Override
-    public ValidatorResponse verifyAndAddAttendance(Long barcodeId, LocalDateTime timestamp) {
-        ValidatorResponse res = verifyAddAttendance(String.valueOf(barcodeId));
+    public ValidatorResponse validateAndAddAttendance(Long barcodeId, LocalDateTime timestamp) {
+        ValidatorResponse res = velidateAddAttendance(String.valueOf(barcodeId));
         if (res.hasErrors()) {
             return res;
         }

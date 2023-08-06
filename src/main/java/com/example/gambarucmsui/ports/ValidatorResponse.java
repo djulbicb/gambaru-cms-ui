@@ -2,6 +2,7 @@ package com.example.gambarucmsui.ports;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
 public class ValidatorResponse {
     private String message;
@@ -27,6 +28,14 @@ public class ValidatorResponse {
     }
 
     public String getMessage() {
-        return message;
+        if (message != null) {
+            return message;
+        }
+
+        StringJoiner joiner = new StringJoiner("\n");
+        for (String value : errors.values()) {
+            joiner.add(value);
+        }
+        return joiner.toString();
     }
 }

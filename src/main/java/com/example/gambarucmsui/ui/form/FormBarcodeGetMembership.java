@@ -3,7 +3,10 @@ package com.example.gambarucmsui.ui.form;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
+import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -11,15 +14,23 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
+import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.*;
+import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class FormBarcodeGetMembership {
-    private final BarcodeLoadPort barcodeLoadPort;
 
     // PORTS
     //////////////////////////////////////////
+    private final AddUserMembership addUserMembership;
+    private final LocalDate inTimestamp;
+    private final UserLoadPort userLoadPort;
+    private final BarcodeLoadPort barcodeLoad;
 
     // FXML
     //////////////////////////////////////////
@@ -32,24 +43,40 @@ public class FormBarcodeGetMembership {
     @FXML private TextField txtMembershipFee;
     @FXML private TextField txtTeam;
 
-
-    // OUTPUT DATA
-    /////////////////////////////////////////
-    private boolean isFormReady = false;
-    private Long outBarcodeId;
-
-    public FormBarcodeGetMembership() {
-        barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
+    public FormBarcodeGetMembership(LocalDate timestamp) {
+        addUserMembership = Container.getBean(AddUserMembership.class);
+        userLoadPort = Container.getBean(UserLoadPort.class);
+        barcodeLoad = Container.getBean(BarcodeLoadPort.class);
+        this.inTimestamp = timestamp;
     }
 
     @FXML void onOk(MouseEvent event) {
-        if (!isFormReady) {
-            lblErrBarcodeId.setText("Skeniraj dobar barkod.");
-            return;
+        String barcodeIdStr = getOr(txtBarcodeId, "");
+        int month = inTimestamp.getMonthValue();
+        int year = inTimestamp.getYear();
+
+        if (validate(barcodeIdStr)) {
+            addUserMembership.validateAndAddMembership(barcodeIdStr, month, year);
+            close();
         }
-        String barcodeId = txtBarcodeId.getText().trim();
-        outBarcodeId = parseBarcodeStr(barcodeId);
-        close();
+    }
+
+    boolean validate(String barcodeIdStr) {
+        int month = inTimestamp.getMonthValue();
+        int year = inTimestamp.getYear();
+        ValidatorResponse validator = addUserMembership.velidateAddMembership(barcodeIdStr, month, year);
+
+        if (validator.hasErrors()) {
+            Map<String, String> errors = validator.getErrors();
+            if (errors.containsKey(BARCODE_ID)) {
+                lblErrBarcodeId.setText(errors.get(BARCODE_ID));
+                return false;
+            }
+        }
+
+        PersonEntity user = userLoadPort.findUserByBarcodeId(parseBarcodeStr(barcodeIdStr)).get();
+        lblResult.setText(String.format("Polaznik: %s %s", user.getFirstName(), user.getLastName()));
+        return true;
     }
 
     @FXML void onClose(MouseEvent event) {
@@ -57,48 +84,17 @@ public class FormBarcodeGetMembership {
     }
     @FXML
     void onBarcodeIdTyped(KeyEvent event) {
-        isFormReady = false;
         lblErrBarcodeId.setText("");
         lblResult.setText("");
         txtTeam.setText("");
         txtMembershipFee.setText("");
 
-        String barcodeIdStr = txtBarcodeId.getText();
-        if (!isLong(barcodeIdStr)) {
-            if (!barcodeIdStr.isBlank()) {
-                lblErrBarcodeId.setText("Upiši barkod npr 123.");
-            }
-            return;
+        String barcodeIdStr = getOr(txtBarcodeId, "");
+        if (validate(barcodeIdStr)) {
+            BarcodeEntity barcode = barcodeLoad.findById(parseBarcodeStr(barcodeIdStr)).get();
+            txtTeam.setText(barcode.getTeam().getName());
+            txtMembershipFee.setText(String.valueOf(barcode.getTeam().getMembershipPayment()));
         }
-
-        Long barcode = parseBarcodeStr(barcodeIdStr);
-        Optional<BarcodeEntity> barcodeEntityOptional = barcodeLoadPort.findById(barcode);
-        if (barcodeEntityOptional.isEmpty()) {
-            lblErrBarcodeId.setText("Taj barkod ne postoji u bazi.");
-            return;
-        }
-
-        BarcodeEntity b = barcodeEntityOptional.get();
-        if (b.getStatus() != BarcodeEntity.Status.ASSIGNED)  {
-            lblErrBarcodeId.setText("Taj barkod postoji ali nije u upotrebi. Probaj drugi drugi.");
-            return;
-        }
-
-        PersonEntity user = b.getPerson();
-        lblResult.setText(String.format("Korisnik nađen: %s %s.", user.getFirstName(), user.getLastName()));
-
-        txtTeam.setText(b.getTeam().getName());
-        txtMembershipFee.setText(b.getTeam().getMembershipPayment().toString());
-
-        isFormReady = true;
-    }
-
-    public boolean isFormReady() {
-        return isFormReady;
-    }
-
-    public Long getBarcodeId() {
-        return outBarcodeId;
     }
 
     private void close() {

@@ -3,6 +3,7 @@ package com.example.gambarucmsui.ui.panel;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.membership.IsMembershipPayed;
@@ -15,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.gambarucmsui.util.FormatUtil.formatBarcode;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET_MEMBERSHIP;
@@ -101,64 +104,20 @@ public class PanelMembershipController implements PanelHeader {
         table.getItems().setAll(collect);
     }
     public void onBarcodeRead(String barcodeIdStr) {
-        Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        Optional<BarcodeEntity> optBarcode = barcodeLoad.findById(barcodeId);
-        if (optBarcode.isPresent()) {
-            BarcodeEntity barcode = optBarcode.get();
-            int month = paginationDate.getMonthValue();
-            int year = paginationDate.getYear();
+        int month = paginationDate.getMonthValue();
+        int year = paginationDate.getYear();
 
-            if (barcode.getStatus() != BarcodeEntity.Status.ASSIGNED) {
-                ToastView.showModal("Barkod se trenutno ne koristi.");
-                return;
-            }
-            if (isMembershipPayed.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, month, year)) {
-                ToastView.showModal("Članarina za ovaj mesec je već plaćena.");
-                return;
-            }
-
-            System.out.println("Adding membership payment " + barcodeId);
-            PersonEntity user = barcode.getPerson();
-
-            addUserMembership.addMembership(barcode.getBarcodeId(), month, year, barcode.getTeam().getMembershipPayment());
-
-            listPageForDate();
-
-            ToastView.showModal(String.format("Članarina plaćena za %s %s.", user.getFirstName(), user.getLastName()));
-        } else {
-            ToastView.showModal("Barkod ne postoji u sistemu.");
-        }
+        ValidatorResponse res = addUserMembership.validateAndAddMembership(barcodeIdStr, month, year);
+        ToastView.showModal(res.getMessage());
+        listPageForDate();
     }
 
     @FXML
     void onAddMembershipManually() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(FORM_BARCODE_GET_MEMBERSHIP));
-        FormBarcodeGetMembership controller = new FormBarcodeGetMembership();
-        fxmlLoader.setController(controller);
-        VBox root = fxmlLoader.load();
-
-        Stage dialogStage = createStage("Dodaj korisnika u tim", root, primaryStage);
-        dialogStage.showAndWait();
-
-        if (controller.isFormReady()) {
-            Optional<BarcodeEntity> barcodeOpt = barcodeLoad.findById(controller.getBarcodeId());
-            if (barcodeOpt.isPresent()) {
-                BarcodeEntity barcode = barcodeOpt.get();
-                int month = paginationDate.getMonthValue();
-                int year = paginationDate.getYear();
-
-                if (barcode.getStatus() != BarcodeEntity.Status.ASSIGNED) {
-                    ToastView.showModal("Barkod se trenutno ne koristi.");
-                    return;
-                }
-                if (isMembershipPayed.isMembershipPayedByBarcodeAndMonthAndYear(barcode.getBarcodeId(), month, year)) {
-                    ToastView.showModal("Članarina za ovaj mesec je već plaćena.");
-                    return;
-                }
-
-                addUserMembership.addMembership(barcode.getBarcodeId(), month, year, barcode.getTeam().getMembershipPayment());
-                listPageForDate();
-            }
-        }
+        FormBarcodeGetMembership controller = new FormBarcodeGetMembership(paginationDate);
+        Pane root = loadFxml(FORM_BARCODE_GET_MEMBERSHIP, controller);
+        createStage("Dodaj korisnika u tim", root, primaryStage).showAndWait();
+        listPageForDate();
     }
 }
+

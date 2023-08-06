@@ -29,7 +29,6 @@ public class BarcodeEntity {
     @ManyToOne
     @JoinColumn(name = "team_id")
     private TeamEntity team;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "assigned_timestamp")
     private LocalDateTime assignedTimestamp;

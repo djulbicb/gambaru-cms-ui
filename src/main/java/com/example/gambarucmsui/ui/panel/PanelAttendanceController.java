@@ -107,7 +107,7 @@ public class PanelAttendanceController implements PanelHeader {
 
     public void onBarcodeRead(String barcodeIdStr) {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        ValidatorResponse res = attendanceAddForUserPort.verifyAndAddAttendance(barcodeId, getDateTimeOfPaginationOrNow());
+        ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcodeId, getDateTimeOfPaginationOrNow());
         if (res.hasErrors()) {
             ToastView.showModal(res.getErrors().get(BARCODE_ID));
         } else {

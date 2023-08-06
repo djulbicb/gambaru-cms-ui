@@ -48,13 +48,13 @@ public class FormBarcodeGetAttendance {
 
         if (validate(barcodeIdStr)) {
             Long barcodeId = parseBarcodeStr(getOr(txtBarcodeId, ""));
-            addAttendance.verifyAndAddAttendance(barcodeId, timestamp);
+            addAttendance.validateAndAddAttendance(barcodeId, timestamp);
             close();
         }
     }
 
     boolean validate(String barcodeIdStr) {
-        ValidatorResponse validator = addAttendance.verifyAddAttendance(barcodeIdStr);
+        ValidatorResponse validator = addAttendance.velidateAddAttendance(barcodeIdStr);
         if (validator.hasErrors()) {
             Map<String, String> errors = validator.getErrors();
             if (errors.containsKey(BARCODE_ID)) {

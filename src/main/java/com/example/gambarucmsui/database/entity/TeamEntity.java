@@ -23,10 +23,10 @@ public class TeamEntity {
 
     @Column(name = "name", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
     private String name;
-
+    public static final String TEAM_NAME = "name";
     @Column(name = "membership_payment")
     private BigDecimal membershipPayment;
-
+    public static final String MEMBERSHIP_PAYMENT = "membershipPayment";
     public TeamEntity() {
     }
 
