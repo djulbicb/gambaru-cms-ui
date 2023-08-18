@@ -83,4 +83,16 @@ public class UserMembershipRepository extends Repository<PersonMembershipPayment
         query.setParameter("month", month);
         return Optional.ofNullable(query.getSingleResult());
     }
+
+    public Optional<PersonMembershipPaymentEntity> findLastPaymentByBarcodeId(Long barcodeId) {
+        List<PersonMembershipPaymentEntity> results = entityManager.createQuery(
+                        "SELECT p FROM PersonMembershipPaymentEntity p " +
+                                "WHERE p.barcode.id = :barcodeId " +
+                                "ORDER BY p.timestamp DESC", PersonMembershipPaymentEntity.class)
+                .setParameter("barcodeId", barcodeId)
+                .setMaxResults(1)
+                .getResultList();
+
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
 }

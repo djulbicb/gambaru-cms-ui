@@ -10,6 +10,7 @@ import com.example.gambarucmsui.ports.interfaces.membership.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
@@ -112,13 +113,30 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
     }
 
     @Override
-    public State getLastMembershipForUser(Long userId, LocalDate forDate) {
-        Optional<PersonMembershipPaymentEntity> paymentOpt = membershipRepo.getMembershipForBarcodeAndDate(userId, forDate.getMonthValue(), forDate.getYear());
-        if (paymentOpt.isPresent()) {
-            PersonMembershipPaymentEntity payment = paymentOpt.get();
+    public State getLastMembershipForUser(BarcodeEntity barcode, LocalDate currentDate) {
 
-
+        LocalDateTime payment = barcode.getLastMembershipPaymentTimestamp();
+        if (payment == null) {
+            return State.empty();
         }
+
+//        Optional<PersonMembershipPaymentEntity> paymentOpt = membershipRepo.findLastPaymentByBarcodeId(barcode.getBarcodeId());
+//
+//        if (paymentOpt.isEmpty()) {
+//            return State.empty();
+//        }
+//
+//        PersonMembershipPaymentEntity payment = paymentOpt.get();
+
+        LocalDate lastPayed = payment.toLocalDate();
+        long daysBetween = ChronoUnit.DAYS.between(lastPayed, currentDate);
+
+        if (daysBetween < 25) {
+            return State.green(payment);
+        } else if (daysBetween <= 30) {
+            return State.orange(30 - daysBetween);
+        }
+
         return State.red();
     }
 

@@ -24,7 +24,7 @@ public class Container {
     }
 
     public static Set<Object> initBeans(EntityManager entityManager) {
-        UserRepository userRepository = new UserRepository(entityManager);
+        UserRepo userRepo = new UserRepo(entityManager);
         BarcodeRepository barcodeRepository = new BarcodeRepository(entityManager);
         UserAttendanceRepository userAttendanceRepository = new UserAttendanceRepository(entityManager);
         UserMembershipRepository userMembershipRepository = new UserMembershipRepository(entityManager);
@@ -32,10 +32,10 @@ public class Container {
         UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
         PersonPictureRepository personPictureRepository = new PersonPictureRepository(entityManager);
 
-        Container.addBean(new ImageService(personPictureRepository));
-        Container.addBean(new UserService(barcodeRepository, teamRepository, userRepository, userAttendanceRepository, userPictureRepository));
+        Container.addBean(new ImageService(personPictureRepository, userRepo));
+        Container.addBean(new UserService(barcodeRepository, teamRepository, userRepo, userAttendanceRepository, userPictureRepository));
         Container.addBean(new TeamService(teamRepository));
-        Container.addBean(new AttendanceServiceLoadPortPort(barcodeRepository, userAttendanceRepository, userMembershipRepository));
+        Container.addBean(new AttendanceServicePort(barcodeRepository, userAttendanceRepository, userMembershipRepository));
         Container.addBean(new BarcodeService(barcodeRepository));
         Container.addBean(new StatisticsService(userAttendanceRepository, userMembershipRepository));
         Container.addBean(new MembershipService(barcodeRepository, userAttendanceRepository, userMembershipRepository));

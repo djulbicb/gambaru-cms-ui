@@ -8,8 +8,8 @@ import jakarta.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
-public class UserRepository extends Repository<PersonEntity> {
-    public UserRepository(EntityManager entityManager) {
+public class UserRepo extends Repository<PersonEntity> {
+    public UserRepo(EntityManager entityManager) {
         super(entityManager, PersonEntity.class);
     }
     public Optional<PersonEntity> findUserByBarcodeId(Long barcodeId) {

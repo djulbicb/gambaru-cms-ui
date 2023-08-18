@@ -1,35 +1,49 @@
 package com.example.gambarucmsui.ports.interfaces.membership;
 
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface GetMembershipStatusPort {
 
-    State getLastMembershipForUser(Long userId, LocalDate forDate);
+    State getLastMembershipForUser(BarcodeEntity barcode, LocalDate currentDate);
 
     public static class State {
+        public static State empty() {
+            State state = new State(Color.RED, "Nema uplata članarine.");
+            return state;
+        }
+        public static State orange(Long days) {
+            String daysMessage = "";
+            if (days == 1) {
+                daysMessage = String.format("%s dan", days);
+            } else {
+                daysMessage = String.format("%s dana", days);
+            }
+
+            State state = new State(Color.ORANGE, String.format("Članarina uskoro ističe. Za %s.", daysMessage));
+            return state;
+        }
+        public static State green(LocalDateTime timestamp) {
+            State state = new State(Color.GREEN, "Članarina plaćena.");
+            return state;
+        }
         public static State red() {
             State state = new State(Color.RED, "Članarina nije plaćena.");
             return state;
         }
-        public static State orange() {
-            State state = new State(Color.ORANGE, "Članarina nije plaćena.");
-            return state;
-        }
-        public static State green() {
-            State state = new State(Color.GREEN, "Članarina plaćena.");
-            return state;
-        }
-
 
         private long days;
-        private LocalDate timestamp;
+        private LocalDateTime timestamp;
         private String message;
         private Color color;
         public enum Color {
             GREEN, ORANGE, RED
         }
 
-        public State(long days, LocalDate timestamp, String message, Color color) {
+        public State(long days, LocalDateTime timestamp, String message, Color color) {
             this.days = days;
             this.timestamp = timestamp;
             this.message = message;
@@ -52,7 +66,7 @@ public interface GetMembershipStatusPort {
             return color;
         }
 
-        public LocalDate getTimestamp() {
+        public LocalDateTime getTimestamp() {
             return timestamp;
         }
     }

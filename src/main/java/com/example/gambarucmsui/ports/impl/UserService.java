@@ -2,7 +2,6 @@ package com.example.gambarucmsui.ports.impl;
 
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.*;
-import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.user.*;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
@@ -19,7 +18,7 @@ import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.ImageUtil.resizeAndOptimizeImage;
 
 public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, UserAddToTeamPort, IsUserAlreadyInThisTeamPort, UserPurgePort {
-    private final UserRepository userRepo;
+    private final UserRepo userRepo;
     private final UserPictureRepository userPictureRepo;
     private final BarcodeRepository barcodeRepo;
     private final TeamRepository teamRepo;
@@ -30,7 +29,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     public UserService(
             BarcodeRepository barcodeRepo,
             TeamRepository teamRepo,
-            UserRepository userRepo,
+            UserRepo userRepo,
             UserAttendanceRepository userAttendanceRepo,
             UserPictureRepository userPictureRepo) {
         this.userRepo = userRepo;

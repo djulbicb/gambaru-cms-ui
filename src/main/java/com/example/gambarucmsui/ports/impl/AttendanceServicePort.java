@@ -17,13 +17,13 @@ import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
-public class AttendanceServiceLoadPortPort implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort {
+public class AttendanceServicePort implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort {
 
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
     private final BarcodeRepository barcodeRepo;
 
-    public AttendanceServiceLoadPortPort(
+    public AttendanceServicePort(
             BarcodeRepository barcodeRepo,
             UserAttendanceRepository attendanceRepo,
             UserMembershipRepository membershipRepo) {
