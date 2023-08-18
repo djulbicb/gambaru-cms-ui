@@ -6,6 +6,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
 
+import java.io.IOException;
+
 public class DelayedKeyListener implements EventHandler<KeyEvent> {
     private final PauseTransition pause = new PauseTransition(Duration.millis(500));
     private KeyCode previousKeyCode;

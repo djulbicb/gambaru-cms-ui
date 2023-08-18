@@ -64,7 +64,7 @@ class FormTeamUpdateControllerTest extends H2DatabaseConfig {
         // then
         TeamEntity updated = teamLoadPort.findById(en.getTeamId()).get();
         assertTrue(res.hasErrors());
-        assertEquals(res.getErrors().get("name"), TeamInputValidator.errTeamNameExists());
+        assertEquals(res.getErrorOrEmpty("name"), TeamInputValidator.errTeamNameExists());
         assertEquals("Lowe", updated.getName());
     }
 
@@ -84,9 +84,9 @@ class FormTeamUpdateControllerTest extends H2DatabaseConfig {
         assertTrue(save2.hasErrors());
         assertTrue(save3.hasErrors());
 
-        assertEquals(save1.getErrors().get("name"), TeamInputValidator.errTeamName());
-        assertEquals(save2.getErrors().get("name"), TeamInputValidator.errTeamName());
-        assertEquals(save3.getErrors().get("name"), TeamInputValidator.errTeamName());
+        assertEquals(save1.getErrorOrEmpty("name"), TeamInputValidator.errTeamName());
+        assertEquals(save2.getErrorOrEmpty("name"), TeamInputValidator.errTeamName());
+        assertEquals(save3.getErrorOrEmpty("name"), TeamInputValidator.errTeamName());
 
         TeamEntity loadAfterSave = teamLoadPort.findById(given.getTeamId()).get();
         assertEquals(loadAfterSave, given);
@@ -108,9 +108,9 @@ class FormTeamUpdateControllerTest extends H2DatabaseConfig {
         assertTrue(save2.hasErrors());
         assertTrue(save3.hasErrors());
 
-        assertEquals(TeamInputValidator.errTeamFee(), save1.getErrors().get("membershipPayment"));
-        assertEquals(TeamInputValidator.errTeamFee(), save2.getErrors().get("membershipPayment"));
-        assertEquals(TeamInputValidator.errTeamFee(), save3.getErrors().get("membershipPayment"));
+        assertEquals(TeamInputValidator.errTeamFee(), save1.getErrorOrEmpty("membershipPayment"));
+        assertEquals(TeamInputValidator.errTeamFee(), save2.getErrorOrEmpty("membershipPayment"));
+        assertEquals(TeamInputValidator.errTeamFee(), save3.getErrorOrEmpty("membershipPayment"));
 
         TeamEntity loadAfterSave = teamLoadPort.findById(given.getTeamId()).get();
         assertEquals(loadAfterSave, given);

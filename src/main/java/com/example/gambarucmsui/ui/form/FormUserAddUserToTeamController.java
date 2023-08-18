@@ -74,13 +74,8 @@ public class FormUserAddUserToTeamController implements Initializable {
         ValidatorResponse validator = userAddToTeamPort.verifyAddUserToPort(userId, barcodeId, teamName);
 
         if (validator.hasErrors()) {
-            Map<String, String> errors = validator.getErrors();
-            if (errors.containsKey(BARCODE_ID)) {
-                lblErrUserBarcodeId.setText(errors.get(BARCODE_ID));
-            }
-            if (errors.containsKey("teamName")) {
-                lblErrUserTeamName.setText(errors.get("teamName"));
-            }
+            lblErrUserBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));
+            lblErrUserTeamName.setText(validator.getErrorOrEmpty("teamName"));
             return false;
         }
         return true;

@@ -60,6 +60,30 @@
                         </VBox>
                      </children>
                   </VBox>
+                  <Label maxHeight="1.7976931348623157E308" text="ČLANOVI TIMA:" textFill="#fcfcfc">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <TableView fx:id="tableUser" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                     <columns>
+                        <TableColumn text="Ime">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="firstName" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Prezime">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="lastName" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Poslednja uplata">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="timestamp" />
+                           </cellValueFactory>
+                        </TableColumn>
+                     </columns>
+                  </TableView>
                </children>
             </VBox>
          </children>

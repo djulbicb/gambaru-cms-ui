@@ -91,4 +91,10 @@ public class UserRepository extends Repository<PersonEntity> {
         return count > 0;
     }
 
+    public List<BarcodeEntity> findAllUsersInTeam(Long teamId) {
+        String jpql = "SELECT b FROM BarcodeEntity b WHERE b.team.teamId = :teamId";
+        TypedQuery<BarcodeEntity> query = entityManager.createQuery(jpql, BarcodeEntity.class);
+        query.setParameter("teamId", teamId);
+        return query.getResultList();
+    }
 }

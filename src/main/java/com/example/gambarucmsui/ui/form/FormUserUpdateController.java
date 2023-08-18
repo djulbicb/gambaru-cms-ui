@@ -87,7 +87,7 @@ public class FormUserUpdateController implements Initializable {
     }
 
     @FXML
-    void onSave(MouseEvent event) {
+    void onSave(MouseEvent event) throws IOException {
         String firstNameStr = getOr(txtUserFirstName, "");
         String lastNameStr = getOr(txtUserLastName, "");
         String phoneStr = getOr(txtUserPhone, "");
@@ -103,20 +103,11 @@ public class FormUserUpdateController implements Initializable {
     boolean validate(String firstNameStr, String lastNameStr, String phoneStr, String genderStr) {
         ValidatorResponse verify = userUpdatePort.verify(firstNameStr, lastNameStr, genderStr, phoneStr);
         if (verify.hasErrors()) {
-            Map<String, String> errors = verify.getErrors();
+            lblErrUserFirstName.setText(verify.getErrorOrEmpty("firstName"));
+            lblErrUserLastName.setText(verify.getErrorOrEmpty("lastName"));
+            lblErrUserPhone.setText(verify.getErrorOrEmpty("phone"));
+            lblErrUserGender.setText(verify.getErrorOrEmpty("gender"));
 
-            if (errors.containsKey("firstName")) {
-                lblErrUserFirstName.setText(errors.get("firstName"));
-            }
-            if (errors.containsKey("lastName")) {
-                lblErrUserLastName.setText(errors.get("lastName"));
-            }
-            if (errors.containsKey("phone")) {
-                lblErrUserPhone.setText(errors.get("phone"));
-            }
-            if (errors.containsKey("gender")) {
-                lblErrUserGender.setText(errors.get("gender"));
-            }
             return false;
         }
 

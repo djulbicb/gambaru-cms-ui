@@ -15,8 +15,15 @@ public class ValidatorResponse {
         this.errors = errors;
     }
 
-    public Map<String, String> getErrors() {
+    Map<String, String> getErrors() {
         return errors;
+    }
+
+    public String getErrorOrEmpty(String errorKey) {
+        if (errors.containsKey(errorKey)) {
+            return errors.get(errorKey);
+        }
+        return "";
     }
 
     public boolean isOk() {

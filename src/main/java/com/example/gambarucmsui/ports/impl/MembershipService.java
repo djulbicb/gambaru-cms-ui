@@ -5,13 +5,10 @@ import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
 import com.example.gambarucmsui.database.repo.UserMembershipRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
-import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
-import com.example.gambarucmsui.ports.interfaces.membership.IsMembershipPayed;
-import com.example.gambarucmsui.ports.interfaces.membership.LoadMembership;
-import com.example.gambarucmsui.ports.interfaces.membership.MembershipPurgePort;
-import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.ports.interfaces.membership.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -19,7 +16,7 @@ import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
-public class MembershipService implements AddUserMembership, LoadMembership, IsMembershipPayed, MembershipPurgePort {
+public class MembershipService implements AddUserMembership, LoadMembership, IsMembershipPayed, MembershipPurgePort, GetMembershipStatusPort {
 
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
@@ -112,6 +109,17 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
     @Override
     public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, int month, int year) {
         return membershipRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, month, year);
+    }
+
+    @Override
+    public State getLastMembershipForUser(Long userId, LocalDate forDate) {
+        Optional<PersonMembershipPaymentEntity> paymentOpt = membershipRepo.getMembershipForBarcodeAndDate(userId, forDate.getMonthValue(), forDate.getYear());
+        if (paymentOpt.isPresent()) {
+            PersonMembershipPaymentEntity payment = paymentOpt.get();
+
+
+        }
+        return State.red();
     }
 
     @Override

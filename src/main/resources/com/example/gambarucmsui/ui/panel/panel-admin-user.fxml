@@ -141,7 +141,7 @@
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserUpdate" text="IZMENI KORISNIKA" textFill="#fcfcfc" />
                         <HBox spacing="5.0">
                            <children>
-                              <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAddUserToTeam" text="DODAJ TIM" textFill="#fcfcfc" HBox.hgrow="ALWAYS" />
+                              <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAddUserToTeam" text="DODAJ U TIM" textFill="#fcfcfc" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
                      </children>

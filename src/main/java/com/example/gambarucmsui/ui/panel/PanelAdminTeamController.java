@@ -1,6 +1,7 @@
 package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
@@ -9,11 +10,16 @@ import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ports.interfaces.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
+import com.example.gambarucmsui.ui.dto.admin.UserAdminDetail;
+import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
+import com.example.gambarucmsui.util.DataUtil;
+import com.example.gambarucmsui.util.FormatUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
@@ -30,12 +36,15 @@ import static com.example.gambarucmsui.util.PathUtil.*;
 public class PanelAdminTeamController implements PanelHeader {
     @FXML
     private TableView<TeamDetail> tableTeam;
+    @FXML
+    private TableView<UserDetail> tableUser;
 
     private final Stage primaryStage;
     private final UserSavePort userSavePort;
     private final UserUpdatePort userUpdatePort;
     private final TeamSavePort teamSavePort;
     private final TeamLoadPort teamLoadPort;
+    private final UserLoadPort userLoadPort;
     private final TeamIfExists teamIfExists;
     private final TeamUpdatePort teamUpdatePort;
     private final BarcodeLoadPort barcodeLoadPort;
@@ -50,6 +59,7 @@ public class PanelAdminTeamController implements PanelHeader {
         teamLoadPort = Container.getBean(TeamLoadPort.class);
         barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
         barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
+        userLoadPort = Container.getBean(UserLoadPort.class);
 
         teamIfExists = Container.getBean(TeamIfExists.class);
     }
@@ -73,19 +83,22 @@ public class PanelAdminTeamController implements PanelHeader {
                     return;
                 }
                 TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
-                if (selectedItem == null) {
-
+                if (selectedItem != null) {
+                    List<UserDetail> collect = userLoadPort.findUsersByTeamId(selectedItem.getTeamId()).stream().map(o -> UserDetail.fromEntityToFull(o, FormatUtil.toDateTimeFormat(o.getLastMembershipPaymentTimestamp()))).collect(Collectors.toList());
+                    tableUser.getItems().setAll(collect);
                 }
             });
             return row;
         });
 
         stretchColumnsToEqualSize(tableTeam);
+        stretchColumnsToEqualSize(tableUser);
     }
 
     void loadTableTeam() {
         List<TeamDetail> teams = teamLoadPort.findAllActive().stream().map(en -> new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
         tableTeam.getItems().setAll(teams);
+        tableUser.getItems().clear();
     }
 
     @FXML

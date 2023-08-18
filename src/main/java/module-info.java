@@ -17,6 +17,7 @@ module com.example.gambarucmsui {
     opens com.example.gambarucmsui.database.entity to org.hibernate.orm.core;
     opens com.example.gambarucmsui.common to javafx.controls;
     opens com.example.gambarucmsui.ui.form to javafx.fxml;
+    opens com.example.gambarucmsui.ui.alert to javafx.fxml;
     opens com.example.gambarucmsui.ui to javafx.fxml;
 
     exports com.example.gambarucmsui;

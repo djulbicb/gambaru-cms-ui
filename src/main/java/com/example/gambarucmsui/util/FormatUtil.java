@@ -54,10 +54,16 @@ public class FormatUtil {
     }
     final static DateTimeFormatter fullTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
     public static String toDateTimeFormat(LocalDateTime time) {
+        if (time == null) {
+            return "Nema uplata.";
+        }
         return fullTimeFormatter.format(time);
     }
     final static DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern("yyyy/MM");
     public static String toMonthYeah(LocalDateTime time) {
+        if (time == null) {
+            return "Nema uplata.";
+        }
         return monthYearFormatter.format(time);
     }
 

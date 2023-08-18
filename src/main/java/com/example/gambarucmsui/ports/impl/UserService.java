@@ -82,7 +82,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     }
 
     @Override
-    public boolean update(Long userId, String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) {
+    public boolean update(Long userId, String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
         Optional<PersonEntity> byId = userRepo.findById(userId);
         if (byId.isPresent()) {
             PersonEntity user = byId.get();
@@ -90,6 +90,20 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
             user.setLastName(lastName);
             user.setGender(gender);
             user.setPhone(phone);
+
+            if (pictureData != null) {
+                ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 300);
+
+                if (user.getPicture() == null) {
+                    PersonPictureEntity picture = userPictureRepo.save(new PersonPictureEntity(byteArrayInputStream.readAllBytes(), user));
+                    user.setPicture(picture);
+                } else {
+                    PersonPictureEntity picture = user.getPicture();
+                    picture.setPictureData(byteArrayInputStream.readAllBytes());
+                    userPictureRepo.update(picture);
+                }
+
+            }
 
             if (pictureData != null) {
                 user.getPicture().setPictureData(pictureData);
@@ -171,6 +185,10 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
         return userRepo.findAll(page, pageSize, sortColumn, teamName, firstName, lastName, barcode, isOnlyActive);
     }
 
+    @Override
+    public List<BarcodeEntity> findUsersByTeamId(Long teamId) {
+        return userRepo.findAllUsersInTeam(teamId);
+    }
 
 
     @Override

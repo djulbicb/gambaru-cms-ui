@@ -19,6 +19,8 @@ public class PathUtil {
     public static final String FORM_USER_ADD_USER_TO_TEAM = RESOURCE + "ui/form/form-user-add-user-to-team.fxml";
     public static final String FORM_BARCODE_GET_ATTENDANCE = RESOURCE + "ui/form/form-barcode-get-attendance.fxml";
     public static final String FORM_BARCODE_GET_MEMBERSHIP = RESOURCE + "ui/form/form-barcode-get-membership.fxml";
+    // ALERT
+    public static final String ALERT_SHOW_ATTENDANCE = RESOURCE + "ui/alert/alert-show-attendance.fxml";
 
     // PICTURE
     public static final String USER_NOT_FOUND = RESOURCE + "images/user-not-found.png";

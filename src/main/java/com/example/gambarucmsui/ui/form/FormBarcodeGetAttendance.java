@@ -6,13 +6,19 @@ import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.ui.alert.AlertShowAttendanceController;
+import com.example.gambarucmsui.ui.panel.FxmlViewHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -20,8 +26,9 @@ import java.util.Optional;
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.*;
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
+import static com.example.gambarucmsui.util.PathUtil.ALERT_SHOW_ATTENDANCE;
 
-public class FormBarcodeGetAttendance {
+public class FormBarcodeGetAttendance implements FxmlViewHandler {
 
     // REPO
     //////////////////////////////////////////
@@ -43,24 +50,25 @@ public class FormBarcodeGetAttendance {
         addAttendance = Container.getBean(AttendanceAddForUserPort.class);
     }
 
-    @FXML void onOk(MouseEvent event) {
+    @FXML void onOk(MouseEvent event) throws IOException {
         String barcodeIdStr = getOr(txtBarcodeId, "");
 
         if (validate(barcodeIdStr)) {
             Long barcodeId = parseBarcodeStr(getOr(txtBarcodeId, ""));
             addAttendance.validateAndAddAttendance(barcodeId, timestamp);
             close();
+
+            BarcodeEntity barcode = barcodeLoadPort.findById(parseBarcodeStr(barcodeIdStr)).get();
+            AlertShowAttendanceController controller = new AlertShowAttendanceController(barcode, timestamp.toLocalDate());
+            Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, controller);
+            ToastView.showModal(pane, 4000, 200);
         }
     }
 
     boolean validate(String barcodeIdStr) {
         ValidatorResponse validator = addAttendance.velidateAddAttendance(barcodeIdStr);
         if (validator.hasErrors()) {
-            Map<String, String> errors = validator.getErrors();
-            if (errors.containsKey(BARCODE_ID)) {
-                lblErrBarcodeId.setText(errors.get(BARCODE_ID));
-                return false;
-            }
+            lblErrBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));
         }
         Long barcodeId = parseBarcodeStr(getOr(txtBarcodeId, ""));
         Optional<BarcodeEntity> byId = barcodeLoadPort.findById(barcodeId);

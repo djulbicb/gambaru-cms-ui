@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<HBox fx:id="root" prefHeight="450.0" prefWidth="700.0" style="-fx-background-color: #34495e;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane HBox.hgrow="ALWAYS">
+         <children>
+            <AnchorPane fx:id="panePicture" maxHeight="400.0" maxWidth="300.0">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="400.0" stroke="BLACK" strokeType="INSIDE" width="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </StackPane>
+      <StackPane prefWidth="250.0" HBox.hgrow="ALWAYS">
+         <children>
+            <VBox maxHeight="-Infinity" maxWidth="300.0" spacing="10.0">
+               <children>
+                  <VBox>
+                     <children>
+                        <Label fx:id="lblFirstName" maxHeight="1.7976931348623157E308" text="Petar" textFill="#fcfcfc">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="lblLastName" maxHeight="1.7976931348623157E308" text="Petrović" textFill="#fcfcfc">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <Separator prefWidth="200.0" />
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label maxHeight="1.7976931348623157E308" text="Team:" textFill="#fcfcfc">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="lblTeamName" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" text="Lowe" textFill="#fcfcfc">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label maxHeight="1.7976931348623157E308" text="Prošla uplata:" textFill="#fcfcfc">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="lblLastMembershipPayment" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" text="21.06.2023." textFill="#fcfcfc">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <StackPane fx:id="paneNotification" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="lblNotification" layoutX="10.0" layoutY="24.0" maxHeight="1.7976931348623157E308" text="Članarina treba da se plati u sledeća 3 dana.." textAlignment="CENTER" textFill="#fcfcfc" wrapText="true">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </StackPane>
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</HBox>

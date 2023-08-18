@@ -67,11 +67,8 @@ public class FormBarcodeGetMembership {
         ValidatorResponse validator = addUserMembership.velidateAddMembership(barcodeIdStr, month, year);
 
         if (validator.hasErrors()) {
-            Map<String, String> errors = validator.getErrors();
-            if (errors.containsKey(BARCODE_ID)) {
-                lblErrBarcodeId.setText(errors.get(BARCODE_ID));
-                return false;
-            }
+            lblErrBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));
+            return false;
         }
 
         PersonEntity user = userLoadPort.findUserByBarcodeId(parseBarcodeStr(barcodeIdStr)).get();

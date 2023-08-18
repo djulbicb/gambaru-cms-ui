@@ -51,7 +51,7 @@ class FormTeamAddControllerTest extends H2DatabaseConfig {
 
         // then
         assertTrue(save.hasErrors());
-        assertEquals(save.getErrors().get("name"), TeamInputValidator.errTeamNameExists());
+        assertEquals(save.getErrorOrEmpty("name"), TeamInputValidator.errTeamNameExists());
     }
 
     @Test
@@ -66,9 +66,9 @@ class FormTeamAddControllerTest extends H2DatabaseConfig {
         assertTrue(save2.hasErrors());
         assertTrue(save3.hasErrors());
 
-        assertEquals(save1.getErrors().get("name"), TeamInputValidator.errTeamName());
-        assertEquals(save2.getErrors().get("name"), TeamInputValidator.errTeamName());
-        assertEquals(save3.getErrors().get("name"), TeamInputValidator.errTeamName());
+        assertEquals(save1.getErrorOrEmpty("name"), TeamInputValidator.errTeamName());
+        assertEquals(save2.getErrorOrEmpty("name"), TeamInputValidator.errTeamName());
+        assertEquals(save3.getErrorOrEmpty("name"), TeamInputValidator.errTeamName());
     }
 
     @Test
@@ -83,9 +83,9 @@ class FormTeamAddControllerTest extends H2DatabaseConfig {
         assertTrue(save2.hasErrors());
         assertTrue(save3.hasErrors());
 
-        assertEquals(TeamInputValidator.errTeamFee(), save1.getErrors().get("membershipPayment"));
-        assertEquals(TeamInputValidator.errTeamFee(), save2.getErrors().get("membershipPayment"));
-        assertEquals(TeamInputValidator.errTeamFee(), save3.getErrors().get("membershipPayment"));
+        assertEquals(TeamInputValidator.errTeamFee(), save1.getErrorOrEmpty("membershipPayment"));
+        assertEquals(TeamInputValidator.errTeamFee(), save2.getErrorOrEmpty("membershipPayment"));
+        assertEquals(TeamInputValidator.errTeamFee(), save3.getErrorOrEmpty("membershipPayment"));
     }
 
 }

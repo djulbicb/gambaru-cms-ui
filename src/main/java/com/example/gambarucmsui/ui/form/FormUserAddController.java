@@ -78,20 +78,10 @@ public class FormUserAddController implements Initializable {
     boolean validate(String firstNameStr, String lastNameStr, String phoneStr, String genderStr) {
         ValidatorResponse verify = port.verify(firstNameStr, lastNameStr, genderStr, phoneStr);
         if (verify.hasErrors()) {
-            Map<String, String> errors = verify.getErrors();
-
-            if (errors.containsKey("firstName")) {
-                lblErrUserFirstName.setText(errors.get("firstName"));
-            }
-            if (errors.containsKey("lastName")) {
-                lblErrUserLastName.setText(errors.get("lastName"));
-            }
-            if (errors.containsKey("phone")) {
-                lblErrUserPhone.setText(errors.get("phone"));
-            }
-            if (errors.containsKey("gender")) {
-                lblErrUserGender.setText(errors.get("gender"));
-            }
+            lblErrUserFirstName.setText(verify.getErrorOrEmpty("firstName"));
+            lblErrUserLastName.setText(verify.getErrorOrEmpty("lastName"));
+            lblErrUserPhone.setText(verify.getErrorOrEmpty("phone"));
+            lblErrUserGender.setText(verify.getErrorOrEmpty("gender"));
             return false;
         }
 

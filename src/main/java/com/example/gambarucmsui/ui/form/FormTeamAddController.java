@@ -64,13 +64,8 @@ public class FormTeamAddController implements Initializable {
         ValidatorResponse res = saveOrReturnErrors(teamNameStr, paymentFeeStr);
 
         if (res.hasErrors()) {
-            Map<String, String> errors = res.getErrors();
-            if (errors.containsKey("name")) {
-                lblErrTeamName.setText(errors.get("name"));
-            }
-            if (errors.containsKey("membershipPayment")) {
-                lblErrMembershipFee.setText(errors.get("membershipPayment"));
-            }
+            lblErrTeamName.setText(res.getErrorOrEmpty("name"));
+            lblErrMembershipFee.setText(res.getErrorOrEmpty("membershipPayment"));
             return;
         }
 

@@ -23,9 +23,13 @@ public interface FxmlViewHandler {
         return dialogStage;
     }
 
-    default Pane loadFxml(String fxmlPath, Object controller) throws IOException {
+    default Pane loadFxml(String fxmlPath, Object controller) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
         fxmlLoader.setController(controller);
-        return fxmlLoader.load();
+        try {
+            return fxmlLoader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
