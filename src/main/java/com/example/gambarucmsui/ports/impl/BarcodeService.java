@@ -1,16 +1,17 @@
 package com.example.gambarucmsui.ports.impl;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
-import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
-import com.example.gambarucmsui.ports.interfaces.barcode.BarcodePurgePort;
-import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
-import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeFetchOrGeneratePort;
+import com.example.gambarucmsui.ports.ValidatorResponse;
+import com.example.gambarucmsui.ports.interfaces.barcode.*;
+import com.example.gambarucmsui.ui.ToastView;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class BarcodeService implements BarcodeLoadPort, BarcodeFetchOrGeneratePort, BarcodeUpdatePort, BarcodePurgePort {
+public class BarcodeService implements BarcodeLoadPort, BarcodeFetchOrGeneratePort, BarcodeUpdatePort, BarcodePurgePort, BarcodeStatusChangePort {
 
     private final BarcodeRepository barcodeRepo;
 
@@ -74,5 +75,56 @@ public class BarcodeService implements BarcodeLoadPort, BarcodeFetchOrGeneratePo
     @Override
     public void purge() {
         barcodeRepo.deleteAll();
+    }
+
+    public ValidatorResponse deactivateBarcode(Long barcodeId) {
+        HashMap<String, String> errors = new HashMap<>();
+        Optional<BarcodeEntity> byId = barcodeRepo.findById(barcodeId);
+        if (byId.isEmpty()) {
+            errors.put(BarcodeEntity.BARCODE_ID, "Barkod ne postoji u sistemu");
+            return new ValidatorResponse(errors);
+        }
+
+        BarcodeEntity barcode = byId.get();
+        if (barcode.getStatus() == BarcodeEntity.Status.DELETED) {
+            errors.put(BarcodeEntity.BARCODE_ID, "Barkod pripada timu koji je obrisan. Nije ga moguce deaktivirati.");
+            return new ValidatorResponse(errors);
+        }
+
+        if (barcode.getStatus() == BarcodeEntity.Status.DEACTIVATED) {
+            errors.put(BarcodeEntity.BARCODE_ID, "Barkod je već deaktiviran.");
+            return new ValidatorResponse(errors);
+        }
+
+        barcode.setStatus(BarcodeEntity.Status.DEACTIVATED);
+        barcodeRepo.update(barcode);
+
+        return new ValidatorResponse("Barkod je uspešno deaktiviran.");
+    }
+
+    @Override
+    public ValidatorResponse activateBarcode(Long barcodeId) {
+        HashMap<String, String> errors = new HashMap<>();
+        Optional<BarcodeEntity> byId = barcodeRepo.findById(barcodeId);
+        if (byId.isEmpty()) {
+            errors.put(BarcodeEntity.BARCODE_ID, "Barkod ne postoji u sistemu");
+            return new ValidatorResponse(errors);
+        }
+
+        BarcodeEntity barcode = byId.get();
+        if (barcode.getStatus() == BarcodeEntity.Status.DELETED) {
+            errors.put(BarcodeEntity.BARCODE_ID, "Barkod pripada timu koji je obrisan. Nije ga moguce deaktivirati.");
+            return new ValidatorResponse(errors);
+        }
+
+        if (barcode.getStatus() == BarcodeEntity.Status.ASSIGNED) {
+            errors.put(BarcodeEntity.BARCODE_ID, "Barkod je već aktiviran.");
+            return new ValidatorResponse(errors);
+        }
+
+        barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
+        barcodeRepo.update(barcode);
+
+        return new ValidatorResponse("Barkod je uspešno aktiviran.");
     }
 }

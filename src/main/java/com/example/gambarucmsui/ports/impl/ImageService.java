@@ -27,7 +27,7 @@ public class ImageService implements PersonPictureBarcodePurgePort, UserPictureL
     }
 
     @Override
-    public ImageView loadUserPictureByUserId(Long userId) {
+    public ImageView loadUserPictureByUserId(Long userId, int height, int width) {
 
         Optional<byte[]> picOpt = personPictureRepo.findByPersonId(userId);
 
@@ -39,8 +39,8 @@ public class ImageService implements PersonPictureBarcodePurgePort, UserPictureL
         }
 
         ImageView imageView = new ImageView(userPicture);
-        imageView.setFitHeight(400);
-        imageView.setFitWidth(300);
+        imageView.setFitHeight(height);
+        imageView.setFitWidth(width);
 
         return imageView;
     }

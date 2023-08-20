@@ -14,6 +14,7 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -133,21 +134,63 @@
                               <Insets bottom="-2.0" top="5.0" />
                            </VBox.margin>
                         </Separator>
-                        <Label maxHeight="1.7976931348623157E308" text="DETALJI SELEKTOVANOG POLAZNIKA:" textFill="#fcfcfc">
-                           <font>
-                              <Font size="10.0" />
-                           </font>
-                        </Label>
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserUpdate" text="IZMENI KORISNIKA" textFill="#fcfcfc" />
-                        <HBox spacing="5.0">
+                        <VBox spacing="5.0">
                            <children>
-                              <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAddUserToTeam" text="DODAJ U TIM" textFill="#fcfcfc" HBox.hgrow="ALWAYS" />
+                              <Label maxHeight="1.7976931348623157E308" text="DETALJI SELEKTOVANOG POLAZNIKA:" textFill="#fcfcfc">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserUpdate" text="IZMENI KORISNIKA" textFill="#fcfcfc" />
+                              <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAddUserToTeam" text="DODAJ U TIM" textFill="#fcfcfc" />
                            </children>
-                        </HBox>
+                        </VBox>
                      </children>
                   </VBox>
                   <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                      <tabs>
+                        <Tab text="KORISNIK">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <StackPane layoutX="9.970703125" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <VBox fx:id="paneUserDetails" spacing="5.0">
+                                             <children>
+                                                <StackPane fx:id="paneUserDetailsPicture" />
+                                                <HBox>
+                                                   <children>
+                                                      <Label maxHeight="1.7976931348623157E308" text="IME:" textFill="#fcfcfc" />
+                                                      <Label fx:id="lblUserDetailsFirstName" maxHeight="1.7976931348623157E308" textFill="#fcfcfc" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox layoutX="10.0" layoutY="210.0">
+                                                   <children>
+                                                      <Label maxHeight="1.7976931348623157E308" text="PREZIME:" textFill="#fcfcfc" />
+                                                      <Label fx:id="lblUserDetailsLastName" maxHeight="1.7976931348623157E308" textFill="#fcfcfc" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox layoutX="10.0" layoutY="224.0">
+                                                   <children>
+                                                      <Label maxHeight="1.7976931348623157E308" text="TELEFON:" textFill="#fcfcfc" />
+                                                      <Label fx:id="lblUserDetailsPhone" maxHeight="1.7976931348623157E308" textFill="#fcfcfc" />
+                                                   </children>
+                                                </HBox>
+                                                <Separator prefWidth="200.0" />
+                                                <Label maxHeight="1.7976931348623157E308" text="BARKODOVI:" textFill="#fcfcfc" />
+                                                <TableView fx:id="tableUserBarcode" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                                             </children>
+                                          </VBox>
+                                          <Label fx:id="lblUserDetailsEmpty" maxHeight="1.7976931348623157E308" text="SELEKTUJ KORISNIKA DA VIDIŠ DETALJE" textFill="#fcfcfc" />
+                                       </children>
+                                    </StackPane>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
                         <Tab closable="false" text="DOLAZNOST">
                            <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -201,15 +244,6 @@
                                  </children>
                               </AnchorPane>
                            </content>
-                        </Tab>
-                        <Tab text="BARKODOVI">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                    <TableView fx:id="tableUserBarcode" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                 </children>
-                              </AnchorPane>
-                          </content>
                         </Tab>
                      </tabs>
                      <VBox.margin>

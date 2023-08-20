@@ -15,6 +15,8 @@ public class BarcodeDetail {
             this.status = "Aktivan";
         } else if (status == BarcodeEntity.Status.DEACTIVATED) {
             this.status = "Deaktivan";
+        } else if (status == BarcodeEntity.Status.DELETED) {
+            this.status = "Obrisan";
         } else {
             this.status = "Neaktivan";
         }

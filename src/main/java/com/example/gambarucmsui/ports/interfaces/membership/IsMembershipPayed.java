@@ -1,5 +1,7 @@
 package com.example.gambarucmsui.ports.interfaces.membership;
 
+import java.time.LocalDate;
+
 public interface IsMembershipPayed {
-    public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, int month, int year);
+    public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, LocalDate currentDate);
 }

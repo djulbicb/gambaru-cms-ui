@@ -65,16 +65,7 @@ public class UserMembershipRepository extends Repository<PersonMembershipPayment
         return query.getResultList();
     }
 
-    public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, int month, int year) {
-        String fetchMembershipsQuery = "SELECT um FROM PersonMembershipPaymentEntity um WHERE um.barcode.barcodeId = :barcodeId AND um.paymentYear = :year AND um.paymentMonth = :month";
-        TypedQuery<PersonMembershipPaymentEntity> query = entityManager.createQuery(fetchMembershipsQuery, PersonMembershipPaymentEntity.class);
-        query.setParameter("barcodeId", barcodeId);
-        query.setParameter("year", year);
-        query.setParameter("month", month);
-        List<PersonMembershipPaymentEntity> memberships = query.getResultList();
-        return !memberships.isEmpty();
-    }
-
+    @Deprecated
     public Optional<PersonMembershipPaymentEntity> getMembershipForBarcodeAndDate(Long barcodeId, int month, int year) {
         String fetchMembershipsQuery = "SELECT um FROM PersonMembershipPaymentEntity um WHERE um.barcode.barcodeId = :barcodeId AND um.paymentYear = :year AND um.paymentMonth = :month";
         TypedQuery<PersonMembershipPaymentEntity> query = entityManager.createQuery(fetchMembershipsQuery, PersonMembershipPaymentEntity.class);
@@ -84,6 +75,7 @@ public class UserMembershipRepository extends Repository<PersonMembershipPayment
         return Optional.ofNullable(query.getSingleResult());
     }
 
+    @Deprecated
     public Optional<PersonMembershipPaymentEntity> findLastPaymentByBarcodeId(Long barcodeId) {
         List<PersonMembershipPaymentEntity> results = entityManager.createQuery(
                         "SELECT p FROM PersonMembershipPaymentEntity p " +

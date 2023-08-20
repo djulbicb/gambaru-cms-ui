@@ -10,6 +10,7 @@ import com.example.gambarucmsui.ports.interfaces.membership.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -33,7 +34,7 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
     }
 
     @Override
-    public ValidatorResponse velidateAddMembership(String barcodeIdStr, int month, int year) {
+    public ValidatorResponse velidateAddMembership(String barcodeIdStr, LocalDate currentDate) {
         Map<String, String> errors = new HashMap<>();
         if (!isLong(barcodeIdStr)) {
             if (barcodeIdStr.isBlank()) {
@@ -58,7 +59,7 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
             errors.put(BARCODE_ID, "Taj barkod nije zadat ijednom korisniku.");
             return new ValidatorResponse(errors);
         }
-        if (membershipRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, month, year)) {
+        if (barcodeRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, currentDate)) {
             errors.put(BARCODE_ID, "Članarina za ovaj mesec je već plaćena.");
             return new ValidatorResponse(errors);
         }
@@ -66,12 +67,15 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
     }
 
     @Override
-    public ValidatorResponse validateAndAddMembership(String barcodeId, int month, int year) {
-        ValidatorResponse res = velidateAddMembership(barcodeId, month, year);
+    public ValidatorResponse validateAndAddMembership(String barcodeId, LocalDate currendDate) {
+        ValidatorResponse res = velidateAddMembership(barcodeId, currendDate);
         if (res.isOk()) {
             BarcodeEntity barcode = barcodeRepo.findById(parseBarcodeStr(barcodeId)).get();
             BigDecimal membershipPayment = barcode.getTeam().getMembershipPayment();
             LocalDateTime now = LocalDateTime.now();
+            int year = currendDate.getYear();
+            int month = currendDate.getMonthValue();
+
             PersonMembershipPaymentEntity entity = new PersonMembershipPaymentEntity(barcode, month, year, now, membershipPayment);
             barcode.setLastMembershipPaymentTimestamp(now);
 
@@ -108,33 +112,24 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
     }
 
     @Override
-    public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, int month, int year) {
-        return membershipRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, month, year);
+    public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, LocalDate currentDate) {
+        return barcodeRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, currentDate);
     }
 
     @Override
-    public State getLastMembershipForUser(BarcodeEntity barcode, LocalDate currentDate) {
+    public State getLastMembershipForUser(LocalDate payment, LocalDate currentDate) {
+        long daysBetween = ChronoUnit.DAYS.between(payment, currentDate);
 
-        LocalDateTime payment = barcode.getLastMembershipPaymentTimestamp();
-        if (payment == null) {
-            return State.empty();
-        }
+        YearMonth yearMonth = YearMonth.of(payment.getYear(), payment.getMonth());
+        int daysInPayedMonth = yearMonth.lengthOfMonth();
+        int expirationDaysPeriod = 5;
 
-//        Optional<PersonMembershipPaymentEntity> paymentOpt = membershipRepo.findLastPaymentByBarcodeId(barcode.getBarcodeId());
-//
-//        if (paymentOpt.isEmpty()) {
-//            return State.empty();
-//        }
-//
-//        PersonMembershipPaymentEntity payment = paymentOpt.get();
+        int greenStatusLimit = daysInPayedMonth - expirationDaysPeriod;
 
-        LocalDate lastPayed = payment.toLocalDate();
-        long daysBetween = ChronoUnit.DAYS.between(lastPayed, currentDate);
-
-        if (daysBetween < 25) {
+        if (daysBetween < greenStatusLimit) {
             return State.green(payment);
-        } else if (daysBetween <= 30) {
-            return State.orange(30 - daysBetween);
+        } else if (daysBetween <= daysInPayedMonth) {
+            return State.orange(daysInPayedMonth - daysBetween);
         }
 
         return State.red();

@@ -15,9 +15,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.*;
@@ -28,7 +25,7 @@ public class FormBarcodeGetMembership {
     // PORTS
     //////////////////////////////////////////
     private final AddUserMembership addUserMembership;
-    private final LocalDate inTimestamp;
+    private final LocalDate inCurrentDate;
     private final UserLoadPort userLoadPort;
     private final BarcodeLoadPort barcodeLoad;
 
@@ -47,24 +44,24 @@ public class FormBarcodeGetMembership {
         addUserMembership = Container.getBean(AddUserMembership.class);
         userLoadPort = Container.getBean(UserLoadPort.class);
         barcodeLoad = Container.getBean(BarcodeLoadPort.class);
-        this.inTimestamp = timestamp;
+        this.inCurrentDate = timestamp;
     }
 
     @FXML void onOk(MouseEvent event) {
         String barcodeIdStr = getOr(txtBarcodeId, "");
-        int month = inTimestamp.getMonthValue();
-        int year = inTimestamp.getYear();
+        int month = inCurrentDate.getMonthValue();
+        int year = inCurrentDate.getYear();
 
         if (validate(barcodeIdStr)) {
-            addUserMembership.validateAndAddMembership(barcodeIdStr, month, year);
+            addUserMembership.validateAndAddMembership(barcodeIdStr, inCurrentDate);
             close();
         }
     }
 
     boolean validate(String barcodeIdStr) {
-        int month = inTimestamp.getMonthValue();
-        int year = inTimestamp.getYear();
-        ValidatorResponse validator = addUserMembership.velidateAddMembership(barcodeIdStr, month, year);
+        int month = inCurrentDate.getMonthValue();
+        int year = inCurrentDate.getYear();
+        ValidatorResponse validator = addUserMembership.velidateAddMembership(barcodeIdStr, inCurrentDate);
 
         if (validator.hasErrors()) {
             lblErrBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));

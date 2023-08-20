@@ -8,7 +8,15 @@ import java.time.LocalDateTime;
 
 public interface GetMembershipStatusPort {
 
-    State getLastMembershipForUser(BarcodeEntity barcode, LocalDate currentDate);
+    default State getLastMembershipForUser(BarcodeEntity barcode, LocalDate currentDate) {
+        LocalDateTime payment = barcode.getLastMembershipPaymentTimestamp();
+        if (payment == null) {
+            return State.empty();
+        }
+        return getLastMembershipForUser(payment.toLocalDate(), currentDate);
+    }
+
+    State getLastMembershipForUser(LocalDate lastMembershipPaymentTimestamp, LocalDate now);
 
     public static class State {
         public static State empty() {
@@ -26,7 +34,7 @@ public interface GetMembershipStatusPort {
             State state = new State(Color.ORANGE, String.format("Članarina uskoro ističe. Za %s.", daysMessage));
             return state;
         }
-        public static State green(LocalDateTime timestamp) {
+        public static State green(LocalDate timestamp) {
             State state = new State(Color.GREEN, "Članarina plaćena.");
             return state;
         }

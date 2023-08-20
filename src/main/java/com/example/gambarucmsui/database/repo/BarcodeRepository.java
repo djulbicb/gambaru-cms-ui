@@ -7,9 +7,14 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.time.YearMonth;
 
 public class BarcodeRepository extends Repository<BarcodeEntity> {
     public BarcodeRepository(EntityManager entityManager) {
@@ -79,5 +84,33 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         TypedQuery<BarcodeEntity> query = entityManager.createQuery(jpql, BarcodeEntity.class);
         query.setParameter("status", status);
         return query.getResultList();
+    }
+
+    public boolean isMembershipPayedByBarcodeAndMonthAndYear(Long barcodeId, LocalDate currentDate) {
+        // String fetchMembershipsQuery = "SELECT um FROM PersonMembershipPaymentEntity um WHERE um.barcode.barcodeId = :barcodeId AND um.paymentYear = :year AND um.paymentMonth = :month";
+//        TypedQuery<PersonMembershipPaymentEntity> query = entityManager.createQuery(fetchMembershipsQuery, BarcodeEntity.class);
+//        query.setParameter("barcodeId", barcodeId);
+//        query.setParameter("year", year);
+//        query.setParameter("month", month);
+//        List<PersonMembershipPaymentEntity> memberships = query.getResultList();
+//        return !memberships.isEmpty();
+
+        Optional<BarcodeEntity> byId = findById(barcodeId);
+        if (byId.isEmpty()) {
+            return false;
+        }
+
+        BarcodeEntity barcode = byId.get();
+        LocalDateTime lastPayment = barcode.getLastMembershipPaymentTimestamp();
+        long daysBetween = ChronoUnit.DAYS.between(lastPayment.toLocalDate(), currentDate);
+
+        YearMonth yearMonth = YearMonth.of(lastPayment.getYear(), lastPayment.getMonth());
+        int daysInMonth = yearMonth.lengthOfMonth();
+
+        if (daysInMonth > daysBetween) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -5,8 +5,10 @@ import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.common.DelayedKeyListener;
 import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeStatusChangePort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
 import com.example.gambarucmsui.ports.interfaces.membership.LoadMembership;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
@@ -24,11 +26,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -37,9 +42,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
-import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize;
 import static com.example.gambarucmsui.util.FormatUtil.*;
+import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.*;
 
 public class PanelAdminUserController implements PanelHeader {
@@ -56,6 +60,8 @@ public class PanelAdminUserController implements PanelHeader {
     private final LoadMembership loadMembership;
     private final AttendanceLoadForUserPort loadAttendance;
     private final BarcodeUpdatePort barcodeUpdatePort;
+    private final BarcodeStatusChangePort barcodeStatusChange;
+    private final UserPictureLoad userPictureLoad;
 
     // FXML
     ///////////////////////////////////////////////////
@@ -75,6 +81,17 @@ public class PanelAdminUserController implements PanelHeader {
     private ComboBox<String> cmbSearchTeam;
     @FXML
     private CheckBox checkSearchOnlyActive;
+    // FXML - USER DETAILS
+    ///////////////////////////////////////////////////
+    @FXML private Label lblUserDetailsEmpty;
+    @FXML private Label lblUserDetailsFirstName;
+    @FXML private Label lblUserDetailsLastName;
+    @FXML private Label lblUserDetailsPhone;
+    @FXML private Pane paneUserDetailsPicture;
+    @FXML private VBox paneUserDetails;
+    @FXML private TableView<AttendanceDetail> tableUserAttendance;
+    @FXML private TableView<MembershipDetail> tableUserMembership;
+    @FXML private TableView<BarcodeDetail> tableUserBarcode;
 
     @Override
     public void initialize() {
@@ -127,6 +144,7 @@ public class PanelAdminUserController implements PanelHeader {
                     Optional<PersonEntity> userOpt = loadUserPort.loadUserByUserId(rowData.getUserId());
                     if (userOpt.isPresent()) {
                         PersonEntity user = userOpt.get();
+                        loadTableUserDetails(user);
                         loadTableUserAttendance(user);
                         loadTableUserMembership(user);
                         loadTableUserBarcode(user);
@@ -148,20 +166,11 @@ public class PanelAdminUserController implements PanelHeader {
         TableColumn<BarcodeDetail, String> activateColumn = buildUserBarcodeButtonColumn();
         tableUserBarcode.getColumns().addAll(barcodeColumn, teamColumn, statusColumn, activateColumn);
 
-
         stretchColumnsToEqualSize(tableUsers);
         stretchColumnsToEqualSize(tableUserAttendance);
         stretchColumnsToEqualSize(tableUserMembership);
         stretchColumnsToEqualSize(tableUserBarcode);
     }
-
-    // USER DETAILS
-    @FXML
-    private TableView<AttendanceDetail> tableUserAttendance;
-    @FXML
-    private TableView<MembershipDetail> tableUserMembership;
-    @FXML
-    private TableView<BarcodeDetail> tableUserBarcode;
 
     public PanelAdminUserController(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -178,6 +187,8 @@ public class PanelAdminUserController implements PanelHeader {
         loadMembership = Container.getBean(LoadMembership.class);
         loadAttendance = Container.getBean(AttendanceLoadForUserPort.class);
         barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
+        barcodeStatusChange = Container.getBean(BarcodeStatusChangePort.class);
+        userPictureLoad = Container.getBean(UserPictureLoad.class);
     }
 
     private void loadTableUserMembership(PersonEntity user) {
@@ -186,6 +197,24 @@ public class PanelAdminUserController implements PanelHeader {
         tableUserMembership.getItems().setAll(userMembershipPaymentEntities);
     }
 
+    private void hideUserDetailsPane() {
+        paneUserDetails.setOpacity(0);
+        lblUserDetailsEmpty.setOpacity(1);
+    }
+    private void showUserDetailsPane() {
+        paneUserDetails.setOpacity(1);
+        lblUserDetailsEmpty.setOpacity(0);
+    }
+    private void loadTableUserDetails(PersonEntity user) {
+        showUserDetailsPane();
+        lblUserDetailsFirstName.setText(user.getFirstName());
+        lblUserDetailsLastName.setText(user.getLastName());
+        lblUserDetailsPhone.setText(user.getPhone());
+        ImageView imageView = userPictureLoad.loadUserPictureByUserId(user.getPersonId(), 200, 150);
+        paneUserDetailsPicture.getChildren().add(imageView);
+        stretchInsideAnchorPance(imageView);
+
+    }
     private void loadTableUserAttendance(PersonEntity user) {
         List<AttendanceDetail> userAttendanceEntities = loadAttendance.fetchLastNEntriesForUserAttendance(user.getBarcodes(), 100).stream().map(e -> new AttendanceDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
         tableUserAttendance.getItems().setAll(userAttendanceEntities);
@@ -223,37 +252,32 @@ public class PanelAdminUserController implements PanelHeader {
                         pane = new HBox(activateBtn, deactivateBtn);
                         activateBtn.setOnMouseClicked(event -> {
                             BarcodeDetail selectedItem = getTableView().getItems().get(getIndex());
-                            System.out.println("Akcije");
                             if (selectedItem != null) {
-                                Optional<BarcodeEntity> byId = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcode()));
-                                if (byId.isPresent()) {
-                                    BarcodeEntity barcode = byId.get();
-                                    if (barcode.getTeam().getStatus() == TeamEntity.Status.DELETED) {
-                                        ToastView.showModal("Tim je obrisan. Barkod se ne moze aktivirati.");
-                                        return;
-                                    }
 
-                                    barcodeUpdatePort.updateBarcode(barcode.getBarcodeId(), BarcodeEntity.Status.ASSIGNED);
+                                ValidatorResponse res = barcodeStatusChange.activateBarcode(parseBarcodeStr(selectedItem.getBarcode()));
 
-                                    loadTableUserBarcode(barcode.getPerson());
-                                    loadTableUser();
+                                if (res.hasErrors()) {
+                                    ToastView.showModal(res.getErrorOrEmpty(BarcodeEntity.BARCODE_ID));
+                                    return;
                                 }
+
+                                ToastView.showModal(res.getMessage());
+                                loadTableUser();
                             }
                         });
                         deactivateBtn.setOnMouseClicked(event -> {
                             BarcodeDetail selectedItem = getTableView().getItems().get(getIndex());
-                            System.out.println("qqq");
                             if (selectedItem != null) {
-                                Optional<BarcodeEntity> byId = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcode()));
-                                if (byId.isPresent()) {
-                                    BarcodeEntity barcode = byId.get();
 
-                                    barcodeUpdatePort.updateBarcode(barcode.getBarcodeId(), BarcodeEntity.Status.DEACTIVATED);
+                                ValidatorResponse res = barcodeStatusChange.deactivateBarcode(parseBarcodeStr(selectedItem.getBarcode()));
 
-                                    loadTableUserBarcode(barcode.getPerson());
-                                    loadTableUser();
+                                if (res.hasErrors()) {
+                                    ToastView.showModal(res.getErrorOrEmpty(BarcodeEntity.BARCODE_ID));
+                                    return;
                                 }
 
+                                ToastView.showModal(res.getMessage());
+                                loadTableUser();
                             }
 
                         });
@@ -281,6 +305,7 @@ public class PanelAdminUserController implements PanelHeader {
                 ).collect(Collectors.toList());
 
         tableUsers.getItems().setAll(collect);
+        hideUserDetailsPane();
     }
 
     @FXML

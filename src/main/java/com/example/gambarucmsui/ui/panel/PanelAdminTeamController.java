@@ -6,6 +6,7 @@ import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.membership.GetMembershipStatusPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
@@ -26,6 +27,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,6 +52,7 @@ public class PanelAdminTeamController implements PanelHeader {
     private final TeamUpdatePort teamUpdatePort;
     private final BarcodeLoadPort barcodeLoadPort;
     private final BarcodeUpdatePort barcodeUpdatePort;
+    private final GetMembershipStatusPort getMembershipStatusPort;
 
     public PanelAdminTeamController(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -62,6 +66,7 @@ public class PanelAdminTeamController implements PanelHeader {
         userLoadPort = Container.getBean(UserLoadPort.class);
 
         teamIfExists = Container.getBean(TeamIfExists.class);
+        getMembershipStatusPort = Container.getBean(GetMembershipStatusPort.class);
     }
     @FXML
     public void initialize() {
@@ -84,7 +89,8 @@ public class PanelAdminTeamController implements PanelHeader {
                 }
                 TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
-                    List<UserDetail> collect = userLoadPort.findUsersByTeamId(selectedItem.getTeamId()).stream().map(o -> UserDetail.fromEntityToFull(o, FormatUtil.toDateTimeFormat(o.getLastMembershipPaymentTimestamp()))).collect(Collectors.toList());
+                    List<UserDetail> collect = userLoadPort.findUsersByTeamId(selectedItem.getTeamId()).stream().map(o ->
+                            UserDetail.fromEntityToFull(o, String.format("%s %s", getEmoji(o.getLastMembershipPaymentTimestamp()), FormatUtil.toDateTimeFormat(o.getLastMembershipPaymentTimestamp())))).collect(Collectors.toList());
                     tableUser.getItems().setAll(collect);
                 }
             });
@@ -95,8 +101,27 @@ public class PanelAdminTeamController implements PanelHeader {
         stretchColumnsToEqualSize(tableUser);
     }
 
+    public static final String GREEN_CHECKMARK = "\u2714\uFE0F";
+    public static final String ORANGE_EXCLAMATION = "\u2757\uFE0F";
+    public static final String RED_X = "\u274C\uFE0F";
+    private String getEmoji(LocalDateTime lastMembershipPaymentTimestamp) {
+        if (lastMembershipPaymentTimestamp == null) {
+            return RED_X;
+        }
+
+        GetMembershipStatusPort.State.Color color = getMembershipStatusPort.getLastMembershipForUser(lastMembershipPaymentTimestamp.toLocalDate(), LocalDate.now()).getColor();
+        if (color == GetMembershipStatusPort.State.Color.GREEN) {
+            return GREEN_CHECKMARK;
+        }
+        if (color == GetMembershipStatusPort.State.Color.ORANGE) {
+            return ORANGE_EXCLAMATION;
+        }
+        return RED_X;
+    }
+
     void loadTableTeam() {
-        List<TeamDetail> teams = teamLoadPort.findAllActive().stream().map(en -> new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
+        List<TeamDetail> teams = teamLoadPort.findAllActive().stream().map(en ->
+                new TeamDetail(en.getTeamId(), en.getName(), en.getMembershipPayment())).collect(Collectors.toList());
         tableTeam.getItems().setAll(teams);
         tableUser.getItems().clear();
     }
