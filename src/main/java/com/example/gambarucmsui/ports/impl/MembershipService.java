@@ -14,6 +14,7 @@ import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static com.example.gambarucmsui.common.Messages.*;
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
@@ -40,14 +41,14 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
             if (barcodeIdStr.isBlank()) {
                 errors.put(BARCODE_ID, "");
             } else {
-                errors.put(BARCODE_ID, "Upiši barkod npr 123.");
+                errors.put(BARCODE_ID, BARCODE_WRONG_FORMAT);
             }
             return new ValidatorResponse(errors);
         }
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
         Optional<BarcodeEntity> barcodeEntityOptional = barcodeRepo.findById(barcodeId);
         if (barcodeEntityOptional.isEmpty()) {
-            errors.put(BARCODE_ID, "Taj barkod uopšte nije registrovan u bazi.");
+            errors.put(BARCODE_ID, BARCODE_NOT_REGISTERED);
             return new ValidatorResponse(errors);
         }
         BarcodeEntity b = barcodeEntityOptional.get();
@@ -56,7 +57,7 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
             return new ValidatorResponse(errors);
         }
         if (b.getStatus() == BarcodeEntity.Status.NOT_USED)  {
-            errors.put(BARCODE_ID, "Taj barkod nije zadat ijednom korisniku.");
+            errors.put(BARCODE_ID, BARCODE_IS_NOT_ASSIGNED);
             return new ValidatorResponse(errors);
         }
         if (barcodeRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, currentDate)) {

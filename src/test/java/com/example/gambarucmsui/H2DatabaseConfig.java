@@ -45,12 +45,12 @@ public class H2DatabaseConfig {
 
     @AfterEach
     public void purge() {
+        Container.getBean(AttendancePurgePort.class).purge();
+        Container.getBean(MembershipPurgePort.class).purge();
         Container.getBean(BarcodePurgePort.class).purge();
         Container.getBean(TeamPurgePort.class).purge();
         Container.getBean(UserPurgePort.class).purge();
-        Container.getBean(AttendancePurgePort.class).purge();
         Container.getBean(PersonPictureBarcodePurgePort.class).purge();
-        Container.getBean(MembershipPurgePort.class).purge();
     }
 
     @AfterAll

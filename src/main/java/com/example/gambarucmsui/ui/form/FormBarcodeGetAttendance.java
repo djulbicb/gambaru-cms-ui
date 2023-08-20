@@ -18,9 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
@@ -66,7 +64,7 @@ public class FormBarcodeGetAttendance implements FxmlViewHandler {
     }
 
     boolean validate(String barcodeIdStr) {
-        ValidatorResponse validator = addAttendance.velidateAddAttendance(barcodeIdStr);
+        ValidatorResponse validator = addAttendance.validateAddAttendance(barcodeIdStr);
         if (validator.hasErrors()) {
             lblErrBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));
         }
