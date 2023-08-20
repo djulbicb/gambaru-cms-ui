@@ -1,6 +1,8 @@
 package com.example.gambarucmsui.ports.impl;
 
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
+import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.database.repo.TeamRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.team.*;
@@ -12,13 +14,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, TeamIfExists, TeamPurgePort {
+import static com.example.gambarucmsui.common.Messages.TEAM_DOESNT_EXIST;
+import static com.example.gambarucmsui.common.Messages.TEAM_IS_DELETED;
+
+public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, TeamIfExists, TeamPurgePort, TeamDeletePort {
 
     private final TeamRepository teamRepository;
     private final TeamInputValidator teamValidator = new TeamInputValidator();
+    private final BarcodeRepository barcodeRepository;
 
-    public TeamService(TeamRepository teamRepository) {
+    public TeamService(TeamRepository teamRepository, BarcodeRepository barcodeRepository) {
         this.teamRepository = teamRepository;
+        this.barcodeRepository = barcodeRepository;
     }
 
     @Override
@@ -108,6 +115,32 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
     @Override
     public void purge() {
         teamRepository.deleteAll();
+    }
+
+    @Override
+    public ValidatorResponse validateAndDeleteTeam(Long teamId) {
+        Map<String, String> errors = new HashMap<>();
+
+        Optional<TeamEntity> byId = teamRepository.findById(teamId);
+        if (byId.isEmpty()) {
+            errors.put(TeamEntity.TEAM_ID, TEAM_DOESNT_EXIST);
+            return new ValidatorResponse(errors);
+        }
+
+        List<BarcodeEntity> barcodes = barcodeRepository.findByTeam(teamId);
+        for (BarcodeEntity barcode : barcodes) {
+            barcode.setStatus(BarcodeEntity.Status.DELETED);
+        }
+        barcodeRepository.saveAll(barcodes);
+
+        TeamEntity team = byId.get();
+        String teamNameBeforeDeletion = team.getName();
+
+        team.setStatus(TeamEntity.Status.DELETED);
+        team.setName(team.getName() + "(Obrisan)");
+        teamRepository.update(team);
+
+        return new ValidatorResponse(TEAM_IS_DELETED(teamNameBeforeDeletion));
     }
 }
 

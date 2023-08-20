@@ -11,8 +11,10 @@ public class TeamEntity {
 
     public static enum Status {
         ACTIVE, DELETED;
+
     }
 
+    public static final String TEAM_ID = "team_id";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "team_id")

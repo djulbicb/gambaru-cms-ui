@@ -1,25 +1,19 @@
 package com.example.gambarucmsui.ui.panel;
 
-import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
+import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
 import com.example.gambarucmsui.ports.interfaces.membership.GetMembershipStatusPort;
-import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
-import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
-import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
-import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.team.*;
 import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ports.interfaces.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
-import com.example.gambarucmsui.ui.dto.admin.UserAdminDetail;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
-import com.example.gambarucmsui.util.DataUtil;
 import com.example.gambarucmsui.util.FormatUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -30,7 +24,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.util.LayoutUtil.*;
@@ -44,6 +38,7 @@ public class PanelAdminTeamController implements PanelHeader {
 
     private final Stage primaryStage;
     private final UserSavePort userSavePort;
+    private final TeamDeletePort teamDeletePort;
     private final UserUpdatePort userUpdatePort;
     private final TeamSavePort teamSavePort;
     private final TeamLoadPort teamLoadPort;
@@ -64,10 +59,12 @@ public class PanelAdminTeamController implements PanelHeader {
         barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
         barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
         userLoadPort = Container.getBean(UserLoadPort.class);
+        teamDeletePort = Container.getBean(TeamDeletePort.class);
 
         teamIfExists = Container.getBean(TeamIfExists.class);
         getMembershipStatusPort = Container.getBean(GetMembershipStatusPort.class);
     }
+
     @FXML
     public void initialize() {
         configureTabTeam();
@@ -104,6 +101,7 @@ public class PanelAdminTeamController implements PanelHeader {
     public static final String GREEN_CHECKMARK = "\u2714\uFE0F";
     public static final String ORANGE_EXCLAMATION = "\u2757\uFE0F";
     public static final String RED_X = "\u274C\uFE0F";
+
     private String getEmoji(LocalDateTime lastMembershipPaymentTimestamp) {
         if (lastMembershipPaymentTimestamp == null) {
             return RED_X;
@@ -150,24 +148,11 @@ public class PanelAdminTeamController implements PanelHeader {
         loadTableTeam();
     }
 
-    @FXML
-    void teamDeleteForm() {
-        TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
-        if (selectedItem == null) {
-            ToastView.showModal("Izaberi unos iz tabele pa onda klikni na obrisi.");
-            return;
-        }
-
-        Optional<TeamEntity> teamOpt = teamLoadPort.findById(selectedItem.getTeamId());
-        if (teamOpt.isEmpty()) {
-            return;
-        }
-
-        TeamEntity team = teamOpt.get();
-
+    private boolean promptUserToContinueDeletion(String teamName) {
+        AtomicBoolean shouldContinue = new AtomicBoolean(false);
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Brisanje tima");
-        alert.setHeaderText(String.format("Da li želiš da obrišeš tim %s?", team.getName()));
+        alert.setHeaderText(String.format("Da li želiš da obrišeš tim %s?", teamName));
         alert.setContentText("Svi barkodovi asocirani sa ovim timom ce biti trajno deaktivirani");
 
         ButtonType yesButton = new ButtonType("Obriši");
@@ -177,16 +162,31 @@ public class PanelAdminTeamController implements PanelHeader {
         alert.getDialogPane().getStylesheets().add(getClass().getResource(CSS).toExternalForm());
         alert.showAndWait().ifPresent(response -> {
             if (response == yesButton) {
-                List<BarcodeEntity> barcodes = barcodeLoadPort.findByTeam(team.getTeamId());
-                for (BarcodeEntity barcode : barcodes) {
-                    barcodeUpdatePort.updateBarcode(barcode.getBarcodeId(), BarcodeEntity.Status.DELETED);
-                }
-                teamUpdatePort.updateTeam(team.getTeamId(), team.getName() + " (Obrisan)", team.getMembershipPayment(), TeamEntity.Status.DELETED);
-                ToastView.showModal("Tim je obrisan");
-                loadTableTeam();
+                shouldContinue.set(true);
             }
         });
 
-        loadTableTeam();
+        return shouldContinue.get();
+    }
+
+    @FXML
+    void teamDeleteForm() {
+        TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Izaberi unos iz tabele pa onda klikni na obrisi.");
+            return;
+        }
+
+
+        if (promptUserToContinueDeletion(selectedItem.getName())) {
+            ValidatorResponse res = teamDeletePort.validateAndDeleteTeam(selectedItem.getTeamId());
+            if (res.hasErrors()) {
+                ToastView.showModal(res.getErrorOrEmpty(TeamEntity.TEAM_ID));
+                return;
+            }
+
+            ToastView.showModal(res.getMessage());
+            loadTableTeam();
+        }
     }
 }

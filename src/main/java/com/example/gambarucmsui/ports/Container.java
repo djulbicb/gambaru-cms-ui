@@ -34,7 +34,7 @@ public class Container {
 
         Container.addBean(new ImageService(personPictureRepository, userRepo));
         Container.addBean(new UserService(barcodeRepository, teamRepository, userRepo, userAttendanceRepository, userPictureRepository));
-        Container.addBean(new TeamService(teamRepository));
+        Container.addBean(new TeamService(teamRepository, barcodeRepository));
         Container.addBean(new AttendanceServicePort(barcodeRepository, userAttendanceRepository, userMembershipRepository));
         Container.addBean(new BarcodeService(barcodeRepository));
         Container.addBean(new StatisticsService(userAttendanceRepository, userMembershipRepository));

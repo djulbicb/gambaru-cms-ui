@@ -55,6 +55,10 @@ public class AttendanceServicePort implements AttendanceAddForUserPort, Attendan
             errors.put(BARCODE_ID, BARCODE_IS_DELETED);
             return new ValidatorResponse(errors);
         }
+        if (b.getStatus() == BarcodeEntity.Status.DEACTIVATED)  {
+            errors.put(BARCODE_ID, BARCODE_IS_DEACTIVATED);
+            return new ValidatorResponse(errors);
+        }
         if (b.getStatus() == BarcodeEntity.Status.NOT_USED)  {
             errors.put(BARCODE_ID, BARCODE_IS_NOT_ASSIGNED);
             return new ValidatorResponse(errors);
