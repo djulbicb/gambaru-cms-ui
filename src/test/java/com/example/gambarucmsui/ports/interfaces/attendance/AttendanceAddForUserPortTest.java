@@ -47,7 +47,6 @@ class AttendanceAddForUserPortTest extends H2DatabaseConfig {
         userAddToTeam = Container.getBean(UserAddToTeamPort.class);
         userSave = Container.getBean(UserSavePort.class);
         teamSave = Container.getBean(TeamSavePort.class);
-
         barcodeLoad = Container.getBean(BarcodeLoadPort.class);
         teamLoad = Container.getBean(TeamLoadPort.class);
         teamDeletePort = Container.getBean(TeamDeletePort.class);

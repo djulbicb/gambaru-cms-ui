@@ -104,7 +104,7 @@ public class PanelMembershipController implements PanelHeader {
         table.getItems().setAll(collect);
     }
     public void onBarcodeRead(String barcodeIdStr) {
-        ValidatorResponse res = addUserMembership.validateAndAddMembership(barcodeIdStr, paginationDate);
+        ValidatorResponse res = addUserMembership.validateAndAddMembership(barcodeIdStr, paginationDate.atStartOfDay());
         ToastView.showModal(res.getMessage());
         listPageForDate();
     }

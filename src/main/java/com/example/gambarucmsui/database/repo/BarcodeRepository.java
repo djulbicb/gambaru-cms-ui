@@ -102,6 +102,11 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
 
         BarcodeEntity barcode = byId.get();
         LocalDateTime lastPayment = barcode.getLastMembershipPaymentTimestamp();
+
+        if (lastPayment == null) {
+            return false;
+        }
+
         long daysBetween = ChronoUnit.DAYS.between(lastPayment.toLocalDate(), currentDate);
 
         YearMonth yearMonth = YearMonth.of(lastPayment.getYear(), lastPayment.getMonth());

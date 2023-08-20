@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public interface AddUserMembership {
-        ValidatorResponse velidateAddMembership(String barcodeId, LocalDate currentDate);
-        ValidatorResponse validateAndAddMembership(String barcodeId, LocalDate currentDate);
+        ValidatorResponse velidateAddMembership(String barcodeId, LocalDateTime currentDate);
+        ValidatorResponse validateAndAddMembership(String barcodeId, LocalDateTime currentDate);
         void executeBulkMembership();
         void addToSaveBulkMembership(BarcodeEntity barcode, LocalDateTime dateTime, BigDecimal membershipPayment);
 }

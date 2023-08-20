@@ -13,5 +13,12 @@ public class Messages {
     public final static String TEAM_IS_DELETED (String teamName) {
         return String.format("Tim %s je obrisan", teamName);
     }
+    // MEMBERSHIP
+
+    public final static String MEMBERSHIP_PAYMENT_ADDED(String firstName, String lastName) {
+        return String.format("Članarina plaćena za %s %s.", firstName, lastName);
+    };
+    public final static String MEMBERSHIP_ALREADY_PAYED = "Članarina za ovaj mesec je već plaćena.";
+
 
 }

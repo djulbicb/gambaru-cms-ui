@@ -53,7 +53,7 @@ public class FormBarcodeGetMembership {
         int year = inCurrentDate.getYear();
 
         if (validate(barcodeIdStr)) {
-            addUserMembership.validateAndAddMembership(barcodeIdStr, inCurrentDate);
+            addUserMembership.validateAndAddMembership(barcodeIdStr, inCurrentDate.atStartOfDay());
             close();
         }
     }
@@ -61,7 +61,7 @@ public class FormBarcodeGetMembership {
     boolean validate(String barcodeIdStr) {
         int month = inCurrentDate.getMonthValue();
         int year = inCurrentDate.getYear();
-        ValidatorResponse validator = addUserMembership.velidateAddMembership(barcodeIdStr, inCurrentDate);
+        ValidatorResponse validator = addUserMembership.velidateAddMembership(barcodeIdStr, inCurrentDate.atStartOfDay());
 
         if (validator.hasErrors()) {
             lblErrBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));

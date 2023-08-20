@@ -35,7 +35,7 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
     }
 
     @Override
-    public ValidatorResponse velidateAddMembership(String barcodeIdStr, LocalDate currentDate) {
+    public ValidatorResponse velidateAddMembership(String barcodeIdStr, LocalDateTime currentDate) {
         Map<String, String> errors = new HashMap<>();
         if (!isLong(barcodeIdStr)) {
             if (barcodeIdStr.isBlank()) {
@@ -60,31 +60,31 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
             errors.put(BARCODE_ID, BARCODE_IS_NOT_ASSIGNED);
             return new ValidatorResponse(errors);
         }
-        if (barcodeRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, currentDate)) {
-            errors.put(BARCODE_ID, "Članarina za ovaj mesec je već plaćena.");
+        if (barcodeRepo.isMembershipPayedByBarcodeAndMonthAndYear(barcodeId, currentDate.toLocalDate())) {
+            errors.put(BARCODE_ID, MEMBERSHIP_ALREADY_PAYED);
             return new ValidatorResponse(errors);
         }
         return new ValidatorResponse(errors);
     }
 
     @Override
-    public ValidatorResponse validateAndAddMembership(String barcodeId, LocalDate currendDate) {
+    public ValidatorResponse validateAndAddMembership(String barcodeId, LocalDateTime currendDate) {
         ValidatorResponse res = velidateAddMembership(barcodeId, currendDate);
         if (res.isOk()) {
             BarcodeEntity barcode = barcodeRepo.findById(parseBarcodeStr(barcodeId)).get();
             BigDecimal membershipPayment = barcode.getTeam().getMembershipPayment();
-            LocalDateTime now = LocalDateTime.now();
+
             int year = currendDate.getYear();
             int month = currendDate.getMonthValue();
 
-            PersonMembershipPaymentEntity entity = new PersonMembershipPaymentEntity(barcode, month, year, now, membershipPayment);
-            barcode.setLastMembershipPaymentTimestamp(now);
+            PersonMembershipPaymentEntity entity = new PersonMembershipPaymentEntity(barcode, month, year, currendDate, membershipPayment);
+            barcode.setLastMembershipPaymentTimestamp(currendDate);
 
             membershipRepo.save(entity);
 
             PersonEntity person = barcode.getPerson();
 
-            return new ValidatorResponse(String.format("Članarina plaćena za %s %s.", person.getFirstName(), person.getLastName()));
+            return new ValidatorResponse(MEMBERSHIP_PAYMENT_ADDED(person.getFirstName(), person.getLastName()));
         }
         return res;
     }
