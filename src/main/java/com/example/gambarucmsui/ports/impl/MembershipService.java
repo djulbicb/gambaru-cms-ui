@@ -119,6 +119,9 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
 
     @Override
     public State getLastMembershipForUser(LocalDate payment, LocalDate currentDate) {
+        if (payment == null || currentDate == null) {
+            return State.empty();
+        }
         long daysBetween = ChronoUnit.DAYS.between(payment, currentDate);
 
         YearMonth yearMonth = YearMonth.of(payment.getYear(), payment.getMonth());
@@ -129,7 +132,7 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
 
         if (daysBetween < greenStatusLimit) {
             return State.green(payment);
-        } else if (daysBetween <= daysInPayedMonth) {
+        } else if (daysBetween < daysInPayedMonth) {
             return State.orange(daysInPayedMonth - daysBetween);
         }
 

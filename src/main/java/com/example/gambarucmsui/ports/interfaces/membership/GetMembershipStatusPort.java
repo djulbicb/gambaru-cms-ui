@@ -6,6 +6,9 @@ import com.example.gambarucmsui.database.entity.PersonEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static com.example.gambarucmsui.common.Messages.MEMBERSHIP_IS_PAYED;
+import static com.example.gambarucmsui.common.Messages.MEMBERSHIP_NOT_PAYED;
+
 public interface GetMembershipStatusPort {
 
     default State getLastMembershipForUser(BarcodeEntity barcode, LocalDate currentDate) {
@@ -35,11 +38,11 @@ public interface GetMembershipStatusPort {
             return state;
         }
         public static State green(LocalDate timestamp) {
-            State state = new State(Color.GREEN, "Članarina plaćena.");
+            State state = new State(Color.GREEN, MEMBERSHIP_IS_PAYED);
             return state;
         }
         public static State red() {
-            State state = new State(Color.RED, "Članarina nije plaćena.");
+            State state = new State(Color.RED, MEMBERSHIP_NOT_PAYED);
             return state;
         }
 
@@ -47,6 +50,16 @@ public interface GetMembershipStatusPort {
         private LocalDateTime timestamp;
         private String message;
         private Color color;
+
+        public boolean isOrange() {
+            return color == Color.ORANGE;
+        }
+        public boolean isRed() {
+            return color == Color.RED;
+        }
+        public boolean isGreen() {
+            return color == Color.GREEN;
+        }
         public enum Color {
             GREEN, ORANGE, RED
         }

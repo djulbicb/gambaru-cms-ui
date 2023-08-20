@@ -20,30 +20,15 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FormTeamUpdateControllerTest extends H2DatabaseConfig {
-
-    private TeamIfExists teamIfExists;
-    private TeamUpdatePort teamUpdatePort;
-    private TeamSavePort teamSavePort;
-    private TeamLoadPort teamLoadPort;
-
-
-    @BeforeEach
-    public void beforeEach() {
-        teamIfExists = Container.getBean(TeamIfExists.class);
-        teamUpdatePort = Container.getBean(TeamUpdatePort.class);
-        teamSavePort = Container.getBean(TeamSavePort.class);
-        teamLoadPort = Container.getBean(TeamLoadPort.class);
-    }
-
     @Test
     void shouldUpdateTeam() {
         // given
-        TeamEntity en = teamSavePort.save("Lowe", BigDecimal.ZERO);
+        TeamEntity en = teamSave.save("Lowe", BigDecimal.ZERO);
         FormTeamUpdateController controller = new FormTeamUpdateController(en.getTeamId(), en.getName(), en.getMembershipPayment());
 
         ValidatorResponse res = controller.updateOrReturnErrors(en.getTeamId(), "Change", String.valueOf(10.0));
 
-        TeamEntity updated = teamLoadPort.findById(en.getTeamId()).get();
+        TeamEntity updated = teamLoad.findById(en.getTeamId()).get();
 
         assertTrue(res.isOk());
         assertEquals("Change", updated.getName());
@@ -53,16 +38,16 @@ class FormTeamUpdateControllerTest extends H2DatabaseConfig {
     @Test
     void shouldNotUpdateTeamCauseDuplicateTeamName() {
         // given
-        TeamEntity preExisting = teamSavePort.save("preExisting", BigDecimal.ZERO);
+        TeamEntity preExisting = teamSave.save("preExisting", BigDecimal.ZERO);
 
         // when
-        TeamEntity en = teamSavePort.save("Lowe", BigDecimal.ZERO);
+        TeamEntity en = teamSave.save("Lowe", BigDecimal.ZERO);
         FormTeamUpdateController controller = new FormTeamUpdateController(en.getTeamId(), en.getName(), en.getMembershipPayment());
 
         ValidatorResponse res = controller.updateOrReturnErrors(en.getTeamId(), "preExisting", String.valueOf(10.0));
 
         // then
-        TeamEntity updated = teamLoadPort.findById(en.getTeamId()).get();
+        TeamEntity updated = teamLoad.findById(en.getTeamId()).get();
         assertTrue(res.hasErrors());
         assertEquals(res.getErrorOrEmpty("name"), TeamInputValidator.errTeamNameExists());
         assertEquals("Lowe", updated.getName());
@@ -71,7 +56,7 @@ class FormTeamUpdateControllerTest extends H2DatabaseConfig {
     @Test
     public void shouldNotSaveTeamCauseWrongName() {
         // given
-        TeamEntity given = teamSavePort.save("Lowe", BigDecimal.ZERO);
+        TeamEntity given = teamSave.save("Lowe", BigDecimal.ZERO);
         FormTeamUpdateController formTeamAddController = new FormTeamUpdateController(given.getTeamId(), given.getName(), given.getMembershipPayment());
 
         // when
@@ -88,14 +73,14 @@ class FormTeamUpdateControllerTest extends H2DatabaseConfig {
         assertEquals(save2.getErrorOrEmpty("name"), TeamInputValidator.errTeamName());
         assertEquals(save3.getErrorOrEmpty("name"), TeamInputValidator.errTeamName());
 
-        TeamEntity loadAfterSave = teamLoadPort.findById(given.getTeamId()).get();
+        TeamEntity loadAfterSave = teamLoad.findById(given.getTeamId()).get();
         assertEquals(loadAfterSave, given);
     }
 
     @Test
     public void shouldNotSaveTeamCauseWrongMembershipFee() {
         // given
-        TeamEntity given = teamSavePort.save("Lowe", BigDecimal.ZERO);
+        TeamEntity given = teamSave.save("Lowe", BigDecimal.ZERO);
         FormTeamUpdateController formTeamAddController = new FormTeamUpdateController(given.getTeamId(), given.getName(), given.getMembershipPayment());
 
         // when
@@ -112,7 +97,7 @@ class FormTeamUpdateControllerTest extends H2DatabaseConfig {
         assertEquals(TeamInputValidator.errTeamFee(), save2.getErrorOrEmpty("membershipPayment"));
         assertEquals(TeamInputValidator.errTeamFee(), save3.getErrorOrEmpty("membershipPayment"));
 
-        TeamEntity loadAfterSave = teamLoadPort.findById(given.getTeamId()).get();
+        TeamEntity loadAfterSave = teamLoad.findById(given.getTeamId()).get();
         assertEquals(loadAfterSave, given);
 
     }

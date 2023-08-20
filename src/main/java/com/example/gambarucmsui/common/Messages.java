@@ -19,6 +19,8 @@ public class Messages {
         return String.format("Članarina plaćena za %s %s.", firstName, lastName);
     };
     public final static String MEMBERSHIP_ALREADY_PAYED = "Članarina za ovaj mesec je već plaćena.";
+    public final static String MEMBERSHIP_NOT_PAYED = "Članarina nije plaćena.";
+    public final static String MEMBERSHIP_IS_PAYED = "Članarina je plaćena.";
 
 
 }

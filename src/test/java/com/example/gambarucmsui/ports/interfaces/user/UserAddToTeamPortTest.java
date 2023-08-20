@@ -19,24 +19,6 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserAddToTeamPortTest extends H2DatabaseConfig {
-
-    private UserAddToTeamPort userAddToTeam;
-    private BarcodeFetchOrGeneratePort barcodeFetchOrGenerate;
-    private UserSavePort userSave;
-    private TeamSavePort teamSave;
-    private BarcodeLoadPort barcodeLoad;
-    private TeamLoadPort teamLoad;
-
-    @BeforeEach
-    public void set() {
-        barcodeFetchOrGenerate = Container.getBean(BarcodeFetchOrGeneratePort.class);
-        userAddToTeam = Container.getBean(UserAddToTeamPort.class);
-        userSave = Container.getBean(UserSavePort.class);
-        teamSave = Container.getBean(TeamSavePort.class);
-        barcodeLoad = Container.getBean(BarcodeLoadPort.class);
-        teamLoad = Container.getBean(TeamLoadPort.class);
-    }
-
     @Test
     public void shouldAssignUserToTeam() throws IOException {
         BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);

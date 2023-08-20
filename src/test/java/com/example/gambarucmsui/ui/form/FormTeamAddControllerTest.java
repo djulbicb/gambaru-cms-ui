@@ -21,20 +21,9 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FormTeamAddControllerTest extends H2DatabaseConfig {
-
-    private FormTeamAddController formTeamAddController;
-    private TeamSavePort teamSavePort;
-    private TeamIfExists teamIfExists;
-
-    @BeforeEach
-    public void set() {
-        teamSavePort = Container.getBean(TeamSavePort.class);
-        teamIfExists = Container.getBean(TeamIfExists.class);
-        formTeamAddController = new FormTeamAddController(teamIfExists, teamSavePort);
-    }
-
     @Test
     public void shouldSaveTeam() {
+        FormTeamAddController formTeamAddController =  new FormTeamAddController(teamIfExists, teamSave);
         // when
         ValidatorResponse save = formTeamAddController.saveOrReturnErrors("Lowe", "123");
 
@@ -45,7 +34,8 @@ class FormTeamAddControllerTest extends H2DatabaseConfig {
 
     @Test
     public void shouldNotSaveTeamCauseDuplicateTeamName() {
-        teamSavePort.save("Star", BigDecimal.valueOf(123));
+        FormTeamAddController formTeamAddController =  new FormTeamAddController(teamIfExists, teamSave);
+        teamSave.save("Star", BigDecimal.valueOf(123));
         // when
         ValidatorResponse save = formTeamAddController.saveOrReturnErrors("Star", "123");
 
@@ -56,6 +46,7 @@ class FormTeamAddControllerTest extends H2DatabaseConfig {
 
     @Test
     public void shouldNotSaveTeamCauseWrongName() {
+        FormTeamAddController formTeamAddController =  new FormTeamAddController(teamIfExists, teamSave);
         // when
         ValidatorResponse save1 = formTeamAddController.saveOrReturnErrors(null, "123");
         ValidatorResponse save2 = formTeamAddController.saveOrReturnErrors("  ", "123");
@@ -73,6 +64,7 @@ class FormTeamAddControllerTest extends H2DatabaseConfig {
 
     @Test
     public void shouldNotSaveTeamCauseWrongMembershipFee() {
+        FormTeamAddController formTeamAddController =  new FormTeamAddController(teamIfExists, teamSave);
         // when
         ValidatorResponse save1 = formTeamAddController.saveOrReturnErrors("Star", null);
         ValidatorResponse save2 = formTeamAddController.saveOrReturnErrors("Star", "   ");

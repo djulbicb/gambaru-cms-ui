@@ -30,32 +30,6 @@ import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AddUserMembershipTest extends H2DatabaseConfig {
-    private AttendanceLoadForUserPort attendanceLoadForUserPort;
-    private AttendanceAddForUserPort attendanceAddForUserPort;
-    private UserAddToTeamPort userAddToTeam;
-    private BarcodeFetchOrGeneratePort barcodeFetchOrGenerate;
-    private UserSavePort userSave;
-    private TeamSavePort teamSave;
-    private BarcodeLoadPort barcodeLoad;
-    private TeamLoadPort teamLoad;
-    private TeamDeletePort teamDeletePort;
-    private BarcodeStatusChangePort barcodeStatusChangePort;
-    private AddUserMembership addUserMembership;
-
-    @BeforeEach
-    public void set() {
-        attendanceLoadForUserPort = Container.getBean(AttendanceLoadForUserPort.class);
-        attendanceAddForUserPort = Container.getBean(AttendanceAddForUserPort.class);
-        addUserMembership = Container.getBean(AddUserMembership.class);
-        barcodeFetchOrGenerate = Container.getBean(BarcodeFetchOrGeneratePort.class);
-        barcodeStatusChangePort = Container.getBean(BarcodeStatusChangePort.class);
-        userAddToTeam = Container.getBean(UserAddToTeamPort.class);
-        userSave = Container.getBean(UserSavePort.class);
-        teamSave = Container.getBean(TeamSavePort.class);
-        barcodeLoad = Container.getBean(BarcodeLoadPort.class);
-        teamLoad = Container.getBean(TeamLoadPort.class);
-        teamDeletePort = Container.getBean(TeamDeletePort.class);
-    }
 
     @Test
     public void shouldAddPayment() throws IOException {
@@ -96,13 +70,4 @@ class AddUserMembershipTest extends H2DatabaseConfig {
         assertTrue(nextMonthStart.isOk());
         assertEquals(MEMBERSHIP_PAYMENT_ADDED(p.getFirstName(), p.getLastName()), nextMonthStart.getMessage());
     }
-
-    @NotNull
-    private BarcodeEntity scenario_AssignPersonToTeamAndReturnAssignedBarcode() throws IOException {
-        BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
-        PersonEntity user = userSave.save("Bo", "Lowe", PersonEntity.Gender.MALE, "123", null);
-        TeamEntity team = teamSave.save("Lowe", BigDecimal.valueOf(123));
-        userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName());
-        return barcode;
     }
-}
