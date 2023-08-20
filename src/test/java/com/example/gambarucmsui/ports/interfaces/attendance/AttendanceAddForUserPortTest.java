@@ -14,6 +14,7 @@ import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import com.example.gambarucmsui.ports.interfaces.user.UserAddToTeamPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,23 +55,18 @@ class AttendanceAddForUserPortTest extends H2DatabaseConfig {
 
     @Test
     public void shouldAddAttendanceForUser() throws IOException {
-        BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
-        PersonEntity user = userSave.save("Bo", "Lowe", PersonEntity.Gender.MALE, "123", null);
-        TeamEntity team = teamSave.save("Lowe", BigDecimal.valueOf(123));
-        userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName());
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
 
         ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), NOW_DATE_TIME);
 
         assertEquals("Bo Lowe prisutan.", res.getMessage());
         assertTrue(res.isOk());
     }
+
     @Test
     public void shouldFailCauseBarcodeDeactivated() throws IOException {
         // given
-        BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
-        PersonEntity user = userSave.save("Bo", "Lowe", PersonEntity.Gender.MALE, "123", null);
-        TeamEntity team = teamSave.save("Lowe", BigDecimal.valueOf(123));
-        userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName());
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
 
         // Add attendance before team deletion
         ValidatorResponse resBeforeDeactivation = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), NOW_DATE_TIME);
@@ -88,10 +84,7 @@ class AttendanceAddForUserPortTest extends H2DatabaseConfig {
     @Test
     public void shouldFailCauseTeamIsDeleted() throws IOException {
         // given
-        BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
-        PersonEntity user = userSave.save("Bo", "Lowe", PersonEntity.Gender.MALE, "123", null);
-        TeamEntity team = teamSave.save("Lowe", BigDecimal.valueOf(123));
-        userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName());
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
 
         // Add attendance before team deletion
         ValidatorResponse resBeforeDeletion = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), NOW_DATE_TIME);
@@ -99,7 +92,7 @@ class AttendanceAddForUserPortTest extends H2DatabaseConfig {
         assertEquals("Bo Lowe prisutan.", resBeforeDeletion.getMessage());
 
         // delete team
-        ValidatorResponse resDeletion = teamDeletePort.validateAndDeleteTeam(team.getTeamId());
+        ValidatorResponse resDeletion = teamDeletePort.validateAndDeleteTeam(barcode.getTeam().getTeamId());
         assertTrue(resDeletion.isOk());
 
         // Add attendance after team deletion
@@ -110,7 +103,7 @@ class AttendanceAddForUserPortTest extends H2DatabaseConfig {
 
     @Test
     public void shouldValidationFailCauseNotExistingBarcode() throws IOException {
-        BarcodeEntity barcode = dummyBarcode(1L);
+        BarcodeEntity barcode = dummyBarcode(2L);
 
         ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), NOW_DATE_TIME);
         assertEquals(BARCODE_NOT_REGISTERED, res.getErrorOrEmpty(BarcodeEntity.BARCODE_ID));
@@ -126,5 +119,14 @@ class AttendanceAddForUserPortTest extends H2DatabaseConfig {
 
         ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), NOW_DATE_TIME);
         assertEquals(BARCODE_IS_NOT_ASSIGNED, res.getErrorOrEmpty(BarcodeEntity.BARCODE_ID));
+    }
+
+    @NotNull
+    private BarcodeEntity scenario_AssignPersonToTeamAndReturnAssignedBarcode() throws IOException {
+        BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
+        PersonEntity user = userSave.save("Bo", "Lowe", PersonEntity.Gender.MALE, "123", null);
+        TeamEntity team = teamSave.save("Lowe", BigDecimal.valueOf(123));
+        userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName());
+        return barcode;
     }
 }

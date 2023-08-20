@@ -12,6 +12,7 @@ public class TestData {
     public static BarcodeEntity dummyBarcode(Long barcodeId) {
         BarcodeEntity barcode = new BarcodeEntity();
         barcode.setBarcodeId(barcodeId);
+        barcode.setStatus(BarcodeEntity.Status.NOT_USED);
         return barcode;
     }
 }
