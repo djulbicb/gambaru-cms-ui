@@ -57,7 +57,7 @@ public class FormBarcodeGetAttendance implements FxmlViewHandler {
             close();
 
             BarcodeEntity barcode = barcodeLoadPort.findById(parseBarcodeStr(barcodeIdStr)).get();
-            AlertShowAttendanceController controller = new AlertShowAttendanceController(barcode, timestamp.toLocalDate());
+            AlertShowAttendanceController controller = new AlertShowAttendanceController(barcode, timestamp);
             Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, controller);
             ToastView.showModal(pane, 4000, 200);
         }

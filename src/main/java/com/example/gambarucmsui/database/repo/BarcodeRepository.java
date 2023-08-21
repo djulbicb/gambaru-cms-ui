@@ -43,9 +43,8 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         for (int i = 0; i < generateCount; i++) {
             BarcodeEntity barcode = new BarcodeEntity();
             barcode.setStatus( BarcodeEntity.Status.NOT_USED);
-            BarcodeEntity save = save(barcode);
             barcode.setAssignedTimestamp(LocalDateTime.now());
-            toBeSaved.add(save);
+            toBeSaved.add(barcode);
         }
         return saveAll(toBeSaved);
     }

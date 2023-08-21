@@ -11,6 +11,11 @@ import java.util.Objects;
 @Table(name = "person")
 public class PersonEntity {
 
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+    public static final String PHONE = "phone";
+    public static final String GENDER = "gender";
+
     public static enum Gender {
         MALE, FEMALE;
     }

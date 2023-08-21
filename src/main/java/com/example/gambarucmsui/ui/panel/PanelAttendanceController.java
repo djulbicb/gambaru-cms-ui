@@ -106,31 +106,23 @@ public class PanelAttendanceController implements PanelHeader {
     }
     @FXML
     protected void addAttendanceManually() throws IOException {
-        Pane root = loadFxml(FORM_BARCODE_GET_ATTENDANCE, new FormBarcodeGetAttendance(getDateTimeOfPaginationOrNow()));
+        Pane root = loadFxml(FORM_BARCODE_GET_ATTENDANCE, new FormBarcodeGetAttendance( LocalDateTime.now()));
         createStage("Dodaj korisnika u tim", root, primaryStage).showAndWait();
         listPageForDate();
     }
 
     public void onBarcodeRead(String barcodeIdStr)  {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcodeId, getDateTimeOfPaginationOrNow());
+        ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcodeId, LocalDateTime.now());
         if (res.hasErrors()) {
             ToastView.showModal(res.getErrorOrEmpty(BARCODE_ID));
         } else {
             BarcodeEntity barcode = barcodeLoadPort.findById(parseBarcodeStr(barcodeIdStr)).get();
-            AlertShowAttendanceController controller = new AlertShowAttendanceController(barcode, paginationDate);
+            AlertShowAttendanceController controller = new AlertShowAttendanceController(barcode, LocalDateTime.now());
             Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, controller);
             ToastView.showModal(pane, 4000, 200);
         }
 
         listPageForDate();
-    }
-
-    private LocalDateTime getDateTimeOfPaginationOrNow() {
-        LocalDateTime now = LocalDateTime.now();
-        if (paginationDate.equals(now.toLocalDate())) {
-           return now;
-        }
-        return paginationDate.atStartOfDay();
     }
 }

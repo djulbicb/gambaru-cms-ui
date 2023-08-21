@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
@@ -74,8 +73,8 @@ public class FormTeamUpdateController implements Initializable {
         String teamNameStr = getOr(txtTeamName, "");
         String paymentFeeStr = getOr(txtMembershipFee, "");
 
-        ValidatorResponse res = updateOrReturnErrors(inTeamId, teamNameStr, paymentFeeStr);
 
+        ValidatorResponse res = teamUpdate.verifyAndUpdateTeam(inTeamId, teamNameStr, paymentFeeStr);
         if (res.hasErrors()) {
             lblErrTeamName.setText(res.getErrorOrEmpty("name"));
             lblErrMembershipFee.setText(res.getErrorOrEmpty("membershipPayment"));
@@ -84,18 +83,6 @@ public class FormTeamUpdateController implements Initializable {
 
         ToastView.showModal(res.getMessage());
         close();
-    }
-
-    public ValidatorResponse updateOrReturnErrors(Long teamId, String teamNameStr, String paymentFeeStr) {
-        ValidatorResponse verifySaveTeam = teamUpdate.verifyUpdateTeam(teamId, teamNameStr, paymentFeeStr);
-        if (verifySaveTeam.isOk()) {
-            String outTeamName = teamNameStr.trim();
-            BigDecimal outMembershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr.trim()));
-
-            TeamEntity team = teamUpdate.updateTeam(teamId, outTeamName, outMembershipPayment);
-            return new ValidatorResponse(TeamInputValidator.msgTeamIsUpdated(team.getName()));
-        }
-        return verifySaveTeam;
     }
 
     private void close() {

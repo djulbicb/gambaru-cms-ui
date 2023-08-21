@@ -107,7 +107,7 @@ public class PanelAdminTeamController implements PanelHeader {
             return RED_X;
         }
 
-        GetMembershipStatusPort.State.Color color = getMembershipStatusPort.getLastMembershipForUser(lastMembershipPaymentTimestamp.toLocalDate(), LocalDate.now()).getColor();
+        GetMembershipStatusPort.State.Color color = getMembershipStatusPort.getLastMembershipForUser(lastMembershipPaymentTimestamp, LocalDateTime.now()).getColor();
         if (color == GetMembershipStatusPort.State.Color.GREEN) {
             return GREEN_CHECKMARK;
         }

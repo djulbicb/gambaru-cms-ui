@@ -1,5 +1,6 @@
 package com.example.gambarucmsui.ports.impl;
 
+import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
@@ -14,8 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.example.gambarucmsui.common.Messages.TEAM_DOESNT_EXIST;
-import static com.example.gambarucmsui.common.Messages.TEAM_IS_DELETED;
+import static com.example.gambarucmsui.common.Messages.*;
 
 public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, TeamIfExists, TeamPurgePort, TeamDeletePort {
 
@@ -29,18 +29,24 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
     }
 
     @Override
-    public ValidatorResponse verifySaveTeam(String teamName, String fee) {
+    public ValidatorResponse verifyAndSaveTeam(String teamName, String fee) {
         Map<String, String> errors = new HashMap<>();
         if (!teamValidator.isTeamNameValid(teamName)) {
-            errors.put("name", TeamInputValidator.errTeamName());
+            errors.put("name", TEAM_NAME_NOT_VALID);
         }
         if (!teamValidator.isFeeValid(fee)) {
-            errors.put("membershipPayment", TeamInputValidator.errTeamFee());
+            errors.put("membershipPayment", TEAM_FEE_NOT_VALID);
         }
         if (ifTeamNameExists(teamName)) {
-            errors.put("name", TeamInputValidator.errTeamNameExists());
+            errors.put("name", TEAM_NAME_ALREADY_EXISTS);
         }
-        return new ValidatorResponse(errors);
+
+        if (!errors.isEmpty()) {
+            return new ValidatorResponse(errors);
+        }
+
+        save(teamName, new BigDecimal(fee));
+        return new ValidatorResponse(Messages.TEAM_IS_CREATED(teamName));
     }
 
     @Override
@@ -50,23 +56,31 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
     }
 
     @Override
-    public ValidatorResponse verifyUpdateTeam(Long teamId, String teamName, String fee) {
+    public ValidatorResponse verifyAndUpdateTeam(Long teamId, String teamName, String fee) {
         Optional<TeamEntity> byId = findById(teamId);
         TeamEntity team = byId.get();
 
         Map<String, String> errors = new HashMap<>();
         if (!teamValidator.isTeamNameValid(teamName)) {
-            errors.put("name", TeamInputValidator.errTeamName());
+            errors.put("name", TEAM_NAME_NOT_VALID);
         }
         if (!teamValidator.isFeeValid(fee)) {
-            errors.put("membershipPayment", TeamInputValidator.errTeamFee());
+            errors.put("membershipPayment", TEAM_FEE_NOT_VALID);
         }
 
         if (!team.getName().equals(teamName) && ifTeamNameExists(teamName)) {
-            errors.put("name", TeamInputValidator.errTeamNameExists());
+            errors.put("name", TEAM_NAME_ALREADY_EXISTS);
         }
 
-        return new ValidatorResponse(errors);
+        if (!errors.isEmpty()) {
+            return new ValidatorResponse(errors);
+        }
+
+        teamName = teamName.trim();
+        fee = fee.trim();
+        updateTeam(teamId, teamName, new BigDecimal(fee));
+        return new ValidatorResponse(Messages.TEAM_IS_UPDATED(teamName));
+
     }
 
     @Override

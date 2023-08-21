@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -104,14 +105,14 @@ public class PanelMembershipController implements PanelHeader {
         table.getItems().setAll(collect);
     }
     public void onBarcodeRead(String barcodeIdStr) {
-        ValidatorResponse res = addUserMembership.validateAndAddMembership(barcodeIdStr, paginationDate.atStartOfDay());
+        ValidatorResponse res = addUserMembership.validateAndAddMembership(barcodeIdStr, LocalDateTime.now());
         ToastView.showModal(res.getMessage());
         listPageForDate();
     }
 
     @FXML
     void onAddMembershipManually() throws IOException {
-        FormBarcodeGetMembership controller = new FormBarcodeGetMembership(paginationDate);
+        FormBarcodeGetMembership controller = new FormBarcodeGetMembership(LocalDateTime.now());
         Pane root = loadFxml(FORM_BARCODE_GET_MEMBERSHIP, controller);
         createStage("Dodaj korisnika u tim", root, primaryStage).showAndWait();
         listPageForDate();

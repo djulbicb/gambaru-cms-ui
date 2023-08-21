@@ -118,10 +118,11 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
     }
 
     @Override
-    public State getLastMembershipForUser(LocalDate payment, LocalDate currentDate) {
+    public State getLastMembershipForUser(LocalDateTime payment, LocalDateTime currentDate) {
         if (payment == null || currentDate == null) {
             return State.empty();
         }
+        
         long daysBetween = ChronoUnit.DAYS.between(payment, currentDate);
 
         YearMonth yearMonth = YearMonth.of(payment.getYear(), payment.getMonth());

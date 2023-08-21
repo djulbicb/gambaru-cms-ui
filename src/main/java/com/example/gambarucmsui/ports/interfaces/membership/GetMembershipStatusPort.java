@@ -11,15 +11,15 @@ import static com.example.gambarucmsui.common.Messages.MEMBERSHIP_NOT_PAYED;
 
 public interface GetMembershipStatusPort {
 
-    default State getLastMembershipForUser(BarcodeEntity barcode, LocalDate currentDate) {
+    default State getLastMembershipForUser(BarcodeEntity barcode, LocalDateTime currentDate) {
         LocalDateTime payment = barcode.getLastMembershipPaymentTimestamp();
         if (payment == null) {
             return State.empty();
         }
-        return getLastMembershipForUser(payment.toLocalDate(), currentDate);
+        return getLastMembershipForUser(payment, currentDate);
     }
 
-    State getLastMembershipForUser(LocalDate lastMembershipPaymentTimestamp, LocalDate now);
+    State getLastMembershipForUser(LocalDateTime lastMembershipPaymentTimestamp, LocalDateTime now);
 
     public static class State {
         public static State empty() {
@@ -37,7 +37,7 @@ public interface GetMembershipStatusPort {
             State state = new State(Color.ORANGE, String.format("Članarina uskoro ističe. Za %s.", daysMessage));
             return state;
         }
-        public static State green(LocalDate timestamp) {
+        public static State green(LocalDateTime timestamp) {
             State state = new State(Color.GREEN, MEMBERSHIP_IS_PAYED);
             return state;
         }

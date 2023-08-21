@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.*;
@@ -25,7 +26,7 @@ public class FormBarcodeGetMembership {
     // PORTS
     //////////////////////////////////////////
     private final AddUserMembership addUserMembership;
-    private final LocalDate inCurrentDate;
+    private final LocalDateTime inCurrentDate;
     private final UserLoadPort userLoadPort;
     private final BarcodeLoadPort barcodeLoad;
 
@@ -40,7 +41,7 @@ public class FormBarcodeGetMembership {
     @FXML private TextField txtMembershipFee;
     @FXML private TextField txtTeam;
 
-    public FormBarcodeGetMembership(LocalDate timestamp) {
+    public FormBarcodeGetMembership(LocalDateTime timestamp) {
         addUserMembership = Container.getBean(AddUserMembership.class);
         userLoadPort = Container.getBean(UserLoadPort.class);
         barcodeLoad = Container.getBean(BarcodeLoadPort.class);
@@ -53,7 +54,7 @@ public class FormBarcodeGetMembership {
         int year = inCurrentDate.getYear();
 
         if (validate(barcodeIdStr)) {
-            addUserMembership.validateAndAddMembership(barcodeIdStr, inCurrentDate.atStartOfDay());
+            addUserMembership.validateAndAddMembership(barcodeIdStr, inCurrentDate);
             close();
         }
     }
@@ -61,7 +62,7 @@ public class FormBarcodeGetMembership {
     boolean validate(String barcodeIdStr) {
         int month = inCurrentDate.getMonthValue();
         int year = inCurrentDate.getYear();
-        ValidatorResponse validator = addUserMembership.velidateAddMembership(barcodeIdStr, inCurrentDate.atStartOfDay());
+        ValidatorResponse validator = addUserMembership.velidateAddMembership(barcodeIdStr, inCurrentDate);
 
         if (validator.hasErrors()) {
             lblErrBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));

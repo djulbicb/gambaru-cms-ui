@@ -84,8 +84,8 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     public void fetchBarcodes() {
-        List<BarcodeEntity> barcodeEntities = barcodeFetchOrGeneratePort.fetchOrGenerateBarcodes(100, BarcodeEntity.Status.NOT_USED);
-        List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
+        List<BarcodeEntity> barcodeEntities = barcodeLoadPort.findAllByStatus(BarcodeEntity.Status.NOT_USED);
+        List<Long> ids = barcodeEntities.stream().map(BarcodeEntity::getBarcodeId).collect(Collectors.toList());
         String csv = listToCsv(ids);
         txtBarcodes.setText(csv);
     }
@@ -100,10 +100,25 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     private void fetchNewBarcodes() {
-        List<BarcodeEntity> barcodeEntities = barcodeFetchOrGeneratePort.generateNewBarcodes(100);
-        List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
-        String csv = listToCsv(ids);
-        txtBarcodes.setText(csv);
+        System.out.println("Adding attendance");
+        showAlertDialog("Dodavanje ljudi", "Sačekaj...");
+
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                List<BarcodeEntity> barcodeEntities = barcodeFetchOrGeneratePort.generateNewBarcodes(100);
+                List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
+                String csv = listToCsv(ids);
+                txtBarcodes.setText(csv);
+
+                Platform.runLater(() -> {
+                    closeAlertDialog();
+                });
+                return null;
+            }
+        };
+
+        new Thread(task).start();
     }
 
     @FXML
@@ -168,7 +183,6 @@ public class PanelBarcodeController implements PanelHeader {
         System.out.println("Adding attendance");
         showAlertDialog("Dodavanje ljudi", "Sačekaj...");
 
-        // Start the process in a separate thread using Task
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {

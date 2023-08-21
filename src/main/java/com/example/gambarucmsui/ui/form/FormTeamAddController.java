@@ -1,7 +1,7 @@
 package com.example.gambarucmsui.ui.form;
 
+import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.TeamEntity;
-import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
@@ -61,7 +60,7 @@ public class FormTeamAddController implements Initializable {
         String paymentFeeStr = getOr(txtMembershipFee, "");
         String teamNameStr = getOr(txtTeamName, "");
 
-        ValidatorResponse res = saveOrReturnErrors(teamNameStr, paymentFeeStr);
+        ValidatorResponse res = teamSavePort.verifyAndSaveTeam(teamNameStr, paymentFeeStr);
 
         if (res.hasErrors()) {
             lblErrTeamName.setText(res.getErrorOrEmpty("name"));
@@ -71,18 +70,6 @@ public class FormTeamAddController implements Initializable {
 
         ToastView.showModal(res.getMessage());
         close();
-    }
-
-    public ValidatorResponse saveOrReturnErrors(String teamNameStr, String paymentFeeStr) {
-        ValidatorResponse verifySaveTeam = teamSavePort.verifySaveTeam(teamNameStr, paymentFeeStr);
-        if (verifySaveTeam.isOk()) {
-            String outTeamName = teamNameStr.trim();
-            BigDecimal outMembershipPayment = BigDecimal.valueOf(Double.valueOf(paymentFeeStr.trim()));
-
-            TeamEntity team = teamSavePort.save(outTeamName, outMembershipPayment);
-            return new ValidatorResponse(TeamInputValidator.msgTeamIsCreated(team.getName()));
-        }
-        return verifySaveTeam;
     }
 
     private void close() {

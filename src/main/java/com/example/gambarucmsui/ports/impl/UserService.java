@@ -1,5 +1,6 @@
 package com.example.gambarucmsui.ports.impl;
 
+import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ports.ValidatorResponse;
@@ -43,22 +44,23 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     public ValidatorResponse verify(String firstName, String lastName, String gender, String phone) {
         Map<String, String> errors = new HashMap<>();
         if (!userVal.isValidFirstName(firstName)) {
-            errors.put("firstName", userVal.errFirstName());
+            errors.put(PersonEntity.FIRST_NAME, Messages.USER_FIRST_NAME_MISSING);
         }
-        if (!userVal.isValidLastName(firstName)) {
-            errors.put("lastName", userVal.errLastName());
+        if (!userVal.isValidLastName(lastName)) {
+            errors.put(PersonEntity.LAST_NAME, Messages.USER_LAST_NAME_MISSING);
         }
         if (!userVal.isValidPhone(phone)) {
-            errors.put("phone", userVal.errPhone());
+            errors.put(PersonEntity.PHONE, Messages.USER_PHONE_MISSING);
         }
         if (!userVal.isValidGender(gender)) {
-            errors.put("gender", userVal.errGender());
+            errors.put(PersonEntity.GENDER, Messages.USER_GENDER_MISSING);
         }
         return new ValidatorResponse(errors);
     }
 
     @Override
-    public PersonEntity save (String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
+    public PersonEntity save(String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
+        Map<String, String > errors = new HashMap<>();
         PersonEntity user = userRepo.save(new PersonEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
         if (pictureData != null) {
             ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 300);
@@ -152,7 +154,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
         }
 
         if (!teamVal.isTeamNameValid(teamName)) {
-            errors.put("teamName", teamVal.errTeamName());
+            errors.put("teamName", Messages.TEAM_NAME_NOT_VALID);
             return new ValidatorResponse(errors);
         }
 

@@ -14,22 +14,6 @@ public class TeamInputValidator {
     public boolean isFeeValid(String paymentFeeStr) {
         return paymentFeeStr != null && !paymentFeeStr.isBlank() && isDecimal(paymentFeeStr);
     }
-
-    public static String errTeamName() {
-        return "Upiši ime tima";
-    }
-
-    public static String errTeamNameExists() {
-        return "Takvo ime tima već postoji. Upiši drugačije ime.";
-    }
-
-    public static String errTeamFee() {
-        return "Upiši cenu članarine. Npr 4000";
-    }
-
-    public static String msgTeamIsCreated(String teamName) {
-        return String.format("Tim %s je kreiran", teamName);
-    }
     public static String msgTeamIsUpdated(String name) {
         return String.format("Tim %s je updejtovan", name);
     }

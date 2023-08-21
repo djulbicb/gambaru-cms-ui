@@ -5,19 +5,14 @@ import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.membership.GetMembershipStatusPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserPictureLoad;
-import com.example.gambarucmsui.util.DataUtil;
 import com.example.gambarucmsui.util.FormatUtil;
-import com.example.gambarucmsui.util.PathUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +21,7 @@ import java.util.ResourceBundle;
 public class AlertShowAttendanceController implements Initializable {
 
     private final BarcodeEntity barcode;
-    private final LocalDate paginationDate;
+    private final LocalDateTime forDate;
     private final GetMembershipStatusPort getMembershipStatusPort;
     private final UserPictureLoad userPictureLoad;
     @FXML private Pane root;
@@ -39,9 +34,9 @@ public class AlertShowAttendanceController implements Initializable {
     @FXML private AnchorPane panePicture;
 
 
-    public AlertShowAttendanceController(BarcodeEntity barcode, LocalDate paginationDate) {
+    public AlertShowAttendanceController(BarcodeEntity barcode, LocalDateTime forDate) {
        this.barcode = barcode;
-       this.paginationDate = paginationDate;
+       this.forDate = forDate;
        this.getMembershipStatusPort = Container.getBean(GetMembershipStatusPort.class);
        this.userPictureLoad = Container.getBean(UserPictureLoad.class);
     }
@@ -55,7 +50,7 @@ public class AlertShowAttendanceController implements Initializable {
         lblTeamName.setText(barcode.getTeam().getName());
         lblLastMembershipPayment.setText(getPayment(barcode.getLastMembershipPaymentTimestamp()));
 
-        GetMembershipStatusPort.State membershipState = getMembershipStatusPort.getLastMembershipForUser(barcode, paginationDate);
+        GetMembershipStatusPort.State membershipState = getMembershipStatusPort.getLastMembershipForUser(barcode, forDate);
         panePicture.getChildren().add(userPictureLoad.loadUserPictureByUserId(person.getPersonId()));
 
         if (membershipState.getColor() == GetMembershipStatusPort.State.Color.ORANGE) {

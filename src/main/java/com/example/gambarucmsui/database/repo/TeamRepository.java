@@ -13,9 +13,10 @@ public class TeamRepository extends Repository<TeamEntity> {
     }
 
     public boolean ifTeamNameExists(String teamName) {
-        String jpql = "SELECT COUNT(t) FROM TeamEntity t WHERE t.name = :teamName";
+        String jpql = "SELECT COUNT(t) FROM TeamEntity t WHERE t.name = :teamName AND t.status = :status";
         TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
         query.setParameter("teamName", teamName);
+        query.setParameter("status", TeamEntity.Status.ACTIVE);
 
         Long count = query.getSingleResult();
         return count == 1;
@@ -29,9 +30,10 @@ public class TeamRepository extends Repository<TeamEntity> {
     }
 
     public TeamEntity findByName(String teamName) {
-        String jpql = "SELECT t FROM TeamEntity t WHERE t.name = :teamName";
+        String jpql = "SELECT t FROM TeamEntity t WHERE t.name = :teamName AND t.status = :status";
         TypedQuery<TeamEntity> query = entityManager.createQuery(jpql, TeamEntity.class);
         query.setParameter("teamName", teamName);
+        query.setParameter("status", TeamEntity.Status.ACTIVE);
 
         return query.getSingleResult();
     }

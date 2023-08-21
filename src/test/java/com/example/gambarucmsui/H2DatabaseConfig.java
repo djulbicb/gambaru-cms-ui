@@ -13,24 +13,17 @@ import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
 import com.example.gambarucmsui.ports.interfaces.membership.GetMembershipStatusPort;
 import com.example.gambarucmsui.ports.interfaces.membership.MembershipPurgePort;
 import com.example.gambarucmsui.ports.interfaces.team.*;
-import com.example.gambarucmsui.ports.interfaces.user.PersonPictureBarcodePurgePort;
-import com.example.gambarucmsui.ports.interfaces.user.UserAddToTeamPort;
-import com.example.gambarucmsui.ports.interfaces.user.UserPurgePort;
-import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
+import com.example.gambarucmsui.ports.interfaces.user.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.Table;
-import org.h2.engine.User;
 import org.h2.tools.Server;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -57,43 +50,59 @@ public class H2DatabaseConfig {
 
     protected AttendanceLoadForUserPort attendanceLoadForUserPort;
     protected AttendanceAddForUserPort attendanceAddForUserPort;
-    protected UserAddToTeamPort userAddToTeam;
     protected BarcodeFetchOrGeneratePort barcodeFetchOrGenerate;
-    protected UserSavePort userSave;
-    protected TeamSavePort teamSave;
     protected BarcodeLoadPort barcodeLoad;
-    protected TeamLoadPort teamLoad;
-    protected TeamDeletePort teamDeletePort;
     protected BarcodeStatusChangePort barcodeStatusChangePort;
     protected AddUserMembership addUserMembership;
-    protected TeamIfExists teamIfExists;
     protected GetMembershipStatusPort getMembershipStatusPortTest;
+    // USER
+    /////////////////////////////////////////////////////////////////
+    protected UserSavePort userSavePort;
+    protected UserLoadPort userLoadPort;
+    protected UserPictureLoad userPictureLoadPort;
+    protected UserUpdatePort userUpdatePort;
+    protected UserAddToTeamPort userAddToTeam;
+    // TEAM
+    /////////////////////////////////////////////////////////////////
+    protected TeamLoadPort teamLoad;
+    protected TeamSavePort teamSavePort;
+    protected TeamDeletePort teamDeletePort;
+    protected TeamIfExists teamIfExists;
+    protected TeamUpdatePort teamUpdatePort;
 
     @BeforeEach
     public void set() {
-        attendanceLoadForUserPort = Container.getBean(AttendanceLoadForUserPort.class);
-        attendanceAddForUserPort = Container.getBean(AttendanceAddForUserPort.class);
-        addUserMembership = Container.getBean(AddUserMembership.class);
         barcodeFetchOrGenerate = Container.getBean(BarcodeFetchOrGeneratePort.class);
         barcodeStatusChangePort = Container.getBean(BarcodeStatusChangePort.class);
-        userAddToTeam = Container.getBean(UserAddToTeamPort.class);
-        userSave = Container.getBean(UserSavePort.class);
-        teamSave = Container.getBean(TeamSavePort.class);
         barcodeLoad = Container.getBean(BarcodeLoadPort.class);
+
+        userSavePort = Container.getBean(UserSavePort.class);
+        userLoadPort = Container.getBean(UserLoadPort.class);
+        userUpdatePort = Container.getBean(UserUpdatePort.class);
+        userPictureLoadPort = Container.getBean(UserPictureLoad.class);
+        userAddToTeam = Container.getBean(UserAddToTeamPort.class);
+
+        teamSavePort = Container.getBean(TeamSavePort.class);
         teamLoad = Container.getBean(TeamLoadPort.class);
+        teamUpdatePort = Container.getBean(TeamUpdatePort.class);
         teamDeletePort = Container.getBean(TeamDeletePort.class);
         teamIfExists = Container.getBean(TeamIfExists.class);
+
         getMembershipStatusPortTest = Container.getBean(GetMembershipStatusPort.class);
+        addUserMembership = Container.getBean(AddUserMembership.class);
+
+        attendanceLoadForUserPort = Container.getBean(AttendanceLoadForUserPort.class);
+        attendanceAddForUserPort = Container.getBean(AttendanceAddForUserPort.class);
     }
 
     @AfterEach
     public void purge() {
+        Container.getBean(PersonPictureBarcodePurgePort.class).purge();
         Container.getBean(AttendancePurgePort.class).purge();
         Container.getBean(MembershipPurgePort.class).purge();
         Container.getBean(BarcodePurgePort.class).purge();
         Container.getBean(TeamPurgePort.class).purge();
         Container.getBean(UserPurgePort.class).purge();
-        Container.getBean(PersonPictureBarcodePurgePort.class).purge();
     }
 
     @AfterAll
@@ -106,8 +115,8 @@ public class H2DatabaseConfig {
     @NotNull
     protected BarcodeEntity scenario_AssignPersonToTeamAndReturnAssignedBarcode() throws IOException {
         BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
-        PersonEntity user = userSave.save("Bo", "Lowe", PersonEntity.Gender.MALE, "123", null);
-        TeamEntity team = teamSave.save("Lowe", BigDecimal.valueOf(123));
+        PersonEntity user = userSavePort.save("Bo", "Lowe", PersonEntity.Gender.MALE, "123", null);
+        TeamEntity team = teamSavePort.save("Lowe", BigDecimal.valueOf(123));
         userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName());
         return barcode;
     }

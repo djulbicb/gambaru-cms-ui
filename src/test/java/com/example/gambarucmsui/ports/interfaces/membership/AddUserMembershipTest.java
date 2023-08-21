@@ -58,15 +58,15 @@ class AddUserMembershipTest extends H2DatabaseConfig {
         BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
         PersonEntity p = barcode.getPerson();
 
-        ValidatorResponse currentMonthStart = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), FEBRUARY_START_DATE.atStartOfDay());
+        ValidatorResponse currentMonthStart = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), FEBRUARY_START_DATE);
         assertTrue(currentMonthStart.isOk());
         assertEquals(MEMBERSHIP_PAYMENT_ADDED(p.getFirstName(), p.getLastName()), currentMonthStart.getMessage());
 
-        ValidatorResponse currentMonthEnd = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), FEBRUARY_END_DATE.atStartOfDay());
+        ValidatorResponse currentMonthEnd = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), FEBRUARY_END_DATE);
         assertTrue(currentMonthEnd.hasErrors());
         assertEquals(MEMBERSHIP_ALREADY_PAYED, currentMonthEnd.getErrorOrEmpty(BARCODE_ID));
 
-        ValidatorResponse nextMonthStart = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), MARCH_START_DATE.atStartOfDay());
+        ValidatorResponse nextMonthStart = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), MARCH_START_DATE);
         assertTrue(nextMonthStart.isOk());
         assertEquals(MEMBERSHIP_PAYMENT_ADDED(p.getFirstName(), p.getLastName()), nextMonthStart.getMessage());
     }

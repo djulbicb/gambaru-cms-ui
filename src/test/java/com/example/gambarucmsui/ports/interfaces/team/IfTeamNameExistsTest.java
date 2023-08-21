@@ -1,4 +1,4 @@
-package com.example.gambarucmsui.ports.impl;
+package com.example.gambarucmsui.ports.interfaces.team;
 
 import com.example.gambarucmsui.H2DatabaseConfig;
 import com.example.gambarucmsui.database.entity.TeamEntity;
