@@ -69,10 +69,6 @@ public class UserRepo extends Repository<PersonEntity> {
         return query.getResultList();
     }
 
-    public PersonEntity updateOne(PersonEntity user) {
-        return save(user);
-    }
-
     public boolean isUserAlreadyInThisTeam(Long personId, Long teamId) {
         String jpql = "SELECT COUNT(b) FROM BarcodeEntity b WHERE b.person.personId = :personId AND b.team.teamId = :teamId";
         TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);

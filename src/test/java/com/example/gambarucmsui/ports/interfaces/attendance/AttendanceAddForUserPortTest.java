@@ -29,18 +29,18 @@ import static org.junit.jupiter.api.Assertions.*;
 class AttendanceAddForUserPortTest extends H2DatabaseConfig {
     @Test
     public void shouldAddAttendanceForUser() throws IOException {
-        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode("First", "Last", "Team" );
 
         ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), NOW_DATE_TIME);
 
-        assertEquals("Bo Lowe prisutan.", res.getMessage());
+        assertEquals("First Last prisutan.", res.getMessage());
         assertTrue(res.isOk());
     }
 
     @Test
     public void shouldFailCauseBarcodeDeactivated() throws IOException {
         // given
-        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode("First", "Name", "Team");
 
         // Add attendance before team deletion
         ValidatorResponse resBeforeDeactivation = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), NOW_DATE_TIME);
@@ -58,12 +58,12 @@ class AttendanceAddForUserPortTest extends H2DatabaseConfig {
     @Test
     public void shouldFailCauseTeamIsDeleted() throws IOException {
         // given
-        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode("First", "Name", "Team");
 
         // Add attendance before team deletion
         ValidatorResponse resBeforeDeletion = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), NOW_DATE_TIME);
         assertTrue(resBeforeDeletion.isOk());
-        assertEquals("Bo Lowe prisutan.", resBeforeDeletion.getMessage());
+        assertEquals("First Name prisutan.", resBeforeDeletion.getMessage());
 
         // delete team
         ValidatorResponse resDeletion = teamDeletePort.validateAndDeleteTeam(barcode.getTeam().getTeamId());

@@ -7,4 +7,5 @@ public interface UserPictureLoad {
         return loadUserPictureByUserId(userId, 400, 300);
     };
     ImageView loadUserPictureByUserId(Long userId, int height, int width);
+
 }

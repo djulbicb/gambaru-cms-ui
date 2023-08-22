@@ -33,7 +33,7 @@ class AddUserMembershipTest extends H2DatabaseConfig {
 
     @Test
     public void shouldAddPayment() throws IOException {
-        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode("First", "Last", "Team");
 
         ValidatorResponse res = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), NOW_DATE_TIME);
 
@@ -43,7 +43,7 @@ class AddUserMembershipTest extends H2DatabaseConfig {
     }
     @Test
     public void shouldNotAddPaymentCausePaymentAlreadyExists() throws IOException {
-        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode("First", "Last", "Team");
 
         ValidatorResponse resFirst = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), NOW_DATE_TIME);
         ValidatorResponse resSecond = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), NOW_DATE_TIME);
@@ -55,7 +55,7 @@ class AddUserMembershipTest extends H2DatabaseConfig {
 
     @Test
     public void shouldCheckMembershipPaymentMonthRange() throws IOException {
-        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode();
+        BarcodeEntity barcode = scenario_AssignPersonToTeamAndReturnAssignedBarcode("First", "Name", "Team");
         PersonEntity p = barcode.getPerson();
 
         ValidatorResponse currentMonthStart = addUserMembership.validateAndAddMembership(String.valueOf(barcode.getBarcodeId()), FEBRUARY_START_DATE);
