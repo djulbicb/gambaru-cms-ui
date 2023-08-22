@@ -90,6 +90,25 @@ class UserLoadPortTest extends H2DatabaseConfig {
         assertEquals(6, filterByLastName.size());
     }
 
+    @Test
+    public void shouldFindOnlyUsersWithActiveBarcodeAndIgnoreDeactivated() throws IOException {
+        // given
+        List<BarcodeEntity> barcodes = scenario_AssignMultiplePersonsToTeamAndReturnBarcodes(List.of(
+                        new ScenarioUser("first", "first", "123"),
+                        new ScenarioUser("second", "second", "234")),
+                "Team");
+
+        BarcodeEntity first = barcodes.get(0);
+        BarcodeEntity second = barcodes.get(1);
+
+        // when
+        barcodeStatusChangePort.deactivateBarcode(first.getBarcodeId());
+        List<BarcodeEntity> actual = userLoadPort.findActiveUsersByTeamId(first.getTeam().getTeamId());
+
+        // then
+        assertEquals(List.of(second), actual);
+    }
+
     private List<ScenarioUser> listOfUsers() {
         return List.of(
                 new ScenarioUser("fabc", "labc", "123"),

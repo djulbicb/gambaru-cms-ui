@@ -21,7 +21,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -86,7 +85,7 @@ public class PanelAdminTeamController implements PanelHeader {
                 }
                 TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
-                    List<UserDetail> collect = userLoadPort.findUsersByTeamId(selectedItem.getTeamId()).stream().map(o ->
+                    List<UserDetail> collect = userLoadPort.findActiveUsersByTeamId(selectedItem.getTeamId()).stream().map(o ->
                             UserDetail.fromEntityToFull(o, String.format("%s %s", getEmoji(o.getLastMembershipPaymentTimestamp()), FormatUtil.toDateTimeFormat(o.getLastMembershipPaymentTimestamp())))).collect(Collectors.toList());
                     tableUser.getItems().setAll(collect);
                 }

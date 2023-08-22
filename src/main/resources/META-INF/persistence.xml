@@ -18,6 +18,9 @@
             <property name="jakarta.persistence.jdbc.user"   value="gambaru" />
             <property name="jakarta.persistence.jdbc.password" value="password" />
 
+<!--            <property name="hibernate.show_sql" value="true"/>-->
+<!--            <property name="hibernate.format_sql" value="true"/>-->
+
             <!-- Generate the database schema -->
             <property name="javax.persistence.schema-generation.database.action" value="update"/>
 

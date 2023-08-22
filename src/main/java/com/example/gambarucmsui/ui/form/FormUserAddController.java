@@ -8,6 +8,7 @@ import com.example.gambarucmsui.ui.form.validation.UserInputValidator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -33,6 +34,8 @@ public class FormUserAddController implements Initializable {
     // FXML
     //////////////////////////////////////////
     @FXML private VBox root;
+    @FXML private Button btnUser;
+    @FXML private Button btnClose;
     @FXML private Label lblErrUserFirstName;
     @FXML private Label lblErrUserLastName;
     @FXML private Label lblErrUserPhone;
@@ -68,6 +71,9 @@ public class FormUserAddController implements Initializable {
         String genderStr = getOr(cmbUserGender, "");
 
         if (validate(firstNameStr, lastNameStr, phoneStr, genderStr)) {
+            btnUser.setDisable(true);
+            btnClose.setDisable(true);
+
             PersonEntity.Gender gender = genderStr.equals("Muški") ? PersonEntity.Gender.MALE : PersonEntity.Gender.FEMALE;
             port.save(firstNameStr, lastNameStr, gender, phoneStr, outPictureData);
             close();

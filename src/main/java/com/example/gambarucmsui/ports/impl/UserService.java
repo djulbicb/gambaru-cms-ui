@@ -187,8 +187,8 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     }
 
     @Override
-    public List<BarcodeEntity> findUsersByTeamId(Long teamId) {
-        return userRepo.findAllUsersInTeam(teamId);
+    public List<BarcodeEntity> findActiveUsersByTeamId(Long teamId) {
+        return userRepo.findAllActiveUsersInTeam(teamId);
     }
 
 

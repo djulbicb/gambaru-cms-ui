@@ -115,8 +115,8 @@
       </HBox>
       <HBox alignment="TOP_RIGHT" spacing="5.0">
          <children>
-            <Button mnemonicParsing="false" onMouseClicked="#onSave" text="SAČUVAJ" />
-            <Button mnemonicParsing="false" onMouseClicked="#onClose" text="ZATVORI" />
+            <Button fx:id="btnSave" mnemonicParsing="false" onMouseClicked="#onSave" text="SAČUVAJ" />
+            <Button fx:id="btnClose" mnemonicParsing="false" onMouseClicked="#onClose" text="ZATVORI" />
          </children>
          <VBox.margin>
             <Insets />

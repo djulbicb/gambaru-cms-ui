@@ -96,13 +96,13 @@ public class PanelAdminUserController implements PanelHeader {
     @Override
     public void initialize() {
         configureTabUsers();
-        loadTeamsToUserComboBox();
     }
 
     @Override
     public void viewSwitched() {
         System.out.println("Switched to panel Admin.");
         loadTableUser();
+        loadTeamsToUserComboBox();
     }
 
     // PAGINATION
@@ -135,6 +135,8 @@ public class PanelAdminUserController implements PanelHeader {
     }
 
     private void configureTabUsers() {
+        loadTeamsToUserComboBox();
+
         // Add on row click listener
         tableUsers.setRowFactory(tv -> {
             TableRow<UserAdminDetail> row = new TableRow<>();
@@ -210,8 +212,9 @@ public class PanelAdminUserController implements PanelHeader {
         lblUserDetailsFirstName.setText(user.getFirstName());
         lblUserDetailsLastName.setText(user.getLastName());
         lblUserDetailsPhone.setText(user.getPhone());
+
         ImageView imageView = userPictureLoad.loadUserPictureByUserId(user.getPersonId(), 200, 150);
-        paneUserDetailsPicture.getChildren().add(imageView);
+        paneUserDetailsPicture.getChildren().setAll(imageView);
         stretchInsideAnchorPance(imageView);
 
     }

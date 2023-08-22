@@ -21,7 +21,9 @@ public class UserRepo extends Repository<PersonEntity> {
     }
 
     public List<PersonEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
-        String jpql = "SELECT u FROM PersonEntity u LEFT JOIN u.barcodes b LEFT JOIN b.team t WHERE 1=1";
+        // Distinct is added because of following reason
+        // Person can have multiple barcodes. When joining these two tables means user would appear multiple times
+        String jpql = "SELECT DISTINCT u FROM PersonEntity u LEFT JOIN u.barcodes b LEFT JOIN b.team t WHERE 1=1";
 
         if (firstName != null && !firstName.isBlank()) {
             jpql += " AND u.firstName LIKE :firstName";
@@ -39,6 +41,8 @@ public class UserRepo extends Repository<PersonEntity> {
             jpql += " AND b.status = :status";
         }
         jpql += " ORDER BY u." + sortColumn + " DESC";
+        int offset = (page - 1) * pageSize;
+        jpql = addLimitOffsetToJpql(jpql, pageSize, offset);
 
         TypedQuery<PersonEntity> query = entityManager.createQuery(jpql, PersonEntity.class);
 
@@ -62,12 +66,13 @@ public class UserRepo extends Repository<PersonEntity> {
             query.setParameter("status", BarcodeEntity.Status.ASSIGNED);
         }
 
-        int offset = (page - 1) * pageSize;
-        query.setFirstResult(offset);
-        query.setMaxResults(pageSize);
-
         return query.getResultList();
     }
+
+    private String addLimitOffsetToJpql(String jpql, int pageSize, int offset) {
+        return jpql + " LIMIT " + pageSize + " OFFSET " + offset;
+    }
+
 
     public boolean isUserAlreadyInThisTeam(Long personId, Long teamId) {
         String jpql = "SELECT COUNT(b) FROM BarcodeEntity b WHERE b.person.personId = :personId AND b.team.teamId = :teamId";
@@ -87,10 +92,11 @@ public class UserRepo extends Repository<PersonEntity> {
         return count > 0;
     }
 
-    public List<BarcodeEntity> findAllUsersInTeam(Long teamId) {
-        String jpql = "SELECT b FROM BarcodeEntity b WHERE b.team.teamId = :teamId";
+    public List<BarcodeEntity> findAllActiveUsersInTeam(Long teamId) {
+        String jpql = "SELECT b FROM BarcodeEntity b WHERE b.team.teamId = :teamId AND b.status = :status";
         TypedQuery<BarcodeEntity> query = entityManager.createQuery(jpql, BarcodeEntity.class);
         query.setParameter("teamId", teamId);
+        query.setParameter("status", BarcodeEntity.Status.ASSIGNED);
         return query.getResultList();
     }
 }
