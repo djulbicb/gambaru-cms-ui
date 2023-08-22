@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.*;
@@ -66,6 +67,28 @@ public class FormBarcodeGetMembership {
 
         if (validator.hasErrors()) {
             lblErrBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));
+            return false;
+        }
+
+        Long barcodeId = parseBarcodeStr(getOr(txtBarcodeId, ""));
+        Optional<BarcodeEntity> byId = barcodeLoad.findById(barcodeId);
+        if (byId.isEmpty()) {
+            return false;
+        }
+
+        BarcodeEntity barcode = byId.get();
+        if (barcode.getStatus() == BarcodeEntity.Status.NOT_USED) {
+            lblResult.setText("Taj barkod nije zadat korisniku");
+            return false;
+        }
+
+        if (barcode.getStatus() == BarcodeEntity.Status.DELETED) {
+            lblResult.setText("Taj barkod pripada timu koji je obrisan.");
+            return false;
+        }
+
+        if (barcode.getStatus() == BarcodeEntity.Status.DEACTIVATED) {
+            lblResult.setText("Taj barkod je deaktiviran.");
             return false;
         }
 

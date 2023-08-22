@@ -75,6 +75,21 @@ public class FormBarcodeGetAttendance implements FxmlViewHandler {
         }
 
         BarcodeEntity barcode = byId.get();
+        if (barcode.getStatus() == BarcodeEntity.Status.NOT_USED) {
+            lblResult.setText("Taj barkod nije zadat korisniku");
+            return false;
+        }
+
+        if (barcode.getStatus() == BarcodeEntity.Status.DELETED) {
+            lblResult.setText("Taj barkod pripada timu koji je obrisan.");
+            return false;
+        }
+
+        if (barcode.getStatus() == BarcodeEntity.Status.DEACTIVATED) {
+            lblResult.setText("Taj barkod je deaktiviran.");
+            return false;
+        }
+
         PersonEntity user = barcode.getPerson();
         lblResult.setText(String.format("Polaznik: %s %s", user.getFirstName(), user.getLastName()));
         return true;
