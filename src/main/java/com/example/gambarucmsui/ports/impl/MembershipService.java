@@ -1,5 +1,6 @@
 package com.example.gambarucmsui.ports.impl;
 
+import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
@@ -64,7 +65,8 @@ public class MembershipService implements AddUserMembership, LoadMembership, IsM
             errors.put(BARCODE_ID, MEMBERSHIP_ALREADY_PAYED);
             return new ValidatorResponse(errors);
         }
-        return new ValidatorResponse(errors);
+        PersonEntity person = b.getPerson();
+        return new ValidatorResponse(Messages.MEMBERSHIP_MANUALLY_FOUND_USER(person.getFirstName(), person.getLastName()));
     }
 
     @Override

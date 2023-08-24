@@ -28,6 +28,8 @@ import javafx.animation.FadeTransition;
 
 import java.io.ByteArrayInputStream;
 
+import static com.example.gambarucmsui.util.PathUtil.CSS;
+
 public class ToastView implements FxmlViewHandler {
 
     public static void showModal(String message) {

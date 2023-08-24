@@ -17,14 +17,15 @@ import static com.example.gambarucmsui.common.Messages.*;
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
+import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
-public class AttendanceServicePort implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort {
+public class AttendanceService implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort {
 
     private final UserAttendanceRepository attendanceRepo;
     private final UserMembershipRepository membershipRepo;
     private final BarcodeRepository barcodeRepo;
 
-    public AttendanceServicePort(
+    public AttendanceService(
             BarcodeRepository barcodeRepo,
             UserAttendanceRepository attendanceRepo,
             UserMembershipRepository membershipRepo) {
@@ -63,7 +64,8 @@ public class AttendanceServicePort implements AttendanceAddForUserPort, Attendan
             errors.put(BARCODE_ID, BARCODE_IS_DEACTIVATED);
             return new ValidatorResponse(errors);
         }
-        return new ValidatorResponse(errors);
+        PersonEntity user = b.getPerson();
+        return new ValidatorResponse(ATTENDANCE_MANUALLY_FOUND_USER(user.getFirstName(), user.getLastName()));
     }
 
     @Override

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import static com.example.gambarucmsui.util.FormatUtil.formatBarcode;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.*;
-import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET_MEMBERSHIP;
+import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET;
 
 public class PanelMembershipController implements PanelHeader {
     //  FXML
@@ -113,7 +113,7 @@ public class PanelMembershipController implements PanelHeader {
     @FXML
     void onAddMembershipManually() throws IOException {
         FormBarcodeGetMembership controller = new FormBarcodeGetMembership(LocalDateTime.now());
-        Pane root = loadFxml(FORM_BARCODE_GET_MEMBERSHIP, controller);
+        Pane root = loadFxml(FORM_BARCODE_GET, controller);
         createStage("Dodaj korisnika u tim", root, primaryStage).showAndWait();
         listPageForDate();
     }

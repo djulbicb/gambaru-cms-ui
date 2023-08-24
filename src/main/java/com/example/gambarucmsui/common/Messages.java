@@ -1,9 +1,5 @@
 package com.example.gambarucmsui.common;
 
-import com.example.gambarucmsui.ports.ValidatorResponse;
-
-import java.util.Map;
-
 public class Messages {
     // USER
     public final static String USER_FIRST_NAME_MISSING = "Upiši ime.";
@@ -40,5 +36,12 @@ public class Messages {
 
     public static String TEAM_IS_UPDATED(String teamName) {
         return String.format("Tim %s je updejtovan.", teamName);
+    }
+
+    // ATTENDANCE
+    public static String ATTENDANCE_MANUALLY_FOUND_USER(String firstName, String lastName) {
+        return String.format("Polaznik: %s %s", firstName, lastName);
+    }    public static String MEMBERSHIP_MANUALLY_FOUND_USER(String firstName, String lastName) {
+        return String.format("Polaznik: %s %s", firstName, lastName);
     }
 }

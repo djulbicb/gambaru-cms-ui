@@ -8,6 +8,7 @@ import com.example.gambarucmsui.ports.interfaces.user.UserPictureLoad;
 import com.example.gambarucmsui.util.FormatUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -17,6 +18,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
+
+import static com.example.gambarucmsui.util.PathUtil.CSS;
 
 public class AlertShowAttendanceController implements Initializable {
 
@@ -100,6 +103,11 @@ public class AlertShowAttendanceController implements Initializable {
             return "Nema uplata";
         }
         return FormatUtil.toDateFormat(barcode.getLastMembershipPaymentTimestamp());
+    }
+
+    @FXML
+    private void onClose() {
+        root.getScene().getWindow().hide();
     }
 }
 

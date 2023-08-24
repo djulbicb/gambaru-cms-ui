@@ -29,8 +29,7 @@ import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize;
-import static com.example.gambarucmsui.util.PathUtil.ALERT_SHOW_ATTENDANCE;
-import static com.example.gambarucmsui.util.PathUtil.FORM_BARCODE_GET_ATTENDANCE;
+import static com.example.gambarucmsui.util.PathUtil.*;
 
 public class PanelAttendanceController implements PanelHeader {
     //  FXML
@@ -106,7 +105,7 @@ public class PanelAttendanceController implements PanelHeader {
     }
     @FXML
     protected void addAttendanceManually() throws IOException {
-        Pane root = loadFxml(FORM_BARCODE_GET_ATTENDANCE, new FormBarcodeGetAttendance( LocalDateTime.now()));
+        Pane root = loadFxml(FORM_BARCODE_GET, new FormBarcodeGetAttendance( LocalDateTime.now()));
         createStage("Dodaj korisnika u tim", root, primaryStage).showAndWait();
         listPageForDate();
     }
