@@ -12,6 +12,9 @@ import com.example.gambarucmsui.ports.interfaces.subscription.UpdateSubscription
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static com.example.gambarucmsui.common.Props.FUTURE;
+import static com.example.gambarucmsui.common.Props.PAST;
+
 public class SubscriptionService implements AddSubscriptionPort, UpdateSubscriptionPort, SubscriptionLoadPort, SubscriptionPurgePort {
 
     private final SubscriptionRepository subscriptionRepo;
@@ -66,8 +69,8 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
 
             SubscriptionEntity en = new SubscriptionEntity();
             en.setFreeOfCharge(true);
-            en.setStartDate(LocalDate.MIN);
-            en.setEndDate(LocalDate.MAX);
+            en.setStartDate(PAST);
+            en.setEndDate(FUTURE);
             en.setBarcode(barcode);
 
             subscriptionRepo.save(en);

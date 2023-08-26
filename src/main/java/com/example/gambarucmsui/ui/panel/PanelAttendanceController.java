@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -119,7 +120,7 @@ public class PanelAttendanceController implements PanelHeader {
 
         if (controller.isReady()) {
             BarcodeEntity barcode = barcodeLoadPort.findById(controller.getBarcodeId()).get();
-            attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), paginationDate.atStartOfDay());
+            attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), LocalDateTime.now());
 
             AlertShowAttendanceController alertCtrl = new AlertShowAttendanceController(barcode, paginationDate);
             Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, alertCtrl);
@@ -131,7 +132,7 @@ public class PanelAttendanceController implements PanelHeader {
 
     public void onBarcodeRead(String barcodeIdStr)  {
         Long barcodeId = parseBarcodeStr(barcodeIdStr);
-        ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcodeId, paginationDate.atStartOfDay());
+        ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcodeId, LocalDateTime.now());
         if (res.hasErrors()) {
             ToastView.showModal(res.getErrorOrEmpty(BARCODE_ID));
         } else {

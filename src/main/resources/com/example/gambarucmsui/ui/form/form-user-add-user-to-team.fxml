@@ -33,7 +33,12 @@
                         <Font size="10.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="txtUserBarcodeId" disable="true" onKeyTyped="#txtUserBarcodeIdReset" />
+                  <HBox spacing="5.0">
+                     <children>
+                        <TextField fx:id="txtUserBarcodeId" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyTyped="#txtUserBarcodeIdReset" HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onMouseClicked="#toggleBarcodeUnlock" text="Ručno" />
+                     </children>
+                  </HBox>
                   <HBox>
                      <children>
                         <Label fx:id="lblErrUserBarcodeId" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">

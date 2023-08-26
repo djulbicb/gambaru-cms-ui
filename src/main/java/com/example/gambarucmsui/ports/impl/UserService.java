@@ -15,8 +15,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
-import static com.example.gambarucmsui.util.FormatUtil.isBarcodeString;
-import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
+import static com.example.gambarucmsui.util.FormatUtil.*;
 import static com.example.gambarucmsui.util.ImageUtil.resizeAndOptimizeImage;
 
 public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, UserAddToTeamPort, IsUserAlreadyInThisTeamPort, UserPurgePort {
@@ -141,11 +140,11 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
             if (isPayNextMonth) {
                 LocalDate now = LocalDate.now();
                 LocalDate end = now.plusMonths(1);
-                addUserToTeam(user.getPersonId(), barcodeId, team.getTeamId(), true, now, end);
+                addUserToTeam(user.getPersonId(), barcodeId, team.getTeamId(), false, now, end);
                 return;
             }
 
-            addUserToTeam(barcodeId, team.getTeamId(), team.getTeamId(),false, null, null);
+            addUserToTeam(user.getPersonId(), barcodeId, team.getTeamId(),false, null, null);
 
         }
     }
@@ -176,7 +175,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     public ValidatorResponse verifyAddUserToPort(Long userId, String barcodeIdStr, String teamName) {
         Map<String, String> errors = new HashMap<>();
 
-        if (!isBarcodeString(barcodeIdStr)) {
+        if (!isLong(barcodeIdStr)) {
             errors.put(BARCODE_ID, "Skeniraj barkod.");
             return new ValidatorResponse(errors);
         }

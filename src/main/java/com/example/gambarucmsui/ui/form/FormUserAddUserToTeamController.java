@@ -62,6 +62,14 @@ public class FormUserAddUserToTeamController implements Initializable {
     }
 
     @FXML
+    void toggleBarcodeUnlock(MouseEvent event) {
+        if (txtUserBarcodeId.isDisabled()) {
+            txtUserBarcodeId.setDisable(false);
+        } else {
+            txtUserBarcodeId.setDisable(true);
+        }
+    }
+    @FXML
     void onAddUserToTeam(MouseEvent event) {
         String barcodeIdStr = getOr(txtUserBarcodeId, "");
         String teamNameStr = getOr(cmbUserTeamName, "");

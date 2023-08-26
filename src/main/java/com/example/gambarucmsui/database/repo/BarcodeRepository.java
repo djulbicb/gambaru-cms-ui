@@ -68,7 +68,6 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
         barcode.setTeam(team);
         barcode.setPerson(user);
-        user.getBarcodes().add(barcode);
         update(barcode);
     }
 
