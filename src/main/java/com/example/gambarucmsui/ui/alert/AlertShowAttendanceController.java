@@ -1,10 +1,11 @@
 package com.example.gambarucmsui.ui.alert;
 
+import com.example.gambarucmsui.common.model.Color;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
-import com.example.gambarucmsui.ports.interfaces.membership.GetMembershipStatusPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserPictureLoad;
+import com.example.gambarucmsui.ui.dto.admin.SubscriptStatus;
 import com.example.gambarucmsui.util.FormatUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,8 +25,7 @@ import static com.example.gambarucmsui.util.PathUtil.CSS;
 public class AlertShowAttendanceController implements Initializable {
 
     private final BarcodeEntity barcode;
-    private final LocalDateTime forDate;
-    private final GetMembershipStatusPort getMembershipStatusPort;
+    private final LocalDate forDate;
     private final UserPictureLoad userPictureLoad;
     @FXML private Pane root;
     @FXML private Label lblFirstName;
@@ -37,10 +37,9 @@ public class AlertShowAttendanceController implements Initializable {
     @FXML private AnchorPane panePicture;
 
 
-    public AlertShowAttendanceController(BarcodeEntity barcode, LocalDateTime forDate) {
+    public AlertShowAttendanceController(BarcodeEntity barcode, LocalDate forDate) {
        this.barcode = barcode;
        this.forDate = forDate;
-       this.getMembershipStatusPort = Container.getBean(GetMembershipStatusPort.class);
        this.userPictureLoad = Container.getBean(UserPictureLoad.class);
     }
 
@@ -51,23 +50,21 @@ public class AlertShowAttendanceController implements Initializable {
         lblFirstName.setText(person.getFirstName());
         lblLastName.setText(person.getLastName());
         lblTeamName.setText(barcode.getTeam().getName());
-        lblLastMembershipPayment.setText(getPayment(barcode.getLastMembershipPaymentTimestamp()));
+        panePicture.getChildren().add(userPictureLoad.loadUserPictureByUserId(person.getPersonId(), 400, 300));
 
-        GetMembershipStatusPort.State membershipState = getMembershipStatusPort.getLastMembershipForUser(barcode, forDate);
-        panePicture.getChildren().add(userPictureLoad.loadUserPictureByUserId(person.getPersonId()));
+        SubscriptStatus status = barcode.getSubscription().getStatus(forDate);
 
-        if (membershipState.getColor() == GetMembershipStatusPort.State.Color.ORANGE) {
-            setNotificationOrange(membershipState.getDays());
-        } else if (membershipState.getColor() == GetMembershipStatusPort.State.Color.GREEN) {
-            setNotificationGreen();
+        if (status.getColor() == Color.GREEN) {
+            setNotificationGreen(status.getMessage());
+        } else if (status.getColor() == Color.ORANGE) {
+            setNotificationOrange(status.getMessage());
         } else {
-            setNotificationRed();
+            setNotificationRed(status.getMessage());
         }
-        lblNotification.setText(membershipState.getMessage());
-
     }
 
-    private void setNotificationGreen() {
+    private void setNotificationGreen(String message) {
+        lblNotification.setText(message);
         paneNotification.setStyle("-fx-background-radius: 10; -fx-background-color: green; -fx-padding: 20px;");
         root.setStyle(
                 """
@@ -77,7 +74,8 @@ public class AlertShowAttendanceController implements Initializable {
                 """
         );
     }
-    private void setNotificationOrange(long days) {
+    private void setNotificationOrange(String message) {
+        lblNotification.setText(message);
         paneNotification.setStyle("-fx-background-radius: 10; -fx-background-color: orange; -fx-padding: 20px;");
         root.setStyle(
                 """
@@ -87,7 +85,8 @@ public class AlertShowAttendanceController implements Initializable {
                 """
         );
     }
-    private void setNotificationRed() {
+    private void setNotificationRed(String message) {
+        lblNotification.setText(message);
         paneNotification.setStyle("-fx-background-radius: 10; -fx-background-color: red; -fx-padding: 20px;");
         root.setStyle(
                 """
@@ -98,12 +97,6 @@ public class AlertShowAttendanceController implements Initializable {
         );
     }
 
-    private String getPayment(LocalDateTime lastMembershipPaymentTimestamp) {
-        if (lastMembershipPaymentTimestamp == null) {
-            return "Nema uplata";
-        }
-        return FormatUtil.toDateFormat(barcode.getLastMembershipPaymentTimestamp());
-    }
 
     @FXML
     private void onClose() {

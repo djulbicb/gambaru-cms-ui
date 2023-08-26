@@ -11,6 +11,7 @@ import com.example.gambarucmsui.ui.form.validation.BarcodeInputValidator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -41,6 +42,10 @@ public class FormUserAddUserToTeamController implements Initializable {
     @FXML private ComboBox<String> cmbUserTeamName;
     @FXML private TextField txtUserBarcodeId;
 
+    @FXML private CheckBox chkPaySubscription;
+
+    @FXML private CheckBox chkSubscriptionFree;
+
     public FormUserAddUserToTeamController(Long userId) {
         this.userId = userId;
         this.userAddToTeamPort = Container.getBean(UserAddToTeamPort.class);
@@ -65,7 +70,7 @@ public class FormUserAddUserToTeamController implements Initializable {
         if (validate(userId, barcodeIdStr, teamNameStr)) {
             Long barcodeId = parseBarcodeStr(barcodeIdStr);
             String teamName = teamNameStr;
-            userAddToTeamPort.addUserToPort(userId, barcodeId, teamName);
+            userAddToTeamPort.addUserToPort(userId, barcodeId, teamName, chkSubscriptionFree.isSelected(), chkPaySubscription.isSelected());
             close();
         }
     }
@@ -96,6 +101,15 @@ public class FormUserAddUserToTeamController implements Initializable {
         lblErrUserBarcodeId.setText("");
     }
 
+    @FXML
+    void onFreeOfChargeClick(ActionEvent e) {
+        if (chkSubscriptionFree.isSelected()) {
+            chkPaySubscription.setSelected(false);
+            chkPaySubscription.setDisable(true);
+        } else {
+            chkPaySubscription.setDisable(false);
+        }
+    }
 
     public void onBarcodeScanned(String numberOnly) {
         txtUserBarcodeId.setText(numberOnly);

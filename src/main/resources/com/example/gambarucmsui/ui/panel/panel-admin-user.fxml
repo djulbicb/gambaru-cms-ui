@@ -127,6 +127,9 @@
                            <font>
                               <Font size="10.0" />
                            </font>
+                           <padding>
+                              <Insets bottom="-5.0" />
+                           </padding>
                         </Label>
                         <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#formUserAdd" text="KREIRAJ NOVOG POLAZNIKA" textFill="#fcfcfc" />
                         <Separator prefWidth="200.0">
@@ -210,33 +213,6 @@
                                           <TableColumn fx:id="tblAttendanceTeamName" text="Tim">
                                              <cellValueFactory>
                                                 <PropertyValueFactory property="teamName" />
-                                             </cellValueFactory>
-                                          </TableColumn>
-                                       </columns>
-                                    </TableView>
-                                 </children>
-                              </AnchorPane>
-                           </content>
-                        </Tab>
-                        <Tab closable="false" text="PLACANJE">
-                           <content>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                    <TableView fx:id="tableUserMembership" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <columns>
-                                          <TableColumn fx:id="membershipBarcodeId" text="Barkod">
-                                             <cellValueFactory>
-                                                <PropertyValueFactory property="barcodeId" />
-                                             </cellValueFactory>
-                                          </TableColumn>
-                                          <TableColumn fx:id="membershipTeam" text="Tim">
-                                             <cellValueFactory>
-                                                <PropertyValueFactory property="teamName" />
-                                             </cellValueFactory>
-                                          </TableColumn>
-                                          <TableColumn fx:id="membershipTimestamp" text="Vreme">
-                                             <cellValueFactory>
-                                                <PropertyValueFactory property="timestamp" />
                                              </cellValueFactory>
                                           </TableColumn>
                                        </columns>

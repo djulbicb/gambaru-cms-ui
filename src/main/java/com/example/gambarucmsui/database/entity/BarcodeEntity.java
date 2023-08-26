@@ -25,21 +25,14 @@ public class BarcodeEntity {
     @ManyToOne
     @JoinColumn(name = "person_id")
     private PersonEntity person;
-
     @ManyToOne
     @JoinColumn(name = "team_id")
     private TeamEntity team;
+    @OneToOne(mappedBy = "barcode",cascade = CascadeType.ALL, orphanRemoval = true)
+    private SubscriptionEntity subscription;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "assigned_timestamp")
     private LocalDateTime assignedTimestamp;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_attendance_timestamp")
-    private LocalDateTime lastAttendanceTimestamp;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_membership_payment_timestamp")
-    private LocalDateTime lastMembershipPaymentTimestamp;
-
 
 
     // Constructors, getters, setters, and other fields/methods ...
@@ -80,28 +73,20 @@ public class BarcodeEntity {
         return status.equals(Status.ASSIGNED);
     }
 
-    public LocalDateTime getLastAttendanceTimestamp() {
-        return lastAttendanceTimestamp;
-    }
-
-    public void setLastAttendanceTimestamp(LocalDateTime lastAttendanceTimestamp) {
-        this.lastAttendanceTimestamp = lastAttendanceTimestamp;
-    }
-
-    public LocalDateTime getLastMembershipPaymentTimestamp() {
-        return lastMembershipPaymentTimestamp;
-    }
-
-    public void setLastMembershipPaymentTimestamp(LocalDateTime lastMembershipPaymentTimestamp) {
-        this.lastMembershipPaymentTimestamp = lastMembershipPaymentTimestamp;
-    }
-
     public LocalDateTime getAssignedTimestamp() {
         return assignedTimestamp;
     }
 
     public void setAssignedTimestamp(LocalDateTime assignedTimestamp) {
         this.assignedTimestamp = assignedTimestamp;
+    }
+
+    public SubscriptionEntity getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(SubscriptionEntity subscription) {
+        this.subscription = subscription;
     }
 
     @Override
@@ -111,9 +96,8 @@ public class BarcodeEntity {
                 ", status=" + status +
                 ", person=" + person +
                 ", team=" + team +
+                ", subscription=" + subscription.getSubscriptionId() +
                 ", assignedTimestamp=" + assignedTimestamp +
-                ", lastAttendanceTimestamp=" + lastAttendanceTimestamp +
-                ", lastMembershipPaymentTimestamp=" + lastMembershipPaymentTimestamp +
                 '}';
     }
 
@@ -122,12 +106,12 @@ public class BarcodeEntity {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         BarcodeEntity barcode = (BarcodeEntity) object;
-        return Objects.equals(barcodeId, barcode.barcodeId) && status == barcode.status && Objects.equals(person, barcode.person) && Objects.equals(team, barcode.team) && Objects.equals(assignedTimestamp, barcode.assignedTimestamp) && Objects.equals(lastAttendanceTimestamp, barcode.lastAttendanceTimestamp) && Objects.equals(lastMembershipPaymentTimestamp, barcode.lastMembershipPaymentTimestamp);
+        return Objects.equals(barcodeId, barcode.barcodeId) && status == barcode.status && Objects.equals(person, barcode.person) && Objects.equals(team, barcode.team) && Objects.equals(subscription, barcode.subscription) && Objects.equals(assignedTimestamp, barcode.assignedTimestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(barcodeId, status, person, team, assignedTimestamp, lastAttendanceTimestamp, lastMembershipPaymentTimestamp);
+        return Objects.hash(barcodeId, status, person, team, subscription, assignedTimestamp);
     }
 }
 

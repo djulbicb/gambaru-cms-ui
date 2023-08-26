@@ -34,7 +34,7 @@ public class FormUserAddController implements Initializable {
     // FXML
     //////////////////////////////////////////
     @FXML private VBox root;
-    @FXML private Button btnUser;
+    @FXML private Button btnSave;
     @FXML private Button btnClose;
     @FXML private Label lblErrUserFirstName;
     @FXML private Label lblErrUserLastName;
@@ -71,7 +71,7 @@ public class FormUserAddController implements Initializable {
         String genderStr = getOr(cmbUserGender, "");
 
         if (validate(firstNameStr, lastNameStr, phoneStr, genderStr)) {
-            btnUser.setDisable(true);
+            btnSave.setDisable(true);
             btnClose.setDisable(true);
 
             PersonEntity.Gender gender = genderStr.equals("Muški") ? PersonEntity.Gender.MALE : PersonEntity.Gender.FEMALE;

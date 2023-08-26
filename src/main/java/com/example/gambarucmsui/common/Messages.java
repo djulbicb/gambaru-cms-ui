@@ -1,5 +1,7 @@
 package com.example.gambarucmsui.common;
 
+import java.util.Map;
+
 public class Messages {
     // USER
     public final static String USER_FIRST_NAME_MISSING = "Upiši ime.";
@@ -16,6 +18,10 @@ public class Messages {
 
     // TEAM
     public final static String TEAM_DOESNT_EXIST = "Taj tim ne postoji.";
+    public static final String BARCODE_IS_NULL = "Upiši barkod.";
+    public static final String FREE_OF_CHARGE = "Besplatno";
+    public static final String MEMBERSHIP_NO_PAYMENT = "Nema uplata.";
+
     public final static String TEAM_IS_DELETED (String teamName) {
         return String.format("Tim %s je obrisan", teamName);
     }
@@ -26,6 +32,7 @@ public class Messages {
     };
     public final static String MEMBERSHIP_ALREADY_PAYED = "Članarina za ovaj mesec je već plaćena.";
     public final static String MEMBERSHIP_NOT_PAYED = "Članarina nije plaćena.";
+    public final static String MEMBERSHIP_EXPIRED = "Članarina istekla.";
     public final static String MEMBERSHIP_IS_PAYED = "Članarina je plaćena.";
     public static String TEAM_IS_CREATED(String teamName) {
         return String.format("Tim %s je kreiran", teamName);
@@ -43,5 +50,17 @@ public class Messages {
         return String.format("Polaznik: %s %s", firstName, lastName);
     }    public static String MEMBERSHIP_MANUALLY_FOUND_USER(String firstName, String lastName) {
         return String.format("Polaznik: %s %s", firstName, lastName);
+    }
+
+    public static String BARCODE_IS_VALID(String firstName, String lastName) {
+        return String.format("Polaznik: %s %s", firstName, lastName);
+    }
+
+    public static String MEMBERSHIP_IS_GOING_TO_EXPIRE(long daysBetween) {
+        String wordDay = "dana";
+        if (daysBetween == 1) {
+            wordDay = "dan";
+        }
+        return String.format("Članarina ističe za %s %s.", daysBetween, wordDay);
     }
 }

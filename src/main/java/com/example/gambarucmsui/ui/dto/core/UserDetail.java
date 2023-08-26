@@ -1,9 +1,13 @@
 package com.example.gambarucmsui.ui.dto.core;
 
+import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.SubscriptionEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.entity.PersonEntity;
+import com.example.gambarucmsui.ui.dto.admin.SubscriptStatus;
 
+import java.time.LocalDate;
 import java.util.StringJoiner;
 
 import static com.example.gambarucmsui.util.FormatUtil.*;
@@ -17,8 +21,9 @@ public class UserDetail {
     private String gender;
     private String team;
     private String createdAt;
-    private String timestamp;
-    public UserDetail(Long userId, String barcodeId, String firstName, String lastName, String phone, String gender, String team, String createdAt, String timestamp) {
+    private String subscriptionStart;
+    private String subscriptionEnd;
+    public UserDetail(Long userId, String barcodeId, String firstName, String lastName, String phone, String gender, String team, String createdAt, String subscriptionStart, String subscriptionEnd) {
         this.userId = userId;
         this.barcodeId = barcodeId;
         this.firstName = firstName;
@@ -27,22 +32,16 @@ public class UserDetail {
         this.gender = gender;
         this.team = team;
         this.createdAt = createdAt;
-        this.timestamp = timestamp;
+        this.subscriptionStart = subscriptionStart;
+        this.subscriptionEnd = subscriptionEnd;
     }
 
-    public static UserDetail fromEntityToFull(BarcodeEntity b, String timestamp) {
+    public static UserDetail fromEntityToFull(BarcodeEntity b, LocalDate currentDate) {
         PersonEntity user = b.getPerson();
         TeamEntity team = b.getTeam();
-//        for (BarcodeEntity barcode : o.getBarcodes()) {
-//            barcodeCsv.add(barcode.getBarcodeId().toString());
-//        }
-//        StringJoiner teamCsv = new StringJoiner(",");
-//        for (BarcodeEntity barcode : o.getBarcodes()) {
-//            TeamEntity team = barcode.getTeam();
-//            if (team != null) {
-//                teamCsv.add(team.getName());
-//            }
-//        }
+
+        SubscriptStatus status = b.getSubscription().getStatus(currentDate);
+
 
         if (user == null) {
             System.out.println("");
@@ -50,14 +49,35 @@ public class UserDetail {
 
         return new UserDetail(
                 user.getPersonId(),
-                formatBarcode(b.getBarcodeId()),
+                String.format("%s %s", status.getEmoji(), formatBarcode(b.getBarcodeId())),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getPhone(),
                 genderToSerbianAbbr(user.getGender()),
                 team.getName(),
                 toDateFormat(user.getCreatedAt()),
-                timestamp);
+                getStart(b.getSubscription()),
+               getEnd(b.getSubscription()));
+    }
+
+    private static String getStart(SubscriptionEntity subscription) {
+        if (subscription.isFreeOfCharge()) {
+            return Messages.FREE_OF_CHARGE;
+        }
+        if (subscription.getStartDate() == null) {
+            return Messages.MEMBERSHIP_NO_PAYMENT;
+        }
+        return toDateFormat(subscription.getStartDate().atStartOfDay());
+    }
+
+    private static String getEnd(SubscriptionEntity subscription) {
+        if (subscription.isFreeOfCharge()) {
+            return Messages.FREE_OF_CHARGE;
+        }
+        if (subscription.getStartDate() == null) {
+            return Messages.MEMBERSHIP_NO_PAYMENT;
+        }
+        return toDateFormat(subscription.getEndDate().atStartOfDay());
     }
 
     public static UserDetail fromEntityToFull(PersonEntity user) {
@@ -78,7 +98,8 @@ public class UserDetail {
                 genderToSerbianAbbr(user.getGender()),
                 teamCsv.toString(),
                 toDateFormat(user.getCreatedAt()),
-                "");
+                "what",
+                "ever");
     }
 
     public Long getUserId() {
@@ -113,8 +134,11 @@ public class UserDetail {
         return createdAt;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    public String getSubscriptionStart() {
+        return subscriptionStart;
     }
 
+    public String getSubscriptionEnd() {
+        return subscriptionEnd;
+    }
 }

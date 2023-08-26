@@ -1,15 +1,22 @@
 package com.example.gambarucmsui.ports.impl;
 
+import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.TeamEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.barcode.*;
-import com.example.gambarucmsui.ui.ToastView;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static com.example.gambarucmsui.common.Messages.*;
+import static com.example.gambarucmsui.common.Messages.MEMBERSHIP_ALREADY_PAYED;
+import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
+import static com.example.gambarucmsui.util.FormatUtil.isLong;
+import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class BarcodeService implements BarcodeLoadPort, BarcodeFetchOrGeneratePort, BarcodeUpdatePort, BarcodePurgePort, BarcodeStatusChangePort {
 
@@ -17,6 +24,49 @@ public class BarcodeService implements BarcodeLoadPort, BarcodeFetchOrGeneratePo
 
     public BarcodeService(BarcodeRepository barcodeRepo) {
         this.barcodeRepo = barcodeRepo;
+    }
+
+    @Override
+    public ValidatorResponse validateBarcodeActive(String barcodeIdStr) {
+        Map<String, String> errors = new HashMap<>();
+
+        if (barcodeIdStr == null ) {
+            errors.put(BARCODE_ID, Messages.BARCODE_IS_NULL);
+            return new ValidatorResponse(errors);
+        }
+
+        if (!isLong(barcodeIdStr)) {
+            if (barcodeIdStr.isBlank()) {
+                errors.put(BARCODE_ID, "");
+            } else {
+                errors.put(BARCODE_ID, BARCODE_WRONG_FORMAT);
+            }
+            return new ValidatorResponse(errors);
+        }
+
+        Long barcodeId = parseBarcodeStr(barcodeIdStr);
+        Optional<BarcodeEntity> barcodeEntityOptional = barcodeRepo.findById(barcodeId);
+        if (barcodeEntityOptional.isEmpty()) {
+            errors.put(BARCODE_ID, BARCODE_NOT_REGISTERED);
+            return new ValidatorResponse(errors);
+        }
+        BarcodeEntity b = barcodeEntityOptional.get();
+        if (b.getStatus() == BarcodeEntity.Status.DELETED)  {
+            errors.put(BARCODE_ID, BARCODE_IS_DELETED);
+            return new ValidatorResponse(errors);
+        }
+        if (b.getStatus() == BarcodeEntity.Status.NOT_USED)  {
+            errors.put(BARCODE_ID, BARCODE_IS_NOT_ASSIGNED);
+            return new ValidatorResponse(errors);
+        }
+        if (b.getStatus() == BarcodeEntity.Status.DEACTIVATED)  {
+            errors.put(BARCODE_ID, BARCODE_IS_DEACTIVATED);
+            return new ValidatorResponse(errors);
+        }
+
+        PersonEntity person = b.getPerson();
+        return new ValidatorResponse(Messages.BARCODE_IS_VALID(person.getFirstName(), person.getLastName()));
+
     }
 
     @Override

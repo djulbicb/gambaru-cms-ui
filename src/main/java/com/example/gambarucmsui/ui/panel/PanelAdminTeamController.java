@@ -5,12 +5,12 @@ import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
-import com.example.gambarucmsui.ports.interfaces.membership.GetMembershipStatusPort;
 import com.example.gambarucmsui.ports.interfaces.team.*;
 import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ports.interfaces.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.ui.dto.admin.SubscriptStatus;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
@@ -21,6 +21,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -46,7 +47,6 @@ public class PanelAdminTeamController implements PanelHeader {
     private final TeamUpdatePort teamUpdatePort;
     private final BarcodeLoadPort barcodeLoadPort;
     private final BarcodeUpdatePort barcodeUpdatePort;
-    private final GetMembershipStatusPort getMembershipStatusPort;
 
     public PanelAdminTeamController(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -61,7 +61,6 @@ public class PanelAdminTeamController implements PanelHeader {
         teamDeletePort = Container.getBean(TeamDeletePort.class);
 
         teamIfExists = Container.getBean(TeamIfExists.class);
-        getMembershipStatusPort = Container.getBean(GetMembershipStatusPort.class);
     }
 
     @FXML
@@ -85,8 +84,10 @@ public class PanelAdminTeamController implements PanelHeader {
                 }
                 TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
-                    List<UserDetail> collect = userLoadPort.findActiveUsersByTeamId(selectedItem.getTeamId()).stream().map(o ->
-                            UserDetail.fromEntityToFull(o, String.format("%s %s", getEmoji(o.getLastMembershipPaymentTimestamp()), FormatUtil.toDateTimeFormat(o.getLastMembershipPaymentTimestamp())))).collect(Collectors.toList());
+                    List<UserDetail> collect = userLoadPort.findActiveUsersByTeamId(selectedItem.getTeamId()).stream().map(o -> {
+                        SubscriptStatus status = o.getSubscription().getStatus(LocalDate.now());
+                        return UserDetail.fromEntityToFull(o, LocalDate.now());
+                    }).collect(Collectors.toList());
                     tableUser.getItems().setAll(collect);
                 }
             });
@@ -95,25 +96,6 @@ public class PanelAdminTeamController implements PanelHeader {
 
         stretchColumnsToEqualSize(tableTeam);
         stretchColumnsToEqualSize(tableUser);
-    }
-
-    public static final String GREEN_CHECKMARK = "\u2714\uFE0F";
-    public static final String ORANGE_EXCLAMATION = "\u2757\uFE0F";
-    public static final String RED_X = "\u274C\uFE0F";
-
-    private String getEmoji(LocalDateTime lastMembershipPaymentTimestamp) {
-        if (lastMembershipPaymentTimestamp == null) {
-            return RED_X;
-        }
-
-        GetMembershipStatusPort.State.Color color = getMembershipStatusPort.getLastMembershipForUser(lastMembershipPaymentTimestamp, LocalDateTime.now()).getColor();
-        if (color == GetMembershipStatusPort.State.Color.GREEN) {
-            return GREEN_CHECKMARK;
-        }
-        if (color == GetMembershipStatusPort.State.Color.ORANGE) {
-            return ORANGE_EXCLAMATION;
-        }
-        return RED_X;
     }
 
     void loadTableTeam() {

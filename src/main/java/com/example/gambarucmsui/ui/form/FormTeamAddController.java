@@ -7,14 +7,19 @@ import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import com.example.gambarucmsui.ui.ToastView;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,6 +39,7 @@ public class FormTeamAddController implements Initializable {
     @FXML private Label lblErrTeamName;
     @FXML private TextField txtMembershipFee;
     @FXML private TextField txtTeamName;
+
 
     public FormTeamAddController(TeamIfExists teamIfExists, TeamSavePort teamSavePort) {
         this.teamIfExists = teamIfExists;
@@ -72,6 +78,7 @@ public class FormTeamAddController implements Initializable {
         close();
     }
 
+    @FXML
     private void close() {
         root.getScene().getWindow().hide();
     }

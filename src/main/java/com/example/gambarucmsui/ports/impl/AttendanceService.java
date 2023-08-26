@@ -3,7 +3,6 @@ package com.example.gambarucmsui.ports.impl;
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
-import com.example.gambarucmsui.database.repo.UserMembershipRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
@@ -22,16 +21,13 @@ import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 public class AttendanceService implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort {
 
     private final UserAttendanceRepository attendanceRepo;
-    private final UserMembershipRepository membershipRepo;
     private final BarcodeRepository barcodeRepo;
 
     public AttendanceService(
             BarcodeRepository barcodeRepo,
-            UserAttendanceRepository attendanceRepo,
-            UserMembershipRepository membershipRepo) {
+            UserAttendanceRepository attendanceRepo) {
         this.barcodeRepo = barcodeRepo;
         this.attendanceRepo = attendanceRepo;
-        this.membershipRepo = membershipRepo;
     }
 
     @Override

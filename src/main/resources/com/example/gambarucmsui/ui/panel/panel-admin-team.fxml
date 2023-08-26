@@ -77,9 +77,14 @@
                               <PropertyValueFactory property="lastName" />
                            </cellValueFactory>
                         </TableColumn>
-                        <TableColumn text="Poslednja uplata">
+                        <TableColumn text="Preplata start">
                            <cellValueFactory>
-                              <PropertyValueFactory property="timestamp" />
+                              <PropertyValueFactory property="subscriptionStart" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Preplata kraj">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="subscriptionEnd" />
                            </cellValueFactory>
                         </TableColumn>
                      </columns>

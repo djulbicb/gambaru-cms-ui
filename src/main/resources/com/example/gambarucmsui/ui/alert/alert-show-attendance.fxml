@@ -71,7 +71,7 @@
                   </HBox>
                   <StackPane fx:id="paneNotification" VBox.vgrow="ALWAYS">
                      <children>
-                        <Label fx:id="lblNotification" layoutX="10.0" layoutY="24.0" maxHeight="1.7976931348623157E308" text="Članarina treba da se plati u sledeća 3 dana.." textAlignment="CENTER" textFill="#fcfcfc" wrapText="true">
+                        <Label fx:id="lblNotification" layoutX="10.0" layoutY="24.0" maxHeight="1.7976931348623157E308" minHeight="125.0" text="Članarina treba da se plati u sledeća 3 dana.." textAlignment="CENTER" textFill="#fcfcfc" wrapText="true">
                            <font>
                               <Font size="25.0" />
                            </font>
@@ -82,13 +82,16 @@
                      </padding>
                   </StackPane>
                   <VBox prefHeight="200.0" prefWidth="100.0" />
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onClose" text="ZATVORI">
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onClose" style="-fx-border-width: 2px; -fx-border-color: #eee; -fx-border-radius: 3px; -fx-background-color: transparent;" text="ZATVORI" textFill="WHITE">
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
                   </Button>
                </children>
             </VBox>

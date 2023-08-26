@@ -10,6 +10,7 @@ import com.example.gambarucmsui.ui.form.validation.UserInputValidator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -26,18 +27,21 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     private final UserInputValidator userVal = new UserInputValidator();
     private final TeamInputValidator teamVal = new TeamInputValidator();
     private final UserAttendanceRepository userAttendanceRepo;
+    private final SubscriptionService subscriptionService;
 
     public UserService(
             BarcodeRepository barcodeRepo,
             TeamRepository teamRepo,
             UserRepo userRepo,
             UserAttendanceRepository userAttendanceRepo,
-            UserPictureRepository userPictureRepo) {
+            UserPictureRepository userPictureRepo,
+            SubscriptionService subscriptionService) {
         this.userRepo = userRepo;
         this.barcodeRepo = barcodeRepo;
         this.teamRepo = teamRepo;
         this.userPictureRepo = userPictureRepo;
         this.userAttendanceRepo = userAttendanceRepo;
+        this.subscriptionService = subscriptionService;
     }
 
     @Override
@@ -115,7 +119,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     }
 
     @Override
-    public void addUserToPort(Long userId, Long barcodeId, String teamName) {
+    public void addUserToPort(Long userId, Long barcodeId, String teamName, boolean isFreeOfCharge, boolean isPayNextMonth) {
         Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(barcodeId);
         Optional<PersonEntity> userOpt = userRepo.findById(userId);
 
@@ -125,8 +129,10 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
             TeamEntity team = teamRepo.findByName(teamName);
 
             barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
-            userRepo.update(user);
             user.getBarcodes().add(barcode);
+            userRepo.update(user);
+
+            subscriptionService.addSubscription(barcodeId, LocalDate.now(), isFreeOfCharge, isPayNextMonth);
         }
     }
 

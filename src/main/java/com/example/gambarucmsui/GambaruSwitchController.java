@@ -48,10 +48,6 @@ public class GambaruSwitchController implements FxmlViewHandler {
     private Pane currentSelected;
     private Pane panelAttendance;
     private PanelAttendanceController panelAttendanceController;
-    private Pane panelMembership;
-    private PanelMembershipController panelMembershipController;
-    private Pane panelStatistics;
-    private PanelStatisticsController panelStatisticsController;
     private Pane panelAdminUser;
     private PanelAdminUserController panelAdminUserController;
     private Pane panelAdminTeam;
@@ -69,12 +65,6 @@ public class GambaruSwitchController implements FxmlViewHandler {
 
         panelAttendanceController = new PanelAttendanceController(primaryStage);
         panelAttendance = loadFxml(PathUtil.PANEL_ATTENDANCE, panelAttendanceController);
-
-        panelMembershipController = new PanelMembershipController(primaryStage);
-        panelMembership = loadFxml(PathUtil.PANEL_MEMBERSHIP, panelMembershipController);
-
-        panelStatisticsController = new PanelStatisticsController(primaryStage);
-        panelStatistics = loadFxml(PathUtil.PANEL_STATISTICS, panelStatisticsController);
 
         panelAdminUserController = new PanelAdminUserController(primaryStage);
         panelAdminUser = loadFxml(PathUtil.PANEL_ADMIN_USER, panelAdminUserController);
@@ -133,20 +123,6 @@ public class GambaruSwitchController implements FxmlViewHandler {
         panelAttendanceController.viewSwitched();
     }
 
-    private void switchToMembership() {
-        panelContent.getChildren().setAll(panelMembership);
-        currentSelected = panelMembership;
-        stretchInsideAnchorPance(panelMembership);
-        panelMembershipController.viewSwitched();
-    }
-
-    private void switchToStatistic() {
-        panelContent.getChildren().setAll(panelStatistics);
-        currentSelected = panelStatistics;
-        stretchInsideAnchorPance(panelStatistics);
-        panelStatisticsController.viewSwitched();
-    }
-
     private void switchToAdminUser() {
         panelContent.getChildren().setAll(panelAdminUser);
         currentSelected = panelAdminUser;
@@ -176,10 +152,6 @@ public class GambaruSwitchController implements FxmlViewHandler {
         ToggleButton selectedButton = (ToggleButton) headerToggleBtns.getSelectedToggle();
         if (selectedButton.equals(headerBtnAttendance)) {
             switchToAttendance();
-        } else if (selectedButton.equals(headerBtnMembership)) {
-            switchToMembership();
-        } else if (selectedButton.equals(headerBtnStatistics)) {
-            switchToStatistic();
         } else if (selectedButton.equals(headerBtnAdminUser)) {
             switchToAdminUser();
         } else if (selectedButton.equals(headerBtnAdminTeam)) {
@@ -192,8 +164,6 @@ public class GambaruSwitchController implements FxmlViewHandler {
     public void onBarcodeScanned(String barcodeId) {
         if (currentSelected == panelAttendance) {
             panelAttendanceController.onBarcodeRead(barcodeId);
-        } else if (currentSelected == panelMembership) {
-            panelMembershipController.onBarcodeRead(barcodeId);
         }
     }
 }

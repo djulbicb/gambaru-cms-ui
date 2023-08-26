@@ -2,7 +2,6 @@ package com.example.gambarucmsui.database.repo;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.PersonAttendanceEntity;
-import com.example.gambarucmsui.ui.dto.statistics.AttendanceCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
@@ -14,25 +13,6 @@ import java.util.stream.Collectors;
 public class UserAttendanceRepository extends Repository<PersonAttendanceEntity> {
     public UserAttendanceRepository(EntityManager entityManager) {
         super(entityManager, PersonAttendanceEntity.class);
-    }
-
-    public List<AttendanceCount> getAttendanceDataLast60Days() {
-        LocalDateTime daysAgo = LocalDateTime.now().minusDays(60);
-        LocalDateTime now = LocalDateTime.now();
-        String queryString = """
-        SELECT CAST(a.timestamp AS DATE), COUNT(a)
-        FROM PersonAttendanceEntity a
-        WHERE a.timestamp BETWEEN :daysAgo AND :now
-        GROUP BY CAST(a.timestamp AS DATE)
-        ORDER BY CAST(a.timestamp AS DATE)
-        """;
-        TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
-        query.setParameter("daysAgo", daysAgo);
-        query.setParameter("now", now);
-
-        return query.getResultList().stream()
-                .map(row -> new AttendanceCount(LocalDate.parse(row[0]+""), (long) row[1]))
-                .collect(Collectors.toList());
     }
 
     public List<PersonAttendanceEntity> fetchLastNEntriesForUserAttendance(List<BarcodeEntity> barcodeIds, int count) {

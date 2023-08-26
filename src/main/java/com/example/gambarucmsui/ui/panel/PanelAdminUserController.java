@@ -10,7 +10,6 @@ import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUse
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeStatusChangePort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
-import com.example.gambarucmsui.ports.interfaces.membership.LoadMembership;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamUpdatePort;
@@ -57,7 +56,6 @@ public class PanelAdminUserController implements PanelHeader {
     private final TeamLoadPort teamLoadPort;
     private final IsUserAlreadyInThisTeamPort isUserAlreadyInThisTeamPort;
     private final BarcodeLoadPort barcodeLoadPort;
-    private final LoadMembership loadMembership;
     private final AttendanceLoadForUserPort loadAttendance;
     private final BarcodeUpdatePort barcodeUpdatePort;
     private final BarcodeStatusChangePort barcodeStatusChange;
@@ -90,7 +88,6 @@ public class PanelAdminUserController implements PanelHeader {
     @FXML private Pane paneUserDetailsPicture;
     @FXML private VBox paneUserDetails;
     @FXML private TableView<AttendanceDetail> tableUserAttendance;
-    @FXML private TableView<MembershipDetail> tableUserMembership;
     @FXML private TableView<BarcodeDetail> tableUserBarcode;
 
     @Override
@@ -148,7 +145,6 @@ public class PanelAdminUserController implements PanelHeader {
                         PersonEntity user = userOpt.get();
                         loadTableUserDetails(user);
                         loadTableUserAttendance(user);
-                        loadTableUserMembership(user);
                         loadTableUserBarcode(user);
                     }
                 }
@@ -170,7 +166,6 @@ public class PanelAdminUserController implements PanelHeader {
 
         stretchColumnsToEqualSize(tableUsers);
         stretchColumnsToEqualSize(tableUserAttendance);
-        stretchColumnsToEqualSize(tableUserMembership);
         stretchColumnsToEqualSize(tableUserBarcode);
     }
 
@@ -186,17 +181,10 @@ public class PanelAdminUserController implements PanelHeader {
         teamLoadPort = Container.getBean(TeamLoadPort.class);
         isUserAlreadyInThisTeamPort = Container.getBean(IsUserAlreadyInThisTeamPort.class);
         barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
-        loadMembership = Container.getBean(LoadMembership.class);
         loadAttendance = Container.getBean(AttendanceLoadForUserPort.class);
         barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
         barcodeStatusChange = Container.getBean(BarcodeStatusChangePort.class);
         userPictureLoad = Container.getBean(UserPictureLoad.class);
-    }
-
-    private void loadTableUserMembership(PersonEntity user) {
-        List<MembershipDetail> userMembershipPaymentEntities = loadMembership.fetchLastNEntriesForUserMembership(user.getBarcodes(), 100).stream().map(e -> new MembershipDetail(e.getBarcode(), e.getTimestamp(), e.getBarcode().getTeam())).collect(Collectors.toList());
-        ;
-        tableUserMembership.getItems().setAll(userMembershipPaymentEntities);
     }
 
     private void hideUserDetailsPane() {

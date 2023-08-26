@@ -148,3 +148,47 @@
 }
 
 
+
+// DATE PICKER
+/* darkDatePicker.css */
+.date-picker {
+    -fx-background-color: #222; /* Adjusted background color */
+    -fx-text-fill: white; /* Text color */
+    -fx-font-size: 14px; /* Font size */
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: transparent; /* Arrow button background */
+    -fx-background-radius: 0; /* Remove button border radius */
+    -fx-padding: 5px; /* Button padding */
+}
+
+.date-picker .arrow-button > .arrow {
+    -fx-background-color: white; /* Arrow color */
+}
+
+.date-picker .arrow-button:pressed {
+    -fx-background-color: #444; /* Pressed state background */
+}
+
+.date-picker-popup .day-cell {
+    -fx-background-color: #333; /* Day cell background */
+    -fx-text-fill: white; /* Day cell text color */
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #444; /* Hovered day cell background */
+}
+
+.date-picker-popup .day-cell:disabled {
+    -fx-opacity: 0.5; /* Disabled day cell opacity */
+}
+
+.date-picker-popup .selected {
+    -fx-background-color: #0077FF; /* Selected day cell background */
+    -fx-text-fill: white; /* Selected day cell text color */
+}
+
+.date-picker-popup .today {
+    -fx-border-color: white; /* Today's cell border color */
+}

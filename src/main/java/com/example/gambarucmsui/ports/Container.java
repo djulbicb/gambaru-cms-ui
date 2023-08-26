@@ -27,18 +27,18 @@ public class Container {
         UserRepo userRepo = new UserRepo(entityManager);
         BarcodeRepository barcodeRepository = new BarcodeRepository(entityManager);
         UserAttendanceRepository userAttendanceRepository = new UserAttendanceRepository(entityManager);
-        UserMembershipRepository userMembershipRepository = new UserMembershipRepository(entityManager);
         TeamRepository teamRepository = new TeamRepository(entityManager);
         UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
         PersonPictureRepository personPictureRepository = new PersonPictureRepository(entityManager);
+        SubscriptionRepository subscriptionRepository = new SubscriptionRepository(entityManager);
+        SubscriptionService subscriptionService = new SubscriptionService(subscriptionRepository, barcodeRepository);
 
         Container.addBean(new ImageService(personPictureRepository, userRepo));
-        Container.addBean(new UserService(barcodeRepository, teamRepository, userRepo, userAttendanceRepository, userPictureRepository));
+        Container.addBean(subscriptionService);
+        Container.addBean(new UserService(barcodeRepository, teamRepository, userRepo, userAttendanceRepository, userPictureRepository, subscriptionService));
         Container.addBean(new TeamService(teamRepository, barcodeRepository));
-        Container.addBean(new AttendanceService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
+        Container.addBean(new AttendanceService(barcodeRepository, userAttendanceRepository));
         Container.addBean(new BarcodeService(barcodeRepository));
-        Container.addBean(new StatisticsService(userAttendanceRepository, userMembershipRepository));
-        Container.addBean(new MembershipService(barcodeRepository, userAttendanceRepository, userMembershipRepository));
 
         return beans;
     }

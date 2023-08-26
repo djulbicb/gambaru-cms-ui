@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
@@ -14,6 +15,7 @@ public interface FxmlViewHandler {
     default Stage createStage(String title, Pane root, Stage primaryStage) {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initStyle(StageStyle.UNDECORATED);
         dialogStage.initOwner(primaryStage);
         Scene scene = new Scene(root);
         dialogStage.setScene(scene);

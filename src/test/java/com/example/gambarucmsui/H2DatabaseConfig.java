@@ -9,9 +9,9 @@ import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeFetchOrGenerateP
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodePurgePort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeStatusChangePort;
-import com.example.gambarucmsui.ports.interfaces.membership.AddUserMembership;
-import com.example.gambarucmsui.ports.interfaces.membership.GetMembershipStatusPort;
-import com.example.gambarucmsui.ports.interfaces.membership.MembershipPurgePort;
+import com.example.gambarucmsui.ports.interfaces.subscription.AddSubscriptionPort;
+import com.example.gambarucmsui.ports.interfaces.subscription.SubscriptionLoadPort;
+import com.example.gambarucmsui.ports.interfaces.subscription.SubscriptionPurgePort;
 import com.example.gambarucmsui.ports.interfaces.team.*;
 import com.example.gambarucmsui.ports.interfaces.user.*;
 import jakarta.persistence.EntityManager;
@@ -54,8 +54,6 @@ public class H2DatabaseConfig {
     protected BarcodeFetchOrGeneratePort barcodeFetchOrGenerate;
     protected BarcodeLoadPort barcodeLoad;
     protected BarcodeStatusChangePort barcodeStatusChangePort;
-    protected AddUserMembership addUserMembership;
-    protected GetMembershipStatusPort getMembershipStatusPortTest;
     // USER
     /////////////////////////////////////////////////////////////////
     protected UserSavePort userSavePort;
@@ -70,6 +68,8 @@ public class H2DatabaseConfig {
     protected TeamDeletePort teamDeletePort;
     protected TeamIfExists teamIfExists;
     protected TeamUpdatePort teamUpdatePort;
+    private AddSubscriptionPort addSubscriptionPort;
+    private SubscriptionLoadPort subscriptionLoadPort;
 
     @BeforeEach
     public void set() {
@@ -89,18 +89,20 @@ public class H2DatabaseConfig {
         teamDeletePort = Container.getBean(TeamDeletePort.class);
         teamIfExists = Container.getBean(TeamIfExists.class);
 
-        getMembershipStatusPortTest = Container.getBean(GetMembershipStatusPort.class);
-        addUserMembership = Container.getBean(AddUserMembership.class);
-
         attendanceLoadForUserPort = Container.getBean(AttendanceLoadForUserPort.class);
         attendanceAddForUserPort = Container.getBean(AttendanceAddForUserPort.class);
+
+        addSubscriptionPort = Container.getBean(AddSubscriptionPort.class);
+        subscriptionLoadPort = Container.getBean(SubscriptionLoadPort.class);
+
+
     }
 
     @AfterEach
     public void purge() {
         Container.getBean(PersonPictureBarcodePurgePort.class).purge();
+        Container.getBean(SubscriptionPurgePort.class).purge();
         Container.getBean(AttendancePurgePort.class).purge();
-        Container.getBean(MembershipPurgePort.class).purge();
         Container.getBean(BarcodePurgePort.class).purge();
         Container.getBean(TeamPurgePort.class).purge();
         Container.getBean(UserPurgePort.class).purge();
@@ -118,7 +120,7 @@ public class H2DatabaseConfig {
         BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
         PersonEntity user = userSavePort.save(firstName, lastName, PersonEntity.Gender.MALE, "123", null);
         TeamEntity team = teamSavePort.save(teamName, BigDecimal.valueOf(123));
-        userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName());
+        userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName(), false, true);
         return barcode;
     }
 
@@ -154,7 +156,7 @@ public class H2DatabaseConfig {
         for (int i = 0; i < usersToAdd.size(); i++) {
             ScenarioUser u = usersToAdd.get(i);
             PersonEntity user = userSavePort.save(u.getFirstName(), u.getLastName(), PersonEntity.Gender.MALE, u.getPhone(), null);
-            userAddToTeam.addUserToPort(user.getPersonId(), barcodes.get(i).getBarcodeId(), team.getName());
+            userAddToTeam.addUserToPort(user.getPersonId(), barcodes.get(i).getBarcodeId(), team.getName(), false, true);
         }
 
         return barcodes;
