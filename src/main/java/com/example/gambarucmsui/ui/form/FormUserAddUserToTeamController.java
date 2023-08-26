@@ -20,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -77,17 +78,25 @@ public class FormUserAddUserToTeamController implements Initializable {
         if (validate(userId, barcodeIdStr, teamNameStr)) {
             Long barcodeId = parseBarcodeStr(barcodeIdStr);
             String teamName = teamNameStr;
-            userAddToTeamPort.addUserToTeam(userId, barcodeId, teamName, chkSubscriptionFree.isSelected(), chkPaySubscription.isSelected());
+
+            LocalDate start = null;
+            LocalDate end = null;
+            if (chkPaySubscription.isSelected()) {
+                start = LocalDate.now();
+                end = start.plusMonths(1);
+            }
+
+            userAddToTeamPort.verifyAndAddUserToPort(userId, String.valueOf(barcodeId), teamName, chkSubscriptionFree.isSelected(), start, end);
             close();
         }
     }
 
     private boolean validate(Long userId, String barcodeId, String teamName) {
-        ValidatorResponse validator = userAddToTeamPort.verifyAddUserToPort(userId, barcodeId, teamName);
+        ValidatorResponse validator = userAddToTeamPort.verifyAddUserToPort(userId, barcodeId, teamName, chkSubscriptionFree.isSelected(), null, null);
 
         if (validator.hasErrors()) {
             lblErrUserBarcodeId.setText(validator.getErrorOrEmpty(BARCODE_ID));
-            lblErrUserTeamName.setText(validator.getErrorOrEmpty("teamName"));
+            lblErrUserTeamName.setText(validator.getErrorOrEmpty(TeamEntity.TEAM_NAME));
             return false;
         }
         return true;

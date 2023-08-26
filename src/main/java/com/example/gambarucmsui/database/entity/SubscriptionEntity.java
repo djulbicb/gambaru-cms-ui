@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 @Entity
 @Table(name = "subscription")
 public class SubscriptionEntity {
+    public static final String SUB = "subscriptionId";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subscription_id")

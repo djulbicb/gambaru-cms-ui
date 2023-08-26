@@ -57,19 +57,6 @@ public class AlertShowMembershipController implements Initializable {
         LocalDate end = barcode.getSubscription().getEndDate();
         datePickStart.setValue(start);
         datePickEnd.setValue(end);
-
-//
-//        if (membershipState.getColor() == GetMembershipStatusPort.State.Color.ORANGE) {
-//            setNotificationOrange(membershipState.getDays());
-//        } else if (membershipState.getColor() == GetMembershipStatusPort.State.Color.GREEN) {
-//            setNotificationGreen();
-//        } else {
-//            setNotificationRed();
-//        }
-//        lblNotification.setText(membershipState.getMessage());
-//
-//        DateToggleGroup toggleGroup = new DateToggleGroup(LocalDate.now());
-//        paneToggleDate.getChildren().setAll(toggleGroup);
     }
 
     @FXML
@@ -112,6 +99,7 @@ public class AlertShowMembershipController implements Initializable {
     @FXML
     void updateMembership(MouseEvent event) {
         updateSubscriptionPort.updateSubsscription(barcode.getBarcodeId(), chkFreeOfCharge.isSelected(), datePickStart.getValue(), datePickEnd.getValue());
+        onClose();
     }
     @FXML
     private void onClose() {

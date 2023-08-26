@@ -107,7 +107,15 @@
                            <children>
                               <DatePicker fx:id="datePickStart" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                               <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateStartToToday" text="Danas" />
-                              <Button layoutX="631.0" layoutY="10.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateStartToCurrent" text="Trenutna" />
+                              <Button layoutX="631.0" layoutY="10.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateStartToCurrent" text="Trenutna">
+                                 <graphic>
+                                    <Label fx:id="lblErrUserLastName" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                 </graphic>
+                              </Button>
                            </children>
                         </HBox>
                      </children>

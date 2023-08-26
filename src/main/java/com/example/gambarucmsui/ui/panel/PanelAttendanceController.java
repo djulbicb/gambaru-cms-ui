@@ -189,5 +189,6 @@ public class PanelAttendanceController implements PanelHeader {
         Pane pane = loadFxml(ALERT_SHOW_MEMBERSHIP, alertCtrl);
         createStage("Clanarina", pane, primaryStage).showAndWait();
 
+        listPageForDate();
     }
 }

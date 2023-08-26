@@ -80,7 +80,7 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
         }
     }
 
-    public void addSubscription(Long barcodeId, Long teamId, LocalDate now, LocalDate end) {
+    public Optional<SubscriptionEntity> addSubscription(Long barcodeId, Long teamId, LocalDate now, LocalDate end) {
         Optional<BarcodeEntity> byId = barcodeRepo.findById(barcodeId);
         if (byId.isPresent()) {
             BarcodeEntity barcode = byId.get();
@@ -91,11 +91,11 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
             en.setEndDate(end);
             en.setBarcode(barcode);
 
-            subscriptionRepo.save(en);
+            SubscriptionEntity saved = subscriptionRepo.save(en);
 
-            barcode.setSubscription(en);
-            barcodeRepo.update(barcode);
+            return Optional.of(saved);
         }
+        return Optional.empty();
     }
 }
 //

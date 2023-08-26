@@ -33,6 +33,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.gambarucmsui.common.Props.FUTURE;
+import static com.example.gambarucmsui.common.Props.PAST;
 import static com.example.gambarucmsui.util.DataUtil.*;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
@@ -250,7 +252,7 @@ public class PanelBarcodeController implements PanelHeader {
                 for (PersonEntity user : users) {
                     BarcodeEntity barcode = barcodeFetchOrGeneratePort.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
                     TeamEntity team = pickRandom(teams);
-                    userAddToTeamPort.addUserToTeam(user.getPersonId(), barcode.getBarcodeId(), team.getName(), false, true);
+                    userAddToTeamPort.verifyAndAddUserToPort(user.getPersonId(), String.valueOf(barcode.getBarcodeId()), team.getName(), false, PAST, FUTURE);
                 }
 //                barcodeRepo.saveMultiple(barcodes); TODO
                 Platform.runLater(() -> {

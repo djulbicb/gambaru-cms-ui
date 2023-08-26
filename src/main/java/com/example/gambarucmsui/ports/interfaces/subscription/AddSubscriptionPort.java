@@ -1,11 +1,11 @@
 package com.example.gambarucmsui.ports.interfaces.subscription;
 
-import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.SubscriptionEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface AddSubscriptionPort {
     public void addFreeSubscription(Long barcodeId, Long teamId);
-    public void addSubscription(Long barcodeId, Long teamId, LocalDate now, LocalDate end);
+    public Optional<SubscriptionEntity> addSubscription(Long barcodeId, Long teamId, LocalDate now, LocalDate end);
 }

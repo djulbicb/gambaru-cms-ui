@@ -118,39 +118,8 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
         return false;
     }
 
-    @Override
-    public void addUserToTeam(Long userId, Long barcodeId, String teamName, boolean isFreeOfCharge, boolean isPayNextMonth) {
-        Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(barcodeId);
-        Optional<PersonEntity> userOpt = userRepo.findById(userId);
-        TeamEntity team = teamRepo.findByName(teamName);
 
-        if (barcodeOpt.isPresent() && userOpt.isPresent()) {
-            BarcodeEntity barcode = barcodeOpt.get();
-            PersonEntity user = userOpt.get();
-
-            barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
-            user.getBarcodes().add(barcode);
-            userRepo.update(user);
-
-            if (isFreeOfCharge) {
-                subscriptionService.addFreeSubscription(barcodeId, team.getTeamId());
-                return;
-            }
-
-            if (isPayNextMonth) {
-                LocalDate now = LocalDate.now();
-                LocalDate end = now.plusMonths(1);
-                addUserToTeam(user.getPersonId(), barcodeId, team.getTeamId(), false, now, end);
-                return;
-            }
-
-            addUserToTeam(user.getPersonId(), barcodeId, team.getTeamId(),false, null, null);
-
-        }
-    }
-
-    @Override
-    public void addUserToTeam(Long userId, Long barcodeId, Long teamId, boolean isFreeOfCharge, LocalDate start, LocalDate end) {
+    protected void addUserToTeam(Long userId, Long barcodeId, Long teamId, boolean isFreeOfCharge, LocalDate start, LocalDate end) {
         Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(barcodeId);
         Optional<PersonEntity> userOpt = userRepo.findById(userId);
         Optional<TeamEntity> teamOpt = teamRepo.findById(teamId);
@@ -160,23 +129,43 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
             PersonEntity user = userOpt.get();
             TeamEntity team = teamOpt.get();
 
-            barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
+            barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
+            barcode.setTeam(team);
+            barcode.setPerson(user);
+            barcodeRepo.update(barcode);
+
+            user.getBarcodes().add(barcode);
 
             if (isFreeOfCharge) {
                 subscriptionService.addFreeSubscription(barcodeId, teamId);
                 return;
             }
 
-            subscriptionService.addSubscription(barcodeId, teamId, start, end);
+            Optional<SubscriptionEntity> subscriptionEntity = subscriptionService.addSubscription(barcodeId, teamId, start, end);
+            if (subscriptionEntity.isPresent()) {
+                barcode.setSubscription(subscriptionEntity.get());
+                barcodeRepo.update(barcode);
+            }
         }
     }
 
     @Override
-    public ValidatorResponse verifyAddUserToPort(Long userId, String barcodeIdStr, String teamName) {
+    public ValidatorResponse verifyAddUserToPort(Long userId, String barcodeIdStr, String teamName, boolean isFreeOfCharge, LocalDate start, LocalDate end) {
         Map<String, String> errors = new HashMap<>();
 
+        if (!isFreeOfCharge && start != null && end != null) {
+            if (start.isAfter(end)) {
+                errors.put(SubscriptionEntity.SUB, "Početak članarine ne može da bude posle kraja članarine.");
+            }
+        }
         if (!isLong(barcodeIdStr)) {
             errors.put(BARCODE_ID, "Skeniraj barkod.");
+        }
+        if (!teamVal.isTeamNameValid(teamName)) {
+            errors.put(TeamEntity.TEAM_NAME, "Izaberi tim.");
+        }
+
+        if (!errors.isEmpty()) {
             return new ValidatorResponse(errors);
         }
 
@@ -205,6 +194,17 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
         }
 
         return new ValidatorResponse(errors);
+    }
+
+    @Override
+    public ValidatorResponse verifyAndAddUserToPort(Long userId, String barcodeId, String teamName, boolean isFreeOfCharge, LocalDate start, LocalDate end) {
+        ValidatorResponse res = verifyAddUserToPort(userId, barcodeId, teamName, isFreeOfCharge, start, end);
+        if (res.hasErrors()) {
+            return res;
+        }
+        TeamEntity team = teamRepo.findByName(teamName);
+        addUserToTeam(userId, parseBarcodeStr(barcodeId), team.getTeamId(), isFreeOfCharge, start, end);
+        return new ValidatorResponse(Messages.USER_ADDED_TO_TEAM(teamName));
     }
 
     @Override

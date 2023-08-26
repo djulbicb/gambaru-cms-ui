@@ -64,13 +64,6 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
         return typedQuery.getResultList();
     }
 
-    public void updateBarcodeWithUserAndTeam(BarcodeEntity barcode, PersonEntity user, TeamEntity team) {
-        barcode.setStatus(BarcodeEntity.Status.ASSIGNED);
-        barcode.setTeam(team);
-        barcode.setPerson(user);
-        update(barcode);
-    }
-
     public List<BarcodeEntity> findByTeam(Long teamId) {
         String jpql = "SELECT b FROM BarcodeEntity b WHERE b.team.teamId = :teamId";
         TypedQuery<BarcodeEntity> query = entityManager.createQuery(jpql, BarcodeEntity.class);

@@ -63,4 +63,8 @@ public class Messages {
         }
         return String.format("Članarina ističe za %s %s.", daysBetween, wordDay);
     }
+
+    public static String USER_ADDED_TO_TEAM(String teamName) {
+        return String.format("Dodat u tim %s.", teamName);
+    }
 }

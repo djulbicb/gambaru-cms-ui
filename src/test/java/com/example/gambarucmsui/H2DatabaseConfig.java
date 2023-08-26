@@ -124,7 +124,7 @@ public class H2DatabaseConfig {
         PersonEntity user = userSavePort.save(firstName, lastName, PersonEntity.Gender.MALE, "123", null);
         TeamEntity team = teamSavePort.save(teamName, BigDecimal.valueOf(123));
 
-        userAddToTeam.addUserToTeam(user.getPersonId(), barcode.getBarcodeId(), team.getTeamId(), false, start, end);
+        userAddToTeam.verifyAndAddUserToPort(user.getPersonId(), String.valueOf(barcode.getBarcodeId()), teamName, false, start, end);
 
         return barcodeLoad.findById(barcode.getBarcodeId()).get();
     }
@@ -165,7 +165,7 @@ public class H2DatabaseConfig {
         for (int i = 0; i < usersToAdd.size(); i++) {
             ScenarioUser u = usersToAdd.get(i);
             PersonEntity user = userSavePort.save(u.getFirstName(), u.getLastName(), PersonEntity.Gender.MALE, u.getPhone(), null);
-            userAddToTeam.addUserToTeam(user.getPersonId(), barcodes.get(i).getBarcodeId(), team.getName(), false, true);
+            userAddToTeam.verifyAndAddUserToPort(user.getPersonId(), String.valueOf(barcodes.get(i).getBarcodeId()), teamName, false, FEBRUARY_START_DATE, FEBRUARY_END_DATE);
         }
 
         return barcodes;
