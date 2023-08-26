@@ -59,27 +59,67 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
         }
     }
 
-    @Override
-    public void addSubscription(Long barcodeId, LocalDate currentDay, boolean isFreeOfCharge, boolean isPayNextMonth) {
+    public void addFreeSubscription(Long barcodeId, Long teamId) {
         Optional<BarcodeEntity> byId = barcodeRepo.findById(barcodeId);
         if (byId.isPresent()) {
             BarcodeEntity barcode = byId.get();
 
-            if (isFreeOfCharge) {
-                SubscriptionEntity en = new SubscriptionEntity(barcode, true, LocalDate.MIN, LocalDate.MAX);
-                subscriptionRepo.save(en);
-                barcode.setSubscription(en);
-            } else if (isPayNextMonth) {
-                SubscriptionEntity en = new SubscriptionEntity(barcode, false, currentDay, currentDay.plusMonths(1));
-                subscriptionRepo.save(en);
-                barcode.setSubscription(en);
-            } else {
-                SubscriptionEntity en = new SubscriptionEntity(barcode, false, null, null);
-                subscriptionRepo.save(en);
-                barcode.setSubscription(en);
-            }
+            SubscriptionEntity en = new SubscriptionEntity();
+            en.setFreeOfCharge(true);
+            en.setStartDate(LocalDate.MIN);
+            en.setEndDate(LocalDate.MAX);
+            en.setBarcode(barcode);
 
+            subscriptionRepo.save(en);
+
+            barcode.setSubscription(en);
+            barcodeRepo.update(barcode);
+        }
+    }
+
+    public void addSubscription(Long barcodeId, Long teamId, LocalDate now, LocalDate end) {
+        Optional<BarcodeEntity> byId = barcodeRepo.findById(barcodeId);
+        if (byId.isPresent()) {
+            BarcodeEntity barcode = byId.get();
+
+            SubscriptionEntity en = new SubscriptionEntity();
+            en.setFreeOfCharge(false);
+            en.setStartDate(now);
+            en.setEndDate(end);
+            en.setBarcode(barcode);
+
+            subscriptionRepo.save(en);
+
+            barcode.setSubscription(en);
             barcodeRepo.update(barcode);
         }
     }
 }
+//
+//    @Override
+//    public void addFreeSubscription(Long barcodeId, String teamName) {
+//        Optional<BarcodeEntity> byId = barcodeRepo.findById(barcodeId);
+//        if (byId.isPresent()) {
+//            BarcodeEntity barcode = byId.get();
+//            SubscriptionEntity en = new SubscriptionEntity(barcode, true, LocalDate.MIN, LocalDate.MAX);
+//            subscriptionRepo.save(en);
+//            barcode.setSubscription(en);
+//            barcodeRepo.update(barcode);
+//        }
+//
+//    }
+//
+//    @Override
+//    public void addSubscription(Long barcodeId, String teamName, LocalDate start, LocalDate end) {
+//        Optional<BarcodeEntity> byId = barcodeRepo.findById(barcodeId);
+//        if (byId.isPresent()) {
+//            BarcodeEntity barcode = byId.get();
+//
+//
+//            SubscriptionEntity en = new SubscriptionEntity(barcode, false, start, end);
+//            subscriptionRepo.save(en);
+//            barcode.setSubscription(en);
+//
+//            barcodeRepo.update(barcode);
+//        }
+//    }

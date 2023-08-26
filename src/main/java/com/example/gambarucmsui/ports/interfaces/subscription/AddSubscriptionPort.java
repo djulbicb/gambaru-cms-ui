@@ -6,5 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public interface AddSubscriptionPort {
-    void addSubscription(Long barcodeId, LocalDate currentDay, boolean isFreeOfCharge, boolean isPayNextMonth);
+    public void addFreeSubscription(Long barcodeId, Long teamId);
+    public void addSubscription(Long barcodeId, Long teamId, LocalDate now, LocalDate end);
 }

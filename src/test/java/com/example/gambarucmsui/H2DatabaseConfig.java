@@ -28,7 +28,11 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
+
+import static com.example.gambarucmsui.TestData.FEBRUARY_END_DATE;
+import static com.example.gambarucmsui.TestData.FEBRUARY_START_DATE;
 
 public class H2DatabaseConfig {
     private static Server server;
@@ -115,13 +119,18 @@ public class H2DatabaseConfig {
         server.stop();
     }
 
-    @NotNull
-    protected BarcodeEntity scenario_AssignPersonToTeamAndReturnAssignedBarcode(String firstName, String lastName, String teamName) throws IOException {
+    protected BarcodeEntity scenario_AssignPersonToTeamAndReturnAssignedBarcode(String firstName, String lastName, String teamName, LocalDate start, LocalDate end) throws IOException {
         BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
         PersonEntity user = userSavePort.save(firstName, lastName, PersonEntity.Gender.MALE, "123", null);
         TeamEntity team = teamSavePort.save(teamName, BigDecimal.valueOf(123));
-        userAddToTeam.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName(), false, true);
-        return barcode;
+
+        userAddToTeam.addUserToTeam(user.getPersonId(), barcode.getBarcodeId(), team.getTeamId(), false, start, end);
+
+        return barcodeLoad.findById(barcode.getBarcodeId()).get();
+    }
+    @NotNull
+    protected BarcodeEntity scenario_AssignPersonToTeamAndReturnAssignedBarcode(String firstName, String lastName, String teamName) throws IOException {
+      return scenario_AssignPersonToTeamAndReturnAssignedBarcode(firstName, lastName, teamName, FEBRUARY_START_DATE, FEBRUARY_END_DATE);
     }
 
     public class ScenarioUser {
@@ -156,7 +165,7 @@ public class H2DatabaseConfig {
         for (int i = 0; i < usersToAdd.size(); i++) {
             ScenarioUser u = usersToAdd.get(i);
             PersonEntity user = userSavePort.save(u.getFirstName(), u.getLastName(), PersonEntity.Gender.MALE, u.getPhone(), null);
-            userAddToTeam.addUserToPort(user.getPersonId(), barcodes.get(i).getBarcodeId(), team.getName(), false, true);
+            userAddToTeam.addUserToTeam(user.getPersonId(), barcodes.get(i).getBarcodeId(), team.getName(), false, true);
         }
 
         return barcodes;

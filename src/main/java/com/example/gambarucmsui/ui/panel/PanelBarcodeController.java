@@ -250,7 +250,7 @@ public class PanelBarcodeController implements PanelHeader {
                 for (PersonEntity user : users) {
                     BarcodeEntity barcode = barcodeFetchOrGeneratePort.fetchOneOrGenerate(BarcodeEntity.Status.ASSIGNED);
                     TeamEntity team = pickRandom(teams);
-                    userAddToTeamPort.addUserToPort(user.getPersonId(), barcode.getBarcodeId(), team.getName(), false, true);
+                    userAddToTeamPort.addUserToTeam(user.getPersonId(), barcode.getBarcodeId(), team.getName(), false, true);
                 }
 //                barcodeRepo.saveMultiple(barcodes); TODO
                 Platform.runLater(() -> {

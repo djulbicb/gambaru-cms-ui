@@ -21,7 +21,6 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
@@ -70,7 +69,7 @@ public class FormUserAddUserToTeamController implements Initializable {
         if (validate(userId, barcodeIdStr, teamNameStr)) {
             Long barcodeId = parseBarcodeStr(barcodeIdStr);
             String teamName = teamNameStr;
-            userAddToTeamPort.addUserToPort(userId, barcodeId, teamName, chkSubscriptionFree.isSelected(), chkPaySubscription.isSelected());
+            userAddToTeamPort.addUserToTeam(userId, barcodeId, teamName, chkSubscriptionFree.isSelected(), chkPaySubscription.isSelected());
             close();
         }
     }

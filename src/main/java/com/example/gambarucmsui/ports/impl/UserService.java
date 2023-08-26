@@ -111,6 +111,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
             }
 
             if (pictureData != null) {
+
                 user.getPicture().setPictureData(pictureData);
             }
             return true;
@@ -119,20 +120,55 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     }
 
     @Override
-    public void addUserToPort(Long userId, Long barcodeId, String teamName, boolean isFreeOfCharge, boolean isPayNextMonth) {
+    public void addUserToTeam(Long userId, Long barcodeId, String teamName, boolean isFreeOfCharge, boolean isPayNextMonth) {
         Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(barcodeId);
         Optional<PersonEntity> userOpt = userRepo.findById(userId);
+        TeamEntity team = teamRepo.findByName(teamName);
 
         if (barcodeOpt.isPresent() && userOpt.isPresent()) {
             BarcodeEntity barcode = barcodeOpt.get();
             PersonEntity user = userOpt.get();
-            TeamEntity team = teamRepo.findByName(teamName);
 
             barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
             user.getBarcodes().add(barcode);
             userRepo.update(user);
 
-            subscriptionService.addSubscription(barcodeId, LocalDate.now(), isFreeOfCharge, isPayNextMonth);
+            if (isFreeOfCharge) {
+                subscriptionService.addFreeSubscription(barcodeId, team.getTeamId());
+                return;
+            }
+
+            if (isPayNextMonth) {
+                LocalDate now = LocalDate.now();
+                LocalDate end = now.plusMonths(1);
+                addUserToTeam(user.getPersonId(), barcodeId, team.getTeamId(), true, now, end);
+                return;
+            }
+
+            addUserToTeam(barcodeId, team.getTeamId(), team.getTeamId(),false, null, null);
+
+        }
+    }
+
+    @Override
+    public void addUserToTeam(Long userId, Long barcodeId, Long teamId, boolean isFreeOfCharge, LocalDate start, LocalDate end) {
+        Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(barcodeId);
+        Optional<PersonEntity> userOpt = userRepo.findById(userId);
+        Optional<TeamEntity> teamOpt = teamRepo.findById(teamId);
+
+        if (barcodeOpt.isPresent() && userOpt.isPresent() && teamOpt.isPresent()) {
+            BarcodeEntity barcode = barcodeOpt.get();
+            PersonEntity user = userOpt.get();
+            TeamEntity team = teamOpt.get();
+
+            barcodeRepo.updateBarcodeWithUserAndTeam(barcode, user, team);
+
+            if (isFreeOfCharge) {
+                subscriptionService.addFreeSubscription(barcodeId, teamId);
+                return;
+            }
+
+            subscriptionService.addSubscription(barcodeId, teamId, start, end);
         }
     }
 

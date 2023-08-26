@@ -45,4 +45,14 @@ public class SubscriptStatus {
         }
         return RED_X;
     }
+
+    public boolean isGreen() {
+        return color == Color.GREEN;
+    }
+    public boolean isOrange() {
+        return color == Color.ORANGE;
+    }
+    public boolean isRed() {
+        return color == Color.RED;
+    }
 }
