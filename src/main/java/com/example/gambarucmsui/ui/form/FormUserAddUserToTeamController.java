@@ -7,7 +7,6 @@ import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.IsUserAlreadyInThisTeamPort;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserAddToTeamPort;
-import com.example.gambarucmsui.ui.form.validation.BarcodeInputValidator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,7 +33,6 @@ public class FormUserAddUserToTeamController implements Initializable {
     private final TeamLoadPort teamLoadPort;
     private final BarcodeLoadPort barcodeLoadPort;
     private final IsUserAlreadyInThisTeamPort isUserInTeam;
-    private final BarcodeInputValidator barcodeValidator = new BarcodeInputValidator();
 
     @FXML private VBox root;
     @FXML private Label lblErrUserBarcodeId;
