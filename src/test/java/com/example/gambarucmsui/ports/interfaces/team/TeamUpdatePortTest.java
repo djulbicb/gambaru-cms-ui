@@ -46,4 +46,37 @@ class TeamUpdatePortTest extends H2DatabaseConfig {
             assertEquals(Messages.TEAM_FEE_NOT_VALID, res.getErrorOrEmpty(TeamEntity.MEMBERSHIP_PAYMENT));
         }
     }
+
+    @Test
+    public void shouldFailTestWhenTeamWithThanNameExists() throws IOException {
+        // save
+        teamSavePort.verifyAndSaveTeam("First", "123");
+        teamSavePort.verifyAndSaveTeam("Second", "123");
+        TeamEntity team = teamLoad.findByName("First");
+
+        // update
+        ValidatorResponse res1 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "Update", "234");
+        assertTrue(res1.isOk());
+        assertEquals(Messages.TEAM_IS_UPDATED("Update"), res1.getMessage());
+
+        // try to save again but fail
+        ValidatorResponse res2 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "Second", "234");
+        assertTrue(res2.hasErrors());
+        assertEquals(Messages.TEAM_NAME_ALREADY_EXISTS, res2.getErrorOrEmpty(TeamEntity.TEAM_NAME));
+    }
+
+    @Test
+    public void shouldSuccessWhenUpdatingTeamWithSameName() throws IOException {
+        teamSavePort.verifyAndSaveTeam("This", "123");
+        TeamEntity team = teamLoad.findByName("This");
+
+        ValidatorResponse res1 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "This", "234");
+        assertTrue(res1.isOk());
+        assertEquals(Messages.TEAM_IS_UPDATED("This"), res1.getMessage());
+
+        TeamEntity teamAfterUpdate = teamLoad.findByName("This");
+        assertEquals("This", teamAfterUpdate.getName());
+        assertEquals(new BigDecimal("234"), teamAfterUpdate.getMembershipPayment());
+    }
+
 }

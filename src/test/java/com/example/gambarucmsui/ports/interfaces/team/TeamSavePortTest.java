@@ -40,4 +40,36 @@ class TeamSavePortTest extends H2DatabaseConfig {
             assertEquals(Messages.TEAM_FEE_NOT_VALID, res.getErrorOrEmpty(TeamEntity.MEMBERSHIP_PAYMENT));
         }
     }
+
+    @Test
+    public void shouldFailTestWhenTeamWithThanNameExists() throws IOException {
+        ValidatorResponse res1 = teamSavePort.verifyAndSaveTeam("Lowe", "123");
+        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam("Lowe", "234");
+
+        assertTrue(res1.isOk());
+        assertTrue(res2.hasErrors());
+
+        assertEquals(Messages.TEAM_IS_CREATED("Lowe"), res1.getMessage());
+        assertEquals(Messages.TEAM_NAME_ALREADY_EXISTS, res2.getErrorOrEmpty(TeamEntity.TEAM_NAME));
+    }
+
+    @Test
+    public void shouldSuccesTestWhenTeamWithThanNameExistsButWasDeleted() throws IOException {
+        teamSavePort.verifyAndSaveTeam("Lowe", "123");
+        TeamEntity team = teamLoad.findByName("Lowe");
+        teamDeletePort.validateAndDeleteTeam(team.getTeamId());
+
+        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam("Lowe", "234");
+        assertTrue(res2.isOk());
+        assertEquals(Messages.TEAM_IS_CREATED("Lowe"), res2.getMessage());
+
+        // Edgecase: After deletion team is renamed with sufix (Obrisan) and its deactivated
+        // Technically, you can create an ACTIVE team with that name
+        ValidatorResponse res3 = teamSavePort.verifyAndSaveTeam("Lowe(Obrisan)", "234");
+        assertTrue(res3.isOk());
+        assertEquals(Messages.TEAM_IS_CREATED("Lowe(Obrisan)"), res3.getMessage());
+
+        List<TeamEntity> activeTeams = teamLoad.findAllActive();
+        assertEquals(2, activeTeams.size());
+    }
 }

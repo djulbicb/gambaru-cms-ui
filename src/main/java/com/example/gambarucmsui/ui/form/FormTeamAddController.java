@@ -69,8 +69,8 @@ public class FormTeamAddController implements Initializable {
         ValidatorResponse res = teamSavePort.verifyAndSaveTeam(teamNameStr, paymentFeeStr);
 
         if (res.hasErrors()) {
-            lblErrTeamName.setText(res.getErrorOrEmpty("name"));
-            lblErrMembershipFee.setText(res.getErrorOrEmpty("membershipPayment"));
+            lblErrTeamName.setText(res.getErrorOrEmpty(TeamEntity.TEAM_NAME));
+            lblErrMembershipFee.setText(res.getErrorOrEmpty(TeamEntity.MEMBERSHIP_PAYMENT));
             return;
         }
 
@@ -87,4 +87,5 @@ public class FormTeamAddController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
+
 }

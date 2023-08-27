@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.example.gambarucmsui.common.Messages.*;
+import static com.example.gambarucmsui.util.FormatUtil.isDecimal;
 
 public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, TeamIfExists, TeamPurgePort, TeamDeletePort {
 
@@ -32,13 +33,13 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
     public ValidatorResponse verifyAndSaveTeam(String teamName, String fee) {
         Map<String, String> errors = new HashMap<>();
         if (!teamValidator.isTeamNameValid(teamName)) {
-            errors.put("name", TEAM_NAME_NOT_VALID);
+            errors.put(TeamEntity.TEAM_NAME, TEAM_NAME_NOT_VALID);
         }
         if (!teamValidator.isFeeValid(fee)) {
-            errors.put("membershipPayment", TEAM_FEE_NOT_VALID);
+            errors.put(TeamEntity.MEMBERSHIP_PAYMENT, TEAM_FEE_NOT_VALID);
         }
         if (ifTeamNameExists(teamName)) {
-            errors.put("name", TEAM_NAME_ALREADY_EXISTS);
+            errors.put(TeamEntity.TEAM_NAME, TEAM_NAME_ALREADY_EXISTS);
         }
 
         if (!errors.isEmpty()) {

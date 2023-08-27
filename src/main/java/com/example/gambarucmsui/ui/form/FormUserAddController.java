@@ -28,25 +28,25 @@ import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 public class FormUserAddController implements Initializable {
     // Input
     //////////////////////////////////////////
-    private final UserInputValidator validator = new UserInputValidator();
-    private final UserSavePort port;
+    protected UserInputValidator validator = new UserInputValidator();
+    protected UserSavePort userSavePort;
 
     // FXML
     //////////////////////////////////////////
-    @FXML private VBox root;
-    @FXML private Button btnSave;
-    @FXML private Button btnClose;
-    @FXML private Label lblErrUserFirstName;
-    @FXML private Label lblErrUserLastName;
-    @FXML private Label lblErrUserPhone;
-    @FXML private Label lblErrUserGender;
-    @FXML private ComboBox<String> cmbUserGender;
-    @FXML private TextField txtUserFirstName;
-    @FXML private TextField txtUserLastName;
-    @FXML private TextField txtUserPhone;
+    @FXML protected VBox root;
+    @FXML protected Button btnSave;
+    @FXML protected Button btnClose;
+    @FXML protected Label lblErrUserFirstName;
+    @FXML protected Label lblErrUserLastName;
+    @FXML protected Label lblErrUserPhone;
+    @FXML protected Label lblErrUserGender;
+    @FXML protected ComboBox<String> cmbUserGender;
+    @FXML protected TextField txtUserFirstName;
+    @FXML protected TextField txtUserLastName;
+    @FXML protected TextField txtUserPhone;
 
     public FormUserAddController() {
-        this.port = Container.getBean(UserSavePort.class);
+        this.userSavePort = Container.getBean(UserSavePort.class);
     }
 
     // OUTPUT DATA
@@ -75,13 +75,14 @@ public class FormUserAddController implements Initializable {
             btnClose.setDisable(true);
 
             PersonEntity.Gender gender = genderStr.equals("Muški") ? PersonEntity.Gender.MALE : PersonEntity.Gender.FEMALE;
-            port.save(firstNameStr, lastNameStr, gender, phoneStr, outPictureData);
+            userSavePort.save(firstNameStr, lastNameStr, gender, phoneStr, outPictureData);
             close();
         }
     }
 
+
     boolean validate(String firstNameStr, String lastNameStr, String phoneStr, String genderStr) {
-        ValidatorResponse verify = port.verify(firstNameStr, lastNameStr, genderStr, phoneStr);
+        ValidatorResponse verify = userSavePort.verify(firstNameStr, lastNameStr, genderStr, phoneStr);
         if (verify.hasErrors()) {
             lblErrUserFirstName.setText(verify.getErrorOrEmpty("firstName"));
             lblErrUserLastName.setText(verify.getErrorOrEmpty("lastName"));
