@@ -16,7 +16,6 @@ import static com.example.gambarucmsui.common.Messages.*;
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
-import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class AttendanceService implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort {
 

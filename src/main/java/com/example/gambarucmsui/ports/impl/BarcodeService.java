@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.example.gambarucmsui.common.Messages.*;
-import static com.example.gambarucmsui.common.Messages.MEMBERSHIP_ALREADY_PAYED;
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;

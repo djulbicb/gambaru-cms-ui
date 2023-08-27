@@ -17,20 +17,29 @@ import com.example.gambarucmsui.util.generators.PDFGenerator;
 import com.google.zxing.WriterException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.common.Props.FUTURE;
@@ -264,6 +273,39 @@ public class PanelBarcodeController implements PanelHeader {
         };
 
         new Thread(task).start();
+    }
+
+    @FXML
+    void onSaveScenarioUsers(ActionEvent event) throws IOException {
+        teamSavePort.verifyAndSaveTeam("Delete", "123");
+
+        userSavePort.save("Null","Null", PersonEntity.Gender.MALE, "123", null);
+        userSavePort.save("Bez slike","Bez Slike", PersonEntity.Gender.MALE, "123", null);
+        userSavePort.save("Sa slikom","Sa slikom", PersonEntity.Gender.MALE, "123", null);
+        userSavePort.save("Free","Free", PersonEntity.Gender.FEMALE, "123", createBlackImageByteArray());
+        userSavePort.save("Next","Next", PersonEntity.Gender.FEMALE, "123", createBlackImageByteArray());
+        userSavePort.save("Delete","Delete", PersonEntity.Gender.FEMALE, "123", createBlackImageByteArray());
+        userSavePort.save("Disable","Disable", PersonEntity.Gender.FEMALE, "123", createBlackImageByteArray());
+        userSavePort.save("Re-enable","Re-enable", PersonEntity.Gender.FEMALE, "123", createBlackImageByteArray());
+    }
+
+    public static byte[] createBlackImageByteArray() {
+        int IMAGE_WIDTH = 30;
+        int IMAGE_HEIGHT = 30;
+
+        BufferedImage blackImage = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = blackImage.createGraphics();
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        g.dispose();
+
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            ImageIO.write(blackImage, "png", byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @FXML

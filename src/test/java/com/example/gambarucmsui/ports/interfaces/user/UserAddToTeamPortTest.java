@@ -1,7 +1,6 @@
 package com.example.gambarucmsui.ports.interfaces.user;
 
 import com.example.gambarucmsui.H2DatabaseConfig;
-import com.example.gambarucmsui.TestData;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.database.entity.PersonEntity;

@@ -52,6 +52,7 @@
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddUserToTeam" text="DODAJ KORISNIKE U TIM" />
                         <Button layoutX="115.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddAttendance" text="DODAJ n DOLAZNOST" HBox.hgrow="ALWAYS" />
                         <Button layoutX="256.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddPayment" text="DODAJ n PLAĆANJE" HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#onSaveScenarioUsers" text="SCENARIO USERS" />
                      </children>
                   </HBox>
                </children>

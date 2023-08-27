@@ -1,7 +1,5 @@
 package com.example.gambarucmsui.common;
 
-import java.util.Map;
-
 public class Messages {
     // USER
     public final static String USER_FIRST_NAME_MISSING = "Upiši ime.";

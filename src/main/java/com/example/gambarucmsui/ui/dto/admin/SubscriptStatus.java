@@ -2,8 +2,6 @@ package com.example.gambarucmsui.ui.dto.admin;
 
 import com.example.gambarucmsui.common.model.Color;
 
-import java.time.LocalDateTime;
-
 public class SubscriptStatus {
     public static final String GREEN_CHECKMARK = "\u2714\uFE0F";
     public static final String ORANGE_EXCLAMATION = "\u2757\uFE0F";

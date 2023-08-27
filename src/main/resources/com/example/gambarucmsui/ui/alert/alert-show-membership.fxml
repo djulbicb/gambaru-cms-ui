@@ -22,7 +22,7 @@
                <children>
                   <AnchorPane fx:id="panePicture" maxHeight="300.0" maxWidth="300.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="170.0" stroke="BLACK" strokeType="INSIDE" width="130.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="170.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="130.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
                </children>
@@ -86,14 +86,22 @@
                         </Label>
                      </children>
                   </HBox>
-                  <CheckBox fx:id="chkFreeOfCharge" mnemonicParsing="false" text="BESPLATNA ČLANARINA" textFill="WHITE" />
+                  <CheckBox fx:id="chkFreeOfCharge" mnemonicParsing="false" onMouseClicked="#toggleOnFreeCharge" text="BESPLATNA ČLANARINA" textFill="WHITE" />
+                  <Label fx:id="lblMembershipError" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </Label>
                </children>
             </VBox>
          </children>
       </HBox>
       <VBox>
          <children>
-            <VBox spacing="10.0">
+            <VBox fx:id="paneMembership" spacing="10.0">
                <children>
                   <Separator prefWidth="200.0">
                      <padding>
@@ -105,8 +113,12 @@
                         <Label maxHeight="1.7976931348623157E308" text="ČLANARINA - POČETAK" textFill="#fcfcfc" />
                         <HBox spacing="5.0">
                            <children>
-                              <DatePicker fx:id="datePickStart" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                              <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateStartToToday" text="Danas" />
+                              <DatePicker fx:id="datePickStart" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#onDatePick" HBox.hgrow="ALWAYS" />
+                              <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateStartToToday" text="Danas">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Button>
                               <Button layoutX="631.0" layoutY="10.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateStartToCurrent" text="Trenutna">
                                  <graphic>
                                     <Label fx:id="lblErrUserLastName" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
@@ -125,8 +137,12 @@
                         <Label maxHeight="1.7976931348623157E308" text="ČLANARINA - KRAJ" textFill="#fcfcfc" />
                         <HBox spacing="5.0">
                            <children>
-                              <DatePicker fx:id="datePickEnd" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                              <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateEndToToday" text="Danas" />
+                              <DatePicker fx:id="datePickEnd" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#onDatePick" HBox.hgrow="ALWAYS" />
+                              <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateEndToToday" text="Danas">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Button>
                               <Button layoutX="631.0" layoutY="10.0" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateEndToCurrent" text="Trenutna" />
                            </children>
                         </HBox>
@@ -138,7 +154,11 @@
                                  </font>
                               </Label>
                               <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateEndToPrevMonth" text="&lt;" />
-                              <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateEndToNextMonth" text="naredni mesec &gt;" HBox.hgrow="ALWAYS" />
+                              <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#setDateEndToNextMonth" text="naredni mesec &gt;" HBox.hgrow="ALWAYS">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Button>
                            </children>
                            <VBox.margin>
                               <Insets top="5.0" />

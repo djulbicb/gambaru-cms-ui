@@ -6,9 +6,6 @@ import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import javafx.scene.image.ImageView;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.List;

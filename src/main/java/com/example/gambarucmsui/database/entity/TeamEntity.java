@@ -3,7 +3,6 @@ package com.example.gambarucmsui.database.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 @Table(name = "team")

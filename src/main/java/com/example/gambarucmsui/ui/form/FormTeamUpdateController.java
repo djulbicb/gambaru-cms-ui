@@ -1,6 +1,5 @@
 package com.example.gambarucmsui.ui.form;
 
-import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
@@ -19,7 +18,6 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static com.example.gambarucmsui.util.LayoutUtil.formatPagination;
 import static com.example.gambarucmsui.util.LayoutUtil.getOr;
 
 public class FormTeamUpdateController implements Initializable {

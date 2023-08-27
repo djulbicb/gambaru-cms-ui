@@ -49,8 +49,8 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
             SubscriptionEntity subscription = subOpt.get();
             if (isFreeOfCharge) {
                 subscription.setFreeOfCharge(true);
-                subscription.setStartDate(LocalDate.MIN);
-                subscription.setEndDate(LocalDate.MAX);
+                subscription.setStartDate(PAST);
+                subscription.setEndDate(FUTURE);
                 subscriptionRepo.update(subscription);
                 return;
             }

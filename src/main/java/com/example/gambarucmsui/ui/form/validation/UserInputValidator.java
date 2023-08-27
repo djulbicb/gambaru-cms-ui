@@ -12,11 +12,7 @@ public class UserInputValidator {
             return false;
         }
 
-        if (!phone.matches("[\\d+-/]+")) {
-            return false;
-        }
-
-        return true;
+        return phone.matches("[\\d+-/]+");
     }
     public boolean isValidGender(String gender) {
         if (gender == null || gender.isBlank()) {

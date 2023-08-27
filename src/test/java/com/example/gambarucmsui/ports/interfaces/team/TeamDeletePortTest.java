@@ -7,7 +7,6 @@ import com.example.gambarucmsui.ports.ValidatorResponse;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

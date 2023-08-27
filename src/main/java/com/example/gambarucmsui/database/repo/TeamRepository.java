@@ -4,7 +4,6 @@ import com.example.gambarucmsui.database.entity.TeamEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class TeamRepository extends Repository<TeamEntity> {

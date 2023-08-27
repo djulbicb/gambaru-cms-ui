@@ -1,11 +1,9 @@
 package com.example.gambarucmsui.ports.interfaces.team;
 
 import com.example.gambarucmsui.H2DatabaseConfig;
-import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.team.TeamIfExists;
 import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -18,6 +18,9 @@ public interface FxmlViewHandler {
         dialogStage.initStyle(StageStyle.UNDECORATED);
         dialogStage.initOwner(primaryStage);
         Scene scene = new Scene(root);
+
+        root.getStyleClass().add("popup");
+
         dialogStage.setScene(scene);
         dialogStage.setTitle(title);
         dialogStage.setResizable(false);

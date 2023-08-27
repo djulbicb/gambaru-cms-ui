@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static com.example.gambarucmsui.TestData.createBlackImageByteArray;
-import static com.example.gambarucmsui.util.ImageUtil.resizeAndOptimizeImage;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserPictureLoadTest extends H2DatabaseConfig {

@@ -9,12 +9,9 @@ import jakarta.persistence.criteria.Root;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.time.YearMonth;
 
 public class BarcodeRepository extends Repository<BarcodeEntity> {
     public BarcodeRepository(EntityManager entityManager) {

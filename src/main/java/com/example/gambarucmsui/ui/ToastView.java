@@ -1,22 +1,12 @@
 package com.example.gambarucmsui.ui;
 
-import com.example.gambarucmsui.database.entity.PersonEntity;
-import com.example.gambarucmsui.ui.alert.AlertShowAttendanceController;
 import com.example.gambarucmsui.ui.panel.FxmlViewHandler;
-import com.example.gambarucmsui.util.DataUtil;
-import com.example.gambarucmsui.util.PathUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
@@ -25,10 +15,6 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import javafx.animation.FadeTransition;
-
-import java.io.ByteArrayInputStream;
-
-import static com.example.gambarucmsui.util.PathUtil.CSS;
 
 public class ToastView implements FxmlViewHandler {
 
@@ -40,13 +26,6 @@ public class ToastView implements FxmlViewHandler {
         showModal(root, 1100, 100);
     }
     public static void showModal(Node content, double durationMillis, double fadeDurationMillis) {
-//        Group root = new Group();
-//        DropShadow dropShadow = new DropShadow();
-//        dropShadow.setRadius(0.0);
-//        dropShadow.setOffsetX(0.0);
-//        dropShadow.setOffsetY(20.0);
-//        dropShadow.setColor(Color.BLACK);
-
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.initStyle(StageStyle.TRANSPARENT);
@@ -69,6 +48,7 @@ public class ToastView implements FxmlViewHandler {
 //        );
 
         Scene modalScene = new Scene(modalRoot);
+        modalScene.getStylesheets().add("popup");
         modalScene.setFill(Color.TRANSPARENT);
         modalStage.setScene(modalScene);
 

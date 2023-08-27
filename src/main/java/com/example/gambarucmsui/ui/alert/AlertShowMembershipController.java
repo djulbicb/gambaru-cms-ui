@@ -5,6 +5,7 @@ import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.subscription.UpdateSubscriptionPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserPictureLoad;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -26,10 +27,12 @@ public class AlertShowMembershipController implements Initializable {
     private final UserPictureLoad userPictureLoad;
     private final UpdateSubscriptionPort updateSubscriptionPort;
     @FXML private Pane root;
+    @FXML private Pane paneMembership;
     @FXML private Label lblFirstName;
     @FXML private Label lblLastMembershipPayment;
     @FXML private Label lblLastName;
     @FXML private Label lblTeamName;
+    @FXML private Label lblMembershipError;
     @FXML private CheckBox chkFreeOfCharge;
     @FXML private DatePicker datePickEnd;
     @FXML private DatePicker datePickStart;
@@ -57,6 +60,8 @@ public class AlertShowMembershipController implements Initializable {
         LocalDate end = barcode.getSubscription().getEndDate();
         datePickStart.setValue(start);
         datePickEnd.setValue(end);
+
+        changeDisableOfMembershipPane(barcode.getSubscription().isFreeOfCharge());
     }
 
     @FXML
@@ -92,12 +97,36 @@ public class AlertShowMembershipController implements Initializable {
     }
 
     @FXML
+    void toggleOnFreeCharge(MouseEvent event) {
+        changeDisableOfMembershipPane(chkFreeOfCharge.isSelected());
+    }
+
+    private void changeDisableOfMembershipPane(boolean isSelected) {
+        chkFreeOfCharge.setSelected(isSelected);
+        paneMembership.setDisable(isSelected);
+    }
+
+    @FXML
     void setDateStartToCurrent(MouseEvent event) {
         datePickStart.setValue(barcode.getSubscription().getStartDate());
+    }
+    @FXML
+    void onDatePick(ActionEvent event) {
+        lblMembershipError.setText("");
     }
 
     @FXML
     void updateMembership(MouseEvent event) {
+        LocalDate start = datePickStart.getValue();
+        LocalDate end = datePickEnd.getValue();
+
+        if (start != null && end != null) {
+            if (start.isAfter(end)) {
+                lblMembershipError.setText("Početni datum ne može da bude posle krajnjeg.");
+                return;
+            }
+        }
+
         updateSubscriptionPort.updateSubsscription(barcode.getBarcodeId(), chkFreeOfCharge.isSelected(), datePickStart.getValue(), datePickEnd.getValue());
         onClose();
     }

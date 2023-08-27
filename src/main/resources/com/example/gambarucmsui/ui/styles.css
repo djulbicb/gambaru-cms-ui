@@ -1,10 +1,15 @@
 // DARK MODE
-.root {
+.root, .popup, .popup:disabled {
     -fx-accent: #1e74c6;
     -fx-focus-color: -fx-accent;
     -fx-base: #373e43;
     -fx-control-inner-background: derive(-fx-base, 35%);
     -fx-control-inner-background-alt: -fx-control-inner-background ;
+}
+.popup, .popup:disabled {
+    -fx-border-color: #1e74c6 transparent transparent transparent; /* Transparent on sides and bottom, blue on top */
+    -fx-border-width: 6px 0 0 0; /* Border width for top only */
+    -fx-border-style: solid; /* Border style */
 }
 
 .label{

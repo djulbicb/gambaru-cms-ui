@@ -7,12 +7,10 @@ import com.example.gambarucmsui.ports.ValidatorResponse;
 import javafx.scene.image.ImageView;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
 import static com.example.gambarucmsui.TestData.createBlackImageByteArray;
-import static com.example.gambarucmsui.util.ImageUtil.resizeAndOptimizeImage;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserUpdatePortTest extends H2DatabaseConfig {

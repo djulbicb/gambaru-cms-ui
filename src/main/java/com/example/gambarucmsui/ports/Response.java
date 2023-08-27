@@ -1,7 +1,5 @@
 package com.example.gambarucmsui.ports;
 
-import java.awt.geom.RectangularShape;
-
 public class Response<T> {
     private boolean isOk;
     private String message;
