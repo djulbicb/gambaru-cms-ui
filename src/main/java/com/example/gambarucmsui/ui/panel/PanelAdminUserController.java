@@ -219,7 +219,7 @@ public class PanelAdminUserController implements PanelHeader {
     }
 
     private TableColumn<BarcodeDetail, String> buildUserBarcodeButtonColumn() {
-        TableColumn<BarcodeDetail, String> activateColumn = new TableColumn<>("sss");
+        TableColumn<BarcodeDetail, String> activateColumn = new TableColumn<>("Deaktivacija");
         activateColumn.setCellFactory(param -> createButtonTableCell());
         return activateColumn;
     }

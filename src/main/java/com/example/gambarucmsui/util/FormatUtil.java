@@ -4,6 +4,7 @@ import com.example.gambarucmsui.database.entity.PersonEntity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class FormatUtil {
     public static boolean isLong(String str) {
@@ -48,18 +49,19 @@ public class FormatUtil {
         return String.format("%010d", barcodeId);
     }
 
-    final static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    final static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy");
+
     public static String toDateFormat(LocalDateTime time) {
         return dateFormatter.format(time);
     }
-    final static DateTimeFormatter fullTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm");
+    final static DateTimeFormatter fullTimeFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy hh:mm");
     public static String toDateTimeFormat(LocalDateTime time) {
         if (time == null) {
             return "Nema uplata.";
         }
         return fullTimeFormatter.format(time);
     }
-    final static DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern("MM/yyyy");
+    final static DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern("MMM/yyyy");
     public static String toMonthYeah(LocalDateTime time) {
         if (time == null) {
             return "Nema uplata.";
@@ -77,5 +79,9 @@ public class FormatUtil {
         } else {
             return "Ženski";
         }
+    }
+
+    private static Locale serbianLocale() {
+        return new Locale("sr", "RS", "latin");
     }
 }

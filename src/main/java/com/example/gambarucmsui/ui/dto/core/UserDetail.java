@@ -41,12 +41,6 @@ public class UserDetail {
         TeamEntity team = b.getTeam();
 
         SubscriptStatus status = b.getSubscription().getStatus(currentDate);
-        String emoji = status.getEmoji();
-
-        if (user == null) {
-            System.out.println("");
-        }
-
 
         return new UserDetail(
                 user.getPersonId(),
@@ -57,8 +51,8 @@ public class UserDetail {
                 genderToSerbianAbbr(user.getGender()),
                 team.getName(),
                 toDateFormat(user.getCreatedAt()),
-                String.format("%s %s", emoji, getStart(b.getSubscription())),
-                String.format("%s %s", emoji, getEnd(b.getSubscription())));
+                getStart(b.getSubscription()),
+                getEnd(b.getSubscription()));
     }
 
     private static String getStart(SubscriptionEntity subscription) {

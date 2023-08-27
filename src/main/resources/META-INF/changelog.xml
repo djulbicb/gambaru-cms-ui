@@ -6,18 +6,6 @@
           http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
 
     <changeSet id="1" author="bo">
-        <sqlFile path="META-INF/sql/001_create_user_table.sql"/>
-    </changeSet>
-    <changeSet id="2" author="bo">
-        <sqlFile path="META-INF/sql/002_create_team_table.sql"/>
-    </changeSet>
-    <changeSet id="3" author="bo">
-        <sqlFile path="META-INF/sql/003_create_barcode_table.sql"/>
-    </changeSet>
-    <changeSet id="4" author="bo">
-        <sqlFile path="META-INF/sql/004_create_user_attendance_table.sql"/>
-    </changeSet>
-    <changeSet id="5" author="bo">
-        <sqlFile path="META-INF/sql/005_create_user_membership_table.sql"/>
+        <sqlFile path="META-INF/sql/001_create_init_tables.sql"/>
     </changeSet>
 </databaseChangeLog>

@@ -122,7 +122,7 @@ public class PanelAttendanceController implements PanelHeader {
             BarcodeEntity barcode = barcodeLoadPort.findById(controller.getBarcodeId()).get();
             attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), LocalDateTime.now());
 
-            AlertShowAttendanceController alertCtrl = new AlertShowAttendanceController(barcode, paginationDate);
+            AlertShowAttendanceController alertCtrl = new AlertShowAttendanceController(barcode, LocalDate.now());
             Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, alertCtrl);
             ToastView.showModal(pane, 4000, 200);
 
@@ -137,7 +137,7 @@ public class PanelAttendanceController implements PanelHeader {
             ToastView.showModal(res.getErrorOrEmpty(BARCODE_ID));
         } else {
             BarcodeEntity barcode = barcodeLoadPort.findById(parseBarcodeStr(barcodeIdStr)).get();
-            AlertShowAttendanceController controller = new AlertShowAttendanceController(barcode, paginationDate);
+            AlertShowAttendanceController controller = new AlertShowAttendanceController(barcode, LocalDate.now());
             Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, controller);
             ToastView.showModal(pane, 4000, 200);
         }
@@ -185,7 +185,7 @@ public class PanelAttendanceController implements PanelHeader {
         }
 
         BarcodeEntity barcode = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcodeId())).get();
-        AlertShowMembershipController alertCtrl = new AlertShowMembershipController(barcode, paginationDate.atStartOfDay());
+        AlertShowMembershipController alertCtrl = new AlertShowMembershipController(barcode, LocalDateTime.now());
         Pane pane = loadFxml(ALERT_SHOW_MEMBERSHIP, alertCtrl);
         createStage("Clanarina", pane, primaryStage).showAndWait();
 

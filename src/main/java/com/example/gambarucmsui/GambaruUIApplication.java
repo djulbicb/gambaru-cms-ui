@@ -25,7 +25,8 @@ public class GambaruUIApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-//        database();
+        setUpLiquibase();
+
         Thread.setDefaultUncaughtExceptionHandler(new GambaruUIAppGlobalExceptionHandler());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gambaru-header-switch.fxml"));
@@ -62,7 +63,7 @@ public class GambaruUIApplication extends Application {
         launch();
     }
 
-    public static void database() {
+    public static void setUpLiquibase() {
         try {
             System.out.println("Starting Liquibase...");
 

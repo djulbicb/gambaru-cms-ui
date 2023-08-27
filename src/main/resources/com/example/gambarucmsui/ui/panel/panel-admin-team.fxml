@@ -67,6 +67,11 @@
                   </Label>
                   <TableView fx:id="tableUser" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                      <columns>
+                        <TableColumn text="Barcode">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="barcodeId" />
+                           </cellValueFactory>
+                        </TableColumn>
                         <TableColumn text="Ime">
                            <cellValueFactory>
                               <PropertyValueFactory property="firstName" />

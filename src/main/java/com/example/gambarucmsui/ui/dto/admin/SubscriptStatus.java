@@ -36,7 +36,7 @@ public class SubscriptStatus {
 
     public String getEmoji() {
         if (color == Color.ORANGE) {
-            return ORANGE_EXCLAMATION;
+            return ORANGE_EXCLAMATION + " ";
         }
         if (color == Color.GREEN) {
             return GREEN_CHECKMARK;
