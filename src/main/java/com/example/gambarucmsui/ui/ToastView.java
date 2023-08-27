@@ -23,7 +23,7 @@ public class ToastView implements FxmlViewHandler {
         StackPane root = new StackPane(label);
         root.setPadding(new Insets(20));
 
-        showModal(root, 1100, 100);
+        showModal(root, 1500, 100);
     }
     public static void showModal(Node content, double durationMillis, double fadeDurationMillis) {
         Stage modalStage = new Stage();

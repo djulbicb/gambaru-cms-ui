@@ -19,9 +19,6 @@
 .text-field {
     -fx-prompt-text-fill: gray;
 }
-.text-field, .text-field:disabled {
-    -fx-font-size: 15px;
-}
 
 .button{
     -fx-focus-traversable: false;
