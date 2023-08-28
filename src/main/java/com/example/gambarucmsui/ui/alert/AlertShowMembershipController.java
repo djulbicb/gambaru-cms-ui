@@ -120,6 +120,11 @@ public class AlertShowMembershipController implements Initializable {
         LocalDate start = datePickStart.getValue();
         LocalDate end = datePickEnd.getValue();
 
+        if (start == null || end == null) {
+            lblMembershipError.setText("Izaberi datume.");
+            return;
+        }
+
         if (start != null && end != null) {
             if (start.isAfter(end)) {
                 lblMembershipError.setText("Početni datum ne može da bude posle krajnjeg.");
