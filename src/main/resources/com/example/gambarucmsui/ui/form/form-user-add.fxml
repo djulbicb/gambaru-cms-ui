@@ -109,6 +109,15 @@
                      </font>
                   </Label>
                   <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddPicture" text="DODAJ SLIKU" />
+                  <HBox>
+                     <children>
+                        <Label fx:id="lblErrPicture" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
                </children>
             </VBox>
          </children>

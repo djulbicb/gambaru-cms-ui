@@ -40,6 +40,7 @@ public class FormUserAddController implements Initializable {
     @FXML protected Label lblErrUserLastName;
     @FXML protected Label lblErrUserPhone;
     @FXML protected Label lblErrUserGender;
+    @FXML protected Label lblErrPicture;
     @FXML protected ComboBox<String> cmbUserGender;
     @FXML protected TextField txtUserFirstName;
     @FXML protected TextField txtUserLastName;
@@ -72,8 +73,6 @@ public class FormUserAddController implements Initializable {
 
         if (validate(firstNameStr, lastNameStr, phoneStr, genderStr)) {
             btnSave.setDisable(true);
-            btnClose.setDisable(true);
-
             PersonEntity.Gender gender = genderStr.equals("Muški") ? PersonEntity.Gender.MALE : PersonEntity.Gender.FEMALE;
             userSavePort.save(firstNameStr, lastNameStr, gender, phoneStr, outPictureData);
             close();
@@ -100,6 +99,11 @@ public class FormUserAddController implements Initializable {
         fileChooser.setTitle("Save Stack Trace");
         File file = fileChooser.showOpenDialog(null);
         if (file != null && file.exists()) {
+            lblErrPicture.setText("");
+            if (!file.getName().endsWith(".jpg") || !file.getName().endsWith(".png")) {
+                lblErrPicture.setText("Mogu samo jpg i png slike.");
+                return;
+            }
             outPictureData = Files.readAllBytes(file.toPath());
         }
 

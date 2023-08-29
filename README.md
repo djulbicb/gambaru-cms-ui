@@ -31,3 +31,7 @@ max_allowed_packet variable on the MySQL server. This variable controls the maxi
 SET GLOBAL max_allowed_packet = 524288000; -- Adjust the value as needed
 2. If there are a lot of users joined in multiple teams, its somehow truncating number of users that shows up on panel user.
 This was fixed with DISTINCT is UserLoadPort, but keep in mind
+
+CREATE USER 'gambaru'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'gambaru'@'localhost' WITH GRANT OPTION;
+CREATE DATABASE gambaru;
