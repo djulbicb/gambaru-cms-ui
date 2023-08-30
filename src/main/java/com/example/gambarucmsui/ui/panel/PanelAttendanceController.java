@@ -18,6 +18,7 @@ import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.FormBarcodeGetValid;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -30,6 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
+import static com.example.gambarucmsui.ui.dto.admin.SubscriptStatus.*;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.*;
@@ -64,11 +66,16 @@ public class PanelAttendanceController implements PanelHeader {
     @FXML
     public void initialize() {
         System.out.println("Attendance loaded");
+        configureTable();
 
         updatePagination(LocalDate.now());
         listPageForDate();
+    }
 
+    private void configureTable() {
+        table.getColumns().get(0).setCellFactory(createBarcodeCellFactory());
         stretchColumnsToEqualSize(table);
+
     }
 
     @Override

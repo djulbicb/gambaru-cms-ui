@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static com.example.gambarucmsui.ui.dto.admin.SubscriptStatus.GREEN_CHECKMARK;
+import static com.example.gambarucmsui.ui.dto.admin.SubscriptStatus.ORANGE_EXCLAMATION;
 import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.*;
 
@@ -92,9 +94,13 @@ public class PanelAdminTeamController implements PanelHeader {
             return row;
         });
 
+        tableUser.getColumns().get(0).setCellFactory(createBarcodeCellFactory());
+
         stretchColumnsToEqualSize(tableTeam);
         stretchColumnsToEqualSize(tableUser);
     }
+
+
 
     void loadTableTeam() {
         List<TeamDetail> teams = teamLoadPort.findAllActive().stream().map(en ->
