@@ -14,20 +14,26 @@
    <children>
       <HBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox prefWidth="600.0" HBox.hgrow="ALWAYS">
+            <VBox prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label maxHeight="1.7976931348623157E308" text="TIMOVI:" textFill="#fcfcfc">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
+                  <VBox>
+                     <children>
+                        <Label maxHeight="1.7976931348623157E308" text="TIMOVI:" textFill="#fcfcfc">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                        <HBox spacing="5.0">
+                           <children>
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addTeamForm" text="DODAJ TIM" HBox.hgrow="ALWAYS" />
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#updateTeamForm" text="IZMENI TIM" HBox.hgrow="ALWAYS" />
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#teamDeleteForm" text="OBRISI TIM" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
                   <TableView fx:id="tableTeam" prefHeight="200.0" prefWidth="400.0" VBox.vgrow="ALWAYS">
                      <columns>
-                        <TableColumn text="Tim ID">
-                           <cellValueFactory>
-                              <PropertyValueFactory property="teamId" />
-                           </cellValueFactory>
-                        </TableColumn>
                         <TableColumn text="Ime tima">
                            <cellValueFactory>
                               <PropertyValueFactory property="name" />
@@ -42,30 +48,25 @@
                   </TableView>
                </children>
             </VBox>
-            <VBox prefWidth="200.0" spacing="5.0" HBox.hgrow="ALWAYS">
+            <VBox prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
                   <VBox>
                      <children>
-                        <Label maxHeight="1.7976931348623157E308" text="AKCIJE:" textFill="#fcfcfc">
+                        <Label maxHeight="1.7976931348623157E308" text="ČLANOVI:" textFill="#fcfcfc">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Label>
-                        <VBox spacing="5.0">
+                        <HBox spacing="5.0">
                            <children>
-                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addTeamForm" text="DODAJ TIM" />
-                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#updateTeamForm" text="IZMENI TIM" />
-                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#teamDeleteForm" text="OBRISI TIM" />
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddAttendance" text="DODAJ DOLAZNOST" HBox.hgrow="ALWAYS" />
+                              <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPayNextMonth" text="PLATI NAREDNI MESEC" HBox.hgrow="ALWAYS" />
+                              <Button layoutX="157.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onShowSubscriptionDetails" text="ČLANARINA DETALJNO" HBox.hgrow="ALWAYS" />
                            </children>
-                        </VBox>
+                        </HBox>
                      </children>
                   </VBox>
-                  <Label maxHeight="1.7976931348623157E308" text="ČLANOVI TIMA:" textFill="#fcfcfc">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
-                  <TableView fx:id="tableUser" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="tableUser" VBox.vgrow="ALWAYS">
                      <columns>
                         <TableColumn text="Barcode">
                            <cellValueFactory>

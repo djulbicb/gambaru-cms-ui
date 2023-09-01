@@ -1,32 +1,41 @@
 package com.example.gambarucmsui.ui.panel;
 
+import com.example.gambarucmsui.common.Messages;
+import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.ValidatorResponse;
+import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.subscription.AddSubscriptionPort;
 import com.example.gambarucmsui.ports.interfaces.team.*;
 import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ports.interfaces.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.ui.alert.AlertShowMembershipController;
 import com.example.gambarucmsui.ui.dto.admin.SubscriptStatus;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
+import com.example.gambarucmsui.util.FormatUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.ui.dto.admin.SubscriptStatus.GREEN_CHECKMARK;
 import static com.example.gambarucmsui.ui.dto.admin.SubscriptStatus.ORANGE_EXCLAMATION;
+import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.*;
 
@@ -40,6 +49,7 @@ public class PanelAdminTeamController implements PanelHeader {
     private final UserSavePort userSavePort;
     private final TeamDeletePort teamDeletePort;
     private final UserUpdatePort userUpdatePort;
+    private final AddSubscriptionPort addSubscriptionPort;
     private final TeamSavePort teamSavePort;
     private final TeamLoadPort teamLoadPort;
     private final UserLoadPort userLoadPort;
@@ -47,6 +57,7 @@ public class PanelAdminTeamController implements PanelHeader {
     private final TeamUpdatePort teamUpdatePort;
     private final BarcodeLoadPort barcodeLoadPort;
     private final BarcodeUpdatePort barcodeUpdatePort;
+    private final AttendanceAddForUserPort attendanceAddForUserPort;
 
     public PanelAdminTeamController(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -59,8 +70,9 @@ public class PanelAdminTeamController implements PanelHeader {
         barcodeUpdatePort = Container.getBean(BarcodeUpdatePort.class);
         userLoadPort = Container.getBean(UserLoadPort.class);
         teamDeletePort = Container.getBean(TeamDeletePort.class);
-
         teamIfExists = Container.getBean(TeamIfExists.class);
+        attendanceAddForUserPort = Container.getBean(AttendanceAddForUserPort.class);
+        addSubscriptionPort = Container.getBean(AddSubscriptionPort.class);
     }
 
     @FXML
@@ -82,14 +94,7 @@ public class PanelAdminTeamController implements PanelHeader {
                 if (team == null) {
                     return;
                 }
-                TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
-                if (selectedItem != null) {
-                    List<UserDetail> collect = userLoadPort.findActiveUsersByTeamId(selectedItem.getTeamId()).stream().map(o -> {
-                        SubscriptStatus status = o.getSubscription().getStatus(LocalDate.now());
-                        return UserDetail.fromEntityToFull(o, LocalDate.now());
-                    }).collect(Collectors.toList());
-                    tableUser.getItems().setAll(collect);
-                }
+                loadUserTeam();
             });
             return row;
         });
@@ -100,6 +105,16 @@ public class PanelAdminTeamController implements PanelHeader {
         stretchColumnsToEqualSize(tableUser);
     }
 
+    private void loadUserTeam() {
+        TeamDetail selectedItem = tableTeam.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            List<UserDetail> collect = userLoadPort.findActiveUsersByTeamId(selectedItem.getTeamId()).stream().map(o -> {
+                SubscriptStatus status = o.getSubscription().getStatus(LocalDate.now());
+                return UserDetail.fromEntityToFull(o, LocalDate.now());
+            }).collect(Collectors.toList());
+            tableUser.getItems().setAll(collect);
+        }
+    }
 
 
     void loadTableTeam() {
@@ -173,5 +188,54 @@ public class PanelAdminTeamController implements PanelHeader {
             ToastView.showModal(res.getMessage());
             loadTableTeam();
         }
+    }
+
+    @FXML
+    void onAddAttendance(MouseEvent event) {
+        UserDetail selectedItem = tableUser.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Izaberi unos iz tabele pa onda klikni.");
+            return;
+        }
+
+        ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(parseBarcodeStr(selectedItem.getBarcodeId()), LocalDateTime.now());
+        if (res.isOk()) {
+            ToastView.showModal(Messages.ATTENDANCE_ADDED);
+        } else {
+            ToastView.showModal(res.getMessage());
+        }
+    }
+
+    @FXML
+    void onPayNextMonth(MouseEvent event) {
+        UserDetail selectedItem = tableUser.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Selektuj red");
+            return;
+        }
+
+        ValidatorResponse res = addSubscriptionPort.addNextMonthSubscription(selectedItem.getBarcodeId());
+        if (res.isOk()) {
+            ToastView.showModal(res.getMessage());
+            loadUserTeam();
+        } else {
+            ToastView.showModal(Messages.ERROR_ADDING_SUBSCRIPTION);
+        }
+    }
+
+    @FXML
+    void onShowSubscriptionDetails(MouseEvent event) {
+        UserDetail selectedItem = tableUser.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Izaberi unos iz tabele pa onda klikni.");
+            return;
+        }
+
+        BarcodeEntity barcode = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcodeId())).get();
+        AlertShowMembershipController alertCtrl = new AlertShowMembershipController(barcode, LocalDateTime.now());
+        Pane pane = loadFxml(ALERT_SHOW_MEMBERSHIP, alertCtrl);
+        createStage("Članarina", pane, primaryStage).showAndWait();
+
+        loadUserTeam();
     }
 }

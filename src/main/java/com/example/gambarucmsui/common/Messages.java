@@ -19,6 +19,8 @@ public class Messages {
     public static final String BARCODE_IS_NULL = "Upiši barkod.";
     public static final String FREE_OF_CHARGE = "Besplatno";
     public static final String MEMBERSHIP_NO_PAYMENT = "Nema uplata.";
+    public static final String ATTENDANCE_ADDED = "Registrovan dolazak.";
+    public static final String ERROR_ADDING_SUBSCRIPTION = "Došlo do greške tokom dodavanja članarine";
 
     public final static String TEAM_IS_DELETED (String teamName) {
         return String.format("Tim %s je obrisan", teamName);

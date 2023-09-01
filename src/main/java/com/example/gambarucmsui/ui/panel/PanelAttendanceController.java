@@ -160,27 +160,12 @@ public class PanelAttendanceController implements PanelHeader {
             return;
         }
 
-        Optional<BarcodeEntity> byId = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcodeId()));
-        if (byId.isPresent()) {
-            BarcodeEntity barcode = byId.get();
-            SubscriptionEntity subscription = barcode.getSubscription();
-
-            LocalDate start = subscription.getStartDate();
-            LocalDate end = subscription.getEndDate();
-
-            if (start == null) {
-                start = LocalDate.now();
-            }
-            if (end == null) {
-                end = start.plusMonths(1);
-            } else {
-                end = end.plusMonths(1);
-            }
-
-            updateSubscriptionPort.updateSubsscription(barcode.getBarcodeId(),subscription.isFreeOfCharge(), start, end);
+        ValidatorResponse res = addSubscriptionPort.addNextMonthSubscription(selectedItem.getBarcodeId());
+        if (res.isOk()) {
+            ToastView.showModal(res.getMessage());
             listPageForDate();
-
-            ToastView.showModal(Messages.MEMBERSHIP_PAYMENT_ADDED(selectedItem.getFirstName(), selectedItem.getLastName()));
+        } else {
+            ToastView.showModal(Messages.ERROR_ADDING_SUBSCRIPTION);
         }
     }
     @FXML
@@ -194,7 +179,7 @@ public class PanelAttendanceController implements PanelHeader {
         BarcodeEntity barcode = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcodeId())).get();
         AlertShowMembershipController alertCtrl = new AlertShowMembershipController(barcode, LocalDateTime.now());
         Pane pane = loadFxml(ALERT_SHOW_MEMBERSHIP, alertCtrl);
-        createStage("Clanarina", pane, primaryStage).showAndWait();
+        createStage("Članarina", pane, primaryStage).showAndWait();
 
         listPageForDate();
     }

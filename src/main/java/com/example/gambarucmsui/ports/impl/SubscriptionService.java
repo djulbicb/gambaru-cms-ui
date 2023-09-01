@@ -1,19 +1,24 @@
 package com.example.gambarucmsui.ports.impl;
 
+import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.database.entity.SubscriptionEntity;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.database.repo.SubscriptionRepository;
+import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.subscription.AddSubscriptionPort;
 import com.example.gambarucmsui.ports.interfaces.subscription.SubscriptionLoadPort;
 import com.example.gambarucmsui.ports.interfaces.subscription.SubscriptionPurgePort;
 import com.example.gambarucmsui.ports.interfaces.subscription.UpdateSubscriptionPort;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Optional;
 
 import static com.example.gambarucmsui.common.Props.FUTURE;
 import static com.example.gambarucmsui.common.Props.PAST;
+import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class SubscriptionService implements AddSubscriptionPort, UpdateSubscriptionPort, SubscriptionLoadPort, SubscriptionPurgePort {
 
@@ -96,6 +101,34 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
             return Optional.of(saved);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public ValidatorResponse addNextMonthSubscription(String barcodeId) {
+        Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(barcodeId));
+        if (byId.isPresent()) {
+            BarcodeEntity barcode = byId.get();
+            SubscriptionEntity subscription = barcode.getSubscription();
+
+            LocalDate start = subscription.getStartDate();
+            LocalDate end = subscription.getEndDate();
+
+            if (start == null) {
+                start = LocalDate.now();
+            }
+            if (end == null) {
+                end = start.plusMonths(1);
+            } else {
+                end = end.plusMonths(1);
+            }
+
+            updateSubsscription(barcode.getBarcodeId(),subscription.isFreeOfCharge(), start, end);
+
+            PersonEntity person = barcode.getPerson();
+            return new ValidatorResponse(Messages.MEMBERSHIP_PAYMENT_ADDED(person.getFirstName(), person.getLastName()));
+        }
+        HashMap<String, String> errors = new HashMap<>();
+        return new ValidatorResponse(errors);
     }
 }
 //
