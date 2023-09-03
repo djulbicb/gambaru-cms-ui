@@ -35,3 +35,10 @@ This was fixed with DISTINCT is UserLoadPort, but keep in mind
 CREATE USER 'gambaru'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON *.* TO 'gambaru'@'localhost' WITH GRANT OPTION;
 CREATE DATABASE gambaru;
+
+# INSTALL
+/etc/mysql/my.ini
+C:\wamp64\bin\mysql\mysql{version}\my.ini
+
+[mysqld]
+max_allowed_packet=32M

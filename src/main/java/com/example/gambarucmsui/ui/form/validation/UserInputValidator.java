@@ -8,8 +8,13 @@ public class UserInputValidator {
         return lastName!= null && !lastName.isBlank();
     }
     public boolean isValidPhone(String phone) {
-        if (phone == null || phone.isBlank()) {
+        if (phone == null) {
             return false;
+        }
+
+        // accepts empty phone
+        if (phone.isBlank()) {
+            return true;
         }
 
         return phone.matches("[\\d+-/]+");

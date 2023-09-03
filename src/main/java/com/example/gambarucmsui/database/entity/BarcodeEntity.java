@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+import org.hibernate.annotations.Index;
 @Entity
 @Table(name = "barcode")
 public class BarcodeEntity {
@@ -27,6 +27,7 @@ public class BarcodeEntity {
     private PersonEntity person;
     @ManyToOne
     @JoinColumn(name = "team_id")
+    @Index(name = "idx_barcode_team")
     private TeamEntity team;
     @OneToOne(mappedBy = "barcode",cascade = CascadeType.ALL, orphanRemoval = true)
     private SubscriptionEntity subscription;

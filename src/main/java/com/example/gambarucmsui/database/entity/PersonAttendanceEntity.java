@@ -2,6 +2,7 @@ package com.example.gambarucmsui.database.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.Index;
 
 @Entity
 @Table(name = "person_attendance")
@@ -16,6 +17,7 @@ public class PersonAttendanceEntity {
     private BarcodeEntity barcode;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Index(name = "idx_attendance_timestamp")
     private LocalDateTime timestamp;
 
     public PersonAttendanceEntity() {

@@ -66,7 +66,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
         Map<String, String > errors = new HashMap<>();
         PersonEntity user = userRepo.save(new PersonEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
         if (pictureData != null) {
-            ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 300);
+            ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 400);
             PersonPictureEntity picture = userPictureRepo.save(new PersonPictureEntity(byteArrayInputStream.readAllBytes(), user));
             user.setPicture(picture);
         }
@@ -96,7 +96,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
             user.setPhone(phone);
 
             if (pictureData != null) {
-                ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 300);
+                ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 400);
 
                 if (user.getPicture() == null) {
                     PersonPictureEntity picture = userPictureRepo.save(new PersonPictureEntity(byteArrayInputStream.readAllBytes(), user));

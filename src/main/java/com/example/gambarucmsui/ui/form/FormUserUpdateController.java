@@ -45,7 +45,7 @@ public class FormUserUpdateController implements Initializable {
     @FXML private TextField txtUserFirstName;
     @FXML private TextField txtUserLastName;
     @FXML private TextField txtUserPhone;
-
+    @FXML protected Label lblErrPicture;
     public FormUserUpdateController(Long userId) {
         this.userUpdatePort = Container.getBean(UserUpdatePort.class);
         this.userLoadPort = Container.getBean(UserLoadPort.class);
@@ -59,7 +59,7 @@ public class FormUserUpdateController implements Initializable {
     private String outLastName;
     private String outPhone;
     private PersonEntity.Gender outGender;
-    private byte[] pictureData;
+    private byte[] outPictureData;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -94,7 +94,7 @@ public class FormUserUpdateController implements Initializable {
 
         if (validate(firstNameStr, lastNameStr, phoneStr, genderStr)) {
             PersonEntity.Gender gender = genderStr.equals("Muški") ? PersonEntity.Gender.MALE : PersonEntity.Gender.FEMALE;
-            userUpdatePort.update(userId, firstNameStr, lastNameStr, gender, phoneStr, pictureData);
+            userUpdatePort.update(userId, firstNameStr, lastNameStr, gender, phoneStr, outPictureData);
             close();
         }
     }
@@ -143,7 +143,14 @@ public class FormUserUpdateController implements Initializable {
         fileChooser.setTitle("Save Stack Trace");
         File file = fileChooser.showOpenDialog(null);
         if (file != null && file.exists()) {
-            pictureData = Files.readAllBytes(file.toPath());
+            lblErrPicture.setText("");
+
+            boolean isImage = file.getName().endsWith(".jpg") || file.getName().endsWith(".png");
+            if (!isImage) {
+                lblErrPicture.setText("Mogu samo jpg i png slike.");
+                return;
+            }
+            outPictureData = Files.readAllBytes(file.toPath());
         }
     }
 }

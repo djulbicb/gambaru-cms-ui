@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserAttendanceRepository extends Repository<PersonAttendanceEntity> {
@@ -25,15 +26,28 @@ public class UserAttendanceRepository extends Repository<PersonAttendanceEntity>
     }
 
     public List<PersonAttendanceEntity> findAllForAttendanceDate(LocalDate forDate) {
-        String fetchBarcodesFromAttendanceQuery = "SELECT ua FROM PersonAttendanceEntity ua WHERE DATE(ua.timestamp) = :date ORDER BY ua.timestamp DESC";
-        TypedQuery<PersonAttendanceEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, PersonAttendanceEntity.class);
-        subquery.setParameter("date", forDate);
+        LocalDateTime startOfDay = forDate.atStartOfDay();
+        LocalDateTime endOfDay = forDate.plusDays(1).atStartOfDay();
 
-//        List<Object[]> barcodeEntitiesWithTimestamp = subquery.getResultList();
-//        List<BarcodeWithAttendance> wrappers = barcodeEntitiesWithTimestamp.stream()
-//                .map(arr -> new BarcodeWithAttendance((BarcodeEntity) arr[0], (PersonAttendanceEntity) arr[1]))
-//                .collect(Collectors.toList());
+        String fetchBarcodesFromAttendanceQuery = "SELECT ua FROM PersonAttendanceEntity ua WHERE ua.timestamp >= :startOfDay AND ua.timestamp < :endOfDay ORDER BY ua.timestamp DESC";
+        TypedQuery<PersonAttendanceEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, PersonAttendanceEntity.class);
+        subquery.setParameter("startOfDay", startOfDay);
+        subquery.setParameter("endOfDay", endOfDay);
 
         return subquery.getResultList();
     }
+
+
+//    public List<PersonAttendanceEntity> findAllForAttendanceDate(LocalDate forDate) {
+//        String fetchBarcodesFromAttendanceQuery = "SELECT ua FROM PersonAttendanceEntity ua WHERE DATE(ua.timestamp) = :date ORDER BY ua.timestamp DESC";
+//        TypedQuery<PersonAttendanceEntity> subquery = entityManager.createQuery(fetchBarcodesFromAttendanceQuery, PersonAttendanceEntity.class);
+//        subquery.setParameter("date", forDate);
+//
+////        List<Object[]> barcodeEntitiesWithTimestamp = subquery.getResultList();
+////        List<BarcodeWithAttendance> wrappers = barcodeEntitiesWithTimestamp.stream()
+////                .map(arr -> new BarcodeWithAttendance((BarcodeEntity) arr[0], (PersonAttendanceEntity) arr[1]))
+////                .collect(Collectors.toList());
+//
+//        return subquery.getResultList();
+//    }
 }

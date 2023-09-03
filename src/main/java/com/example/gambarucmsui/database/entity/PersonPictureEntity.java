@@ -18,7 +18,7 @@ public class PersonPictureEntity {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "picture_data", columnDefinition = "BLOB")
+    @Column(name = "picture_data", columnDefinition = "LONGBLOB")
     private byte[] pictureData;
 
     @OneToOne
