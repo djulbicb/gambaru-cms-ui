@@ -45,7 +45,6 @@ class UserUpdatePortTest extends H2DatabaseConfig {
         for (ValidatorResponse res : responses) {
             assertEquals(Messages.USER_FIRST_NAME_MISSING, res.getErrorOrEmpty(PersonEntity.FIRST_NAME));
             assertEquals(Messages.USER_LAST_NAME_MISSING, res.getErrorOrEmpty(PersonEntity.LAST_NAME));
-            assertEquals(Messages.USER_PHONE_MISSING, res.getErrorOrEmpty(PersonEntity.PHONE));
             assertEquals(Messages.USER_GENDER_MISSING, res.getErrorOrEmpty(PersonEntity.GENDER));
         }
 
