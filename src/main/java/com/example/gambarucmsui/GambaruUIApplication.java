@@ -25,7 +25,7 @@ public class GambaruUIApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-//        setUpLiquibase();
+        setUpLiquibase();
 
         Thread.setDefaultUncaughtExceptionHandler(new GambaruUIAppGlobalExceptionHandler());
 

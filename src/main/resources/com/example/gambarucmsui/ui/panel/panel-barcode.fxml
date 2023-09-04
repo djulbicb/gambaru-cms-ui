@@ -14,27 +14,52 @@
    <children>
       <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox spacing="5.0" VBox.vgrow="ALWAYS">
+            <VBox fx:id="content" spacing="5.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox fx:id="content" spacing="5.0" HBox.hgrow="ALWAYS">
+                  <Label maxHeight="1.7976931348623157E308" text="UPISI BROJEVE BARCODOVA" textFill="#fcfcfc">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <TextArea fx:id="txtBarcodes" maxHeight="1.7976931348623157E308" prefHeight="500.0" promptText="123,456,789,11112" wrapText="true" VBox.vgrow="ALWAYS" />
+                  <HBox spacing="5.0">
                      <children>
-                        <Label maxHeight="1.7976931348623157E308" text="UPISI BROJEVE BARCODOVA" textFill="#fcfcfc">
-                           <font>
-                              <Font size="10.0" />
-                           </font>
-                        </Label>
-                        <TextArea fx:id="txtBarcodes" maxHeight="1.7976931348623157E308" promptText="123,456,789,11112" wrapText="true" VBox.vgrow="ALWAYS" />
-                        <HBox spacing="5.0">
+                        <VBox>
                            <children>
-                              <Button fx:id="btnFetchNewBarcodes" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#fetchNewBarcodes" text="UCITAJ NOVE" />
-                              <Button fx:id="btnFetchBarcodes" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#fetchBarcodes" text="UCITAJ NEISKORISTENE" />
-                              <Button fx:id="savePdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#printBarcodesToPdf" text="SACUVAJ PDF" />
+                              <Label maxHeight="1.7976931348623157E308" text="KREIRANJE NOVIH BARKODOVA" textFill="#fcfcfc">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
+                              <HBox spacing="5.0">
+                                 <children>
+                                    <TextField fx:id="txtBarcodeCount" maxHeight="1.7976931348623157E308" prefWidth="80.0" text="100" />
+                                    <Button fx:id="btnFetchNewBarcodes" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#fetchNewBarcodes" text="UCITAJ NOVE" />
+                                 </children>
+                              </HBox>
                            </children>
-                        </HBox>
+                        </VBox>
+                        <Separator maxHeight="50.0" orientation="VERTICAL" prefHeight="50.0" />
+                        <VBox HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label maxHeight="1.7976931348623157E308" text="KREIRANJE PDF" textFill="#fcfcfc">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
+                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Button fx:id="btnFetchBarcodes" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#fetchBarcodes" text="UCITAJ NEISKORISTENE" />
+                                    <Button fx:id="savePdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#printBarcodesToPdf" text="SACUVAJ PDF" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
                      </children>
-                  </VBox>
+                  </HBox>
                </children>
-            </HBox>
+            </VBox>
+            <VBox />
             <VBox>
                <children>
                   <Separator />

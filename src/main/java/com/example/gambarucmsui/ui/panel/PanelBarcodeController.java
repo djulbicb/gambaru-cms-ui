@@ -72,14 +72,11 @@ public class PanelBarcodeController implements PanelHeader {
         this.barcodeFetchOrGeneratePort = Container.getBean(BarcodeFetchOrGeneratePort.class);
     }
 
-    @FXML
-    private Button savePdf;
-    @FXML
-    private TextArea txtBarcodes;
-    @FXML
-    private Button btnFetchBarcodes;
-    @FXML
-    private Button btnFetchNewBarcodes;
+    @FXML private Button savePdf;
+    @FXML private TextArea txtBarcodes;
+    @FXML private TextField txtBarcodeCount;
+    @FXML private Button btnFetchBarcodes;
+    @FXML private Button btnFetchNewBarcodes;
 
     @FXML
     public void initialize() {
@@ -110,6 +107,19 @@ public class PanelBarcodeController implements PanelHeader {
     @FXML
     private void fetchNewBarcodes() {
         System.out.println("Adding attendance");
+
+        String countStr = txtBarcodeCount.getText();
+        if (!isLong(countStr)) {
+            ToastView.showModal("Upiši koliko barkodova da se kreira");
+            return;
+        }
+
+        Long count = Long.valueOf(countStr);
+        if (count < 1 || count > 1000) {
+            ToastView.showModal("Upiši broj između 1 i 1000.");
+            return;
+        }
+
         showAlertDialog("Dodavanje ljudi", "Sačekaj...");
 
         Task<Void> task = new Task<Void>() {
