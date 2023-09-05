@@ -156,6 +156,9 @@ public class PanelBarcodeController implements PanelHeader {
         List<BarcodeView> views = new ArrayList<>();
         List<Long> collect = new ArrayList<>();
         for (String barcode : txtBarcodes.getText().split(",")) {
+            if (barcode == null || barcode.isBlank()) {
+                continue;
+            }
             if (!isLong(barcode.trim())) {
                 ToastView.showModal(String.format("Ovo nije broj %s. Akcija je prekinuta", barcode.trim()));
                 return;
@@ -177,7 +180,14 @@ public class PanelBarcodeController implements PanelHeader {
 
 
         byte[] bytes = PDFGenerator.generatePDF(views);
-        Files.write(Path.of(file.getAbsolutePath()), bytes, StandardOpenOption.CREATE);
+        String path = file.getAbsolutePath();
+
+        if (!file.getName().endsWith(".pdf")) {
+            path += path + ".pdf";
+        }
+
+
+        Files.write(Path.of(path), bytes, StandardOpenOption.CREATE);
     }
     //  GENERATE RANDOM
     ////////////////////////////////////////////////////////
