@@ -84,4 +84,13 @@ public class FormatUtil {
     private static Locale serbianLocale() {
         return new Locale("sr", "RS", "latin");
     }
+
+    public static boolean isInteger(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
+    }
 }

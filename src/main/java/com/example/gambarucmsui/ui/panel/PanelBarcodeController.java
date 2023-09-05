@@ -11,6 +11,7 @@ import com.example.gambarucmsui.ports.interfaces.user.UserAddToTeamPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.util.FormatUtil;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
 import com.example.gambarucmsui.util.generators.BarcodeView;
 import com.example.gambarucmsui.util.generators.PDFGenerator;
@@ -109,12 +110,12 @@ public class PanelBarcodeController implements PanelHeader {
         System.out.println("Adding attendance");
 
         String countStr = txtBarcodeCount.getText();
-        if (!isLong(countStr)) {
+        if (!FormatUtil.isInteger(countStr)) {
             ToastView.showModal("Upiši koliko barkodova da se kreira");
             return;
         }
 
-        Long count = Long.valueOf(countStr);
+        Integer count = Integer.valueOf(countStr);
         if (count < 1 || count > 1000) {
             ToastView.showModal("Upiši broj između 1 i 1000.");
             return;
