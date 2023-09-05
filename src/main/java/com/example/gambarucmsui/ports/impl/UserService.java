@@ -184,12 +184,12 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
         }
 
         if (!teamVal.isTeamNameValid(teamName)) {
-            errors.put("teamName", Messages.TEAM_NAME_NOT_VALID);
+            errors.put(TeamEntity.TEAM_NAME, Messages.TEAM_NAME_NOT_VALID);
             return new ValidatorResponse(errors);
         }
 
         if (isUserAlreadyInThisTeam(userId, teamName)) {
-            errors.put("teamName", "Selektovani polaznik je već u tom timu.");
+            errors.put(TeamEntity.TEAM_NAME, "Selektovani polaznik je već u tom timu.");
             return new ValidatorResponse(errors);
         }
 

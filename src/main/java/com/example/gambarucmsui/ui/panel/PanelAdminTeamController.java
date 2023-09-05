@@ -210,7 +210,7 @@ public class PanelAdminTeamController implements PanelHeader {
     void onPayNextMonth(MouseEvent event) {
         UserDetail selectedItem = tableUser.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
-            ToastView.showModal("Selektuj red");
+            ToastView.showModal("Izaberi unos iz tabele pa onda klikni.");
             return;
         }
 

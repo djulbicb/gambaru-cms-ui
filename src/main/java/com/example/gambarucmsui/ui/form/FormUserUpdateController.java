@@ -145,7 +145,7 @@ public class FormUserUpdateController implements Initializable {
         if (file != null && file.exists()) {
             lblErrPicture.setText("");
 
-            boolean isImage = file.getName().endsWith(".jpg") || file.getName().endsWith(".png");
+            boolean isImage = file.getName().endsWith(".jpg") || file.getName().endsWith(".png") || file.getName().endsWith(".jpeg");
             if (!isImage) {
                 lblErrPicture.setText("Mogu samo jpg i png slike.");
                 return;
