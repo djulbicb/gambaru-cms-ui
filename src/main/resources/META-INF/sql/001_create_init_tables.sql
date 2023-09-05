@@ -51,7 +51,7 @@ CREATE TABLE `person_attendance` (
 
 CREATE TABLE `person_picture` (
   `picture_id` bigint(20) NOT NULL,
-  `picture_data` blob,
+  `picture_data` longblob,
   `person_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -91,8 +91,8 @@ CREATE TABLE `team` (
 --
 ALTER TABLE `barcode`
   ADD PRIMARY KEY (`barcode_id`),
-  ADD KEY `fk_barcode_id_person_id` (`person_id`),
-  ADD KEY `fk_barcode_id_team_id` (`team_id`);
+  ADD KEY `idx_barcode_team` (`team_id`),
+  ADD KEY `fk_barcode_person` (`person_id`);
 
 --
 -- Indexes for table `person`
@@ -105,21 +105,22 @@ ALTER TABLE `person`
 --
 ALTER TABLE `person_attendance`
   ADD PRIMARY KEY (`attendance_id`),
-  ADD KEY `fk_attendance_id_barcode_id` (`barcode_id`);
+  ADD KEY `idx_attendance_timestamp` (`timestamp`),
+  ADD KEY `fk_person_attendance_barcode` (`barcode_id`);
 
 --
 -- Indexes for table `person_picture`
 --
 ALTER TABLE `person_picture`
   ADD PRIMARY KEY (`picture_id`),
-  ADD UNIQUE KEY `unq_picture_id_person_id` (`person_id`);
+  ADD UNIQUE KEY `UNQ_PERSON_PICTURE_PERSON` (`person_id`);
 
 --
 -- Indexes for table `subscription`
 --
 ALTER TABLE `subscription`
   ADD PRIMARY KEY (`subscription_id`),
-  ADD UNIQUE KEY `unq_subscription_id_barcode_id` (`barcode_id`);
+  ADD UNIQUE KEY `UNQ_SUBSCRIPTION_BARCODE` (`barcode_id`);
 
 --
 -- Indexes for table `team`
@@ -175,24 +176,24 @@ ALTER TABLE `team`
 -- Constraints for table `barcode`
 --
 ALTER TABLE `barcode`
-  ADD CONSTRAINT `fk_barcode_id_person_id` FOREIGN KEY (`person_id`) REFERENCES `person` (`person_id`),
-  ADD CONSTRAINT `fk_barcode_id_team_id` FOREIGN KEY (`team_id`) REFERENCES `team` (`team_id`);
+  ADD CONSTRAINT `fk_barcode_person` FOREIGN KEY (`person_id`) REFERENCES `person` (`person_id`),
+  ADD CONSTRAINT `fk_barcode_team` FOREIGN KEY (`team_id`) REFERENCES `team` (`team_id`);
 
 --
 -- Constraints for table `person_attendance`
 --
 ALTER TABLE `person_attendance`
-  ADD CONSTRAINT `fk_attendance_id_barcode_id` FOREIGN KEY (`barcode_id`) REFERENCES `barcode` (`barcode_id`);
+  ADD CONSTRAINT `fk_person_attendance_barcode` FOREIGN KEY (`barcode_id`) REFERENCES `barcode` (`barcode_id`);
 
 --
 -- Constraints for table `person_picture`
 --
 ALTER TABLE `person_picture`
-  ADD CONSTRAINT `fk_person_unq_picture_id_person_id` FOREIGN KEY (`person_id`) REFERENCES `person` (`person_id`);
+  ADD CONSTRAINT `fk_person_picture_person` FOREIGN KEY (`person_id`) REFERENCES `person` (`person_id`);
 
 --
 -- Constraints for table `subscription`
 --
 ALTER TABLE `subscription`
-  ADD CONSTRAINT `fk_subscription_id_person_id` FOREIGN KEY (`barcode_id`) REFERENCES `barcode` (`barcode_id`);
+  ADD CONSTRAINT `fk_subscription_barcode` FOREIGN KEY (`barcode_id`) REFERENCES `barcode` (`barcode_id`);
 COMMIT;
