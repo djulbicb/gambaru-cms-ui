@@ -125,7 +125,7 @@ public class PanelBarcodeController implements PanelHeader {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                List<BarcodeEntity> barcodeEntities = barcodeFetchOrGeneratePort.generateNewBarcodes(100);
+                List<BarcodeEntity> barcodeEntities = barcodeFetchOrGeneratePort.generateNewBarcodes(count);
                 List<Long> ids = barcodeEntities.stream().map(barcodeEntity -> barcodeEntity.getBarcodeId()).collect(Collectors.toList());
                 String csv = listToCsv(ids);
                 txtBarcodes.setText(csv);
