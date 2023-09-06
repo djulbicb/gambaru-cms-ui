@@ -5,6 +5,7 @@ import com.example.gambarucmsui.database.entity.PersonEntity;
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.subscription.UpdateSubscriptionPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserPictureLoad;
+import com.example.gambarucmsui.util.factory.DatePickerStringConverter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -62,6 +63,9 @@ public class AlertShowMembershipController implements Initializable {
         datePickEnd.setValue(end);
 
         changeDisableOfMembershipPane(barcode.getSubscription().isFreeOfCharge());
+
+        datePickStart.setConverter(new DatePickerStringConverter());
+        datePickEnd.setConverter(new DatePickerStringConverter());
     }
 
     @FXML

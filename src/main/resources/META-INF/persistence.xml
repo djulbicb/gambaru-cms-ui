@@ -13,13 +13,13 @@
         <class>com.example.gambarucmsui.database.entity.PersonPictureEntity</class>
 
         <properties>
-            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
-            <property name="jakarta.persistence.jdbc.url"    value="jdbc:mysql://localhost:3306/gambaru" />
-            <property name="jakarta.persistence.jdbc.user"   value="gambaru" />
-            <property name="jakarta.persistence.jdbc.password" value="password" />
-
+<!--            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />-->
+<!--            <property name="jakarta.persistence.jdbc.url"    value="jdbc:mysql://localhost:3306/gambaru" />-->
+<!--            <property name="jakarta.persistence.jdbc.user"   value="gambaru" />-->
+<!--            <property name="jakarta.persistence.jdbc.password" value="password" />-->
 <!--            <property name="hibernate.show_sql" value="true"/>-->
 <!--            <property name="hibernate.format_sql" value="true"/>-->
+
 
             <!-- Generate the database schema by entity manager system -->
 <!--            <property name="javax.persistence.schema-generation.database.action" value="update"/>-->

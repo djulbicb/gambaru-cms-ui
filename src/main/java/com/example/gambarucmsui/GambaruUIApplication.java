@@ -67,11 +67,13 @@ public class GambaruUIApplication extends Application {
         try {
             System.out.println("Starting Liquibase...");
 
+            EnvProps props = EnvProps.getInstance();
+
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/gambaru",
-                    "gambaru",
-                    "password");
+                    props.getJdbcUrl(),
+                    props.getJdbcUsername(),
+                    props.getJdbcPassword());
 
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 

@@ -14,6 +14,7 @@ import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserSavePort;
 import com.example.gambarucmsui.ports.interfaces.user.UserUpdatePort;
 import com.example.gambarucmsui.ui.ToastView;
+import com.example.gambarucmsui.ui.alert.AlertShowAttendanceController;
 import com.example.gambarucmsui.ui.alert.AlertShowMembershipController;
 import com.example.gambarucmsui.ui.dto.admin.SubscriptStatus;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
@@ -198,9 +199,15 @@ public class PanelAdminTeamController implements PanelHeader {
             return;
         }
 
-        ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(parseBarcodeStr(selectedItem.getBarcodeId()), LocalDateTime.now());
+        Long barcode = parseBarcodeStr(selectedItem.getBarcodeId());
+        ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcode, LocalDateTime.now());
         if (res.isOk()) {
-            ToastView.showModal(Messages.ATTENDANCE_ADDED);
+            BarcodeEntity en = barcodeLoadPort.findById(barcode).get();
+            attendanceAddForUserPort.validateAndAddAttendance(en.getBarcodeId(), LocalDateTime.now());
+
+            AlertShowAttendanceController alertCtrl = new AlertShowAttendanceController(en, LocalDate.now());
+            Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, alertCtrl);
+            ToastView.showModal(pane, 4000, 200);
         } else {
             ToastView.showModal(res.getMessage());
         }

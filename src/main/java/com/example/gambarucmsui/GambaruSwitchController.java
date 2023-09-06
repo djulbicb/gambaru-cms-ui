@@ -2,6 +2,7 @@ package com.example.gambarucmsui;
 
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ui.panel.*;
+import com.example.gambarucmsui.util.DataUtil;
 import com.example.gambarucmsui.util.PathUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -15,7 +16,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 import static com.example.gambarucmsui.util.LayoutUtil.stretchInsideAnchorPance;
 
@@ -92,10 +95,13 @@ public class GambaruSwitchController implements FxmlViewHandler {
         }
     }
 
-    void loadEntityManagementSystem() {
+    void loadEntityManagementSystem() throws IOException {
         System.out.println("Entity Managment starting.");
+
+        EnvProps props = EnvProps.getInstance();
+
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("gambaru-entity-manager");
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("gambaru-entity-manager", props.getProps());
             EntityManager entityManager = emf.createEntityManager();
 
             Container.initBeans(entityManager);
