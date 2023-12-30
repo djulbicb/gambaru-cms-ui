@@ -62,6 +62,7 @@
                               <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddAttendance" text="DODAJ DOLAZNOST" HBox.hgrow="ALWAYS" />
                               <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPayNextMonth" text="PLATI NAREDNI MESEC" HBox.hgrow="ALWAYS" />
                               <Button layoutX="157.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onShowSubscriptionDetails" text="ČLANARINA DETALJNO" HBox.hgrow="ALWAYS" />
+                              <Button layoutX="406.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPrintBarcodeAsPic" text="BARKOD SLIKA" />
                            </children>
                         </HBox>
                      </children>

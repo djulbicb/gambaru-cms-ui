@@ -12,6 +12,7 @@ module com.example.gambarucmsui {
     requires com.google.zxing;
     requires itextpdf;
     requires liquibase.core;
+    requires org.apache.pdfbox;
 
     opens com.example.gambarucmsui to javafx.fxml;
     opens com.example.gambarucmsui.database.entity to org.hibernate.orm.core;

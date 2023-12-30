@@ -12,6 +12,7 @@ import java.util.List;
 public class PDFGenerator {
     public static byte[] generatePDF(List<BarcodeView> images) {
         Document document = new Document();
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             PdfWriter.getInstance(document, outputStream);

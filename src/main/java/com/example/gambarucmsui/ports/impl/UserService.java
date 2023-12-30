@@ -109,10 +109,10 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
 
             }
 
-            if (pictureData != null) {
-
-                user.getPicture().setPictureData(pictureData);
-            }
+//            if (pictureData != null) {
+//                user.getPicture().setPictureData(pictureData);
+//            }
+            userRepo.update(user);
             return true;
         }
         return false;

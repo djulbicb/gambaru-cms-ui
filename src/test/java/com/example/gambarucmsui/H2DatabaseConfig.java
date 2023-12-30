@@ -29,7 +29,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.gambarucmsui.TestData.FEBRUARY_END_DATE;
 import static com.example.gambarucmsui.TestData.FEBRUARY_START_DATE;
@@ -42,10 +44,13 @@ public class H2DatabaseConfig {
 
     static {
         try {
+            Map<String, String> properties = new HashMap<>();
+            properties.put("javax.persistence.schema-generation.database.action", "update");
+
             server = Server.createTcpServer().start();
             connection = DriverManager.getConnection("jdbc:h2:mem:test;MODE=MYSQL", "gambaru", "password");
 
-            entityManagerFactory = Persistence.createEntityManagerFactory("gambaru-entity-manager-test");
+            entityManagerFactory = Persistence.createEntityManagerFactory("gambaru-entity-manager-test", properties);
             entityManager = entityManagerFactory.createEntityManager();
             Container.initBeans(entityManager);
         } catch (Exception e) {

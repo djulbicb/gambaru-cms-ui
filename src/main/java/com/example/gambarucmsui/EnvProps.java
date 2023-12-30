@@ -3,6 +3,8 @@ package com.example.gambarucmsui;
 import java.io.IOException;
 import java.util.Properties;
 
+// Exposes environment properties as a service
+// Reads file src/main/resources/application.properties
 public class EnvProps {
     private static EnvProps envProps = new EnvProps();
     public static EnvProps getInstance() {
