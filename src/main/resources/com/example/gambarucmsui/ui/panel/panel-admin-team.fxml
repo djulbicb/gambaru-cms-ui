@@ -14,7 +14,7 @@
    <children>
       <HBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
+            <VBox prefWidth="0.0" spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
                   <VBox>
                      <children>
@@ -48,7 +48,7 @@
                   </TableView>
                </children>
             </VBox>
-            <VBox prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
+            <VBox prefWidth="400.0" spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
                   <VBox>
                      <children>
@@ -62,7 +62,7 @@
                               <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddAttendance" text="DODAJ DOLAZNOST" HBox.hgrow="ALWAYS" />
                               <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPayNextMonth" text="PLATI NAREDNI MESEC" HBox.hgrow="ALWAYS" />
                               <Button layoutX="157.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onShowSubscriptionDetails" text="ČLANARINA DETALJNO" HBox.hgrow="ALWAYS" />
-                              <Button layoutX="406.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPrintBarcodeAsPic" text="BARKOD SLIKA" />
+                              <Button layoutX="406.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPrintBarcodeAsPic" text="BARKOD SLIKA" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
                      </children>
