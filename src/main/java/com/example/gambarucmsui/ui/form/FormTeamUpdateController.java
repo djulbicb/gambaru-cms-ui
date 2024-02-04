@@ -75,7 +75,7 @@ public class FormTeamUpdateController implements Initializable {
     }
 
     @FXML
-    void onUpdate(MouseEvent event) {
+    void onUpdate(MouseEvent event) throws IOException {
 
         String teamNameStr = getOr(txtTeamName, "");
         String paymentFeeStr = getOr(txtMembershipFee, "");

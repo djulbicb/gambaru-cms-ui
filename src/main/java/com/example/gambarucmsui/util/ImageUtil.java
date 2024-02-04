@@ -25,15 +25,26 @@ public class ImageUtil {
         return resizeAndOptimizeImage(originalImage, fitToWidth);
     }
 
-    public static ByteArrayInputStream resizeAndOptimizeImage(BufferedImage originalImage, int fitToWidth) throws IOException {
-        float quality = 0.7f;
+    public static ByteArrayInputStream resizeAndOptimizeImage(byte[] imageData,  int newWidth, int newHeight) throws IOException {
+        // Load the image from byte[]
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(imageData);
+        BufferedImage originalImage = ImageIO.read(inputStream);
+        return resizeAndOptimizeImage(originalImage, newWidth, newHeight);
+    }
 
+    public static ByteArrayInputStream resizeAndOptimizeImage(BufferedImage originalImage, int fitToWidth) throws IOException {
         // Calculate the aspect ratio to maintain proportions while resizing
         double aspectRatio = (double) originalImage.getHeight() / originalImage.getWidth();
 
         // Calculate the new height based on the fitToWidth value
         int newWidth = fitToWidth;
         int newHeight = (int) (fitToWidth * aspectRatio);
+
+        return resizeAndOptimizeImage(originalImage, newWidth, newHeight);
+    }
+
+    public static ByteArrayInputStream resizeAndOptimizeImage(BufferedImage originalImage, int newWidth, int newHeight) throws IOException {
+        float quality = 0.7f;
 
         // Create a new BufferedImage with the desired dimensions
         BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);

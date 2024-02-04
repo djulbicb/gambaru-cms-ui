@@ -63,15 +63,14 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
 
         TeamEntity team = teamRepository.save(en);
         if (pictureData != null) {
-            ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 400);
-            TeamLogoEntity picture = teamLogoRepository.save(new TeamLogoEntity(byteArrayInputStream.readAllBytes(), team.getTeamId()));
+            teamLogoRepository.saveOrUpdatePictureData(team.getTeamId(), pictureData);
         }
 
         return team;
     }
 
     @Override
-    public ValidatorResponse verifyAndUpdateTeam(Long teamId, String teamName, String fee, byte[] pictureData) {
+    public ValidatorResponse verifyAndUpdateTeam(Long teamId, String teamName, String fee, byte[] pictureData) throws IOException {
         Optional<TeamEntity> byId = findById(teamId);
         TeamEntity team = byId.get();
 
@@ -99,7 +98,7 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
     }
 
     @Override
-    public TeamEntity updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status, byte[] pictureData) {
+    public TeamEntity updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status, byte[] pictureData) throws IOException {
         Optional<TeamEntity> byId = teamRepository.findById(teamId);
         if (byId.isPresent()) {
             TeamEntity en = byId.get();

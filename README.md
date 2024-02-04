@@ -42,3 +42,5 @@ C:\wamp64\bin\mysql\mysql{version}\my.ini
 
 [mysqld]
 max_allowed_packet=32M
+
+(7,610,467 > 4,194,304). You can change this value on the server by setting the 'max_allowed_packet'
