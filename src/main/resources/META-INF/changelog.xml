@@ -8,4 +8,7 @@
     <changeSet id="1" author="bo">
         <sqlFile path="META-INF/sql/001_create_init_tables.sql"/>
     </changeSet>
+    <changeSet id="2" author="bo">
+        <sqlFile path="META-INF/sql/002_create_team_logo_table.sql"/>
+    </changeSet>
 </databaseChangeLog>

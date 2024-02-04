@@ -77,6 +77,9 @@ public class GambaruUIApplication extends Application {
 
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
+//            // Set the lockWaitTime property
+            System.setProperty("liquibase.lockService.lockWaitTime", "5000"); // Set to 60 seconds
+
             Liquibase liquibase = new Liquibase("META-INF/changelog.xml", new ClassLoaderResourceAccessor(), database);
             liquibase.update(new Contexts());
             connection.close();

@@ -18,7 +18,7 @@ class UserAddToTeamPortTest extends H2DatabaseConfig {
     public void shouldAssignUserToTeam() throws IOException {
         BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
         PersonEntity user = userSavePort.save("Bo", "Lowe", PersonEntity.Gender.MALE, "123", null);
-        TeamEntity team = teamSavePort.save("Lowe", BigDecimal.valueOf(123));
+        TeamEntity team = teamSavePort.save("Lowe", BigDecimal.valueOf(123), null);
 
         userAddToTeam.verifyAndAddUserToPort(user.getPersonId(), String.valueOf(barcode.getBarcodeId()), team.getName(), false, FEBRUARY_START_DATE, FEBRUARY_END_DATE);
 

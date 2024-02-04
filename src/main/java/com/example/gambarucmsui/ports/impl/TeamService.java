@@ -2,13 +2,18 @@ package com.example.gambarucmsui.ports.impl;
 
 import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
+import com.example.gambarucmsui.database.entity.PersonPictureEntity;
 import com.example.gambarucmsui.database.entity.TeamEntity;
+import com.example.gambarucmsui.database.entity.TeamLogoEntity;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
+import com.example.gambarucmsui.database.repo.TeamLogoRepository;
 import com.example.gambarucmsui.database.repo.TeamRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.team.*;
 import com.example.gambarucmsui.ui.form.validation.TeamInputValidator;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -16,20 +21,23 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.example.gambarucmsui.common.Messages.*;
+import static com.example.gambarucmsui.util.ImageUtil.resizeAndOptimizeImage;
 
 public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, TeamIfExists, TeamPurgePort, TeamDeletePort {
 
     private final TeamRepository teamRepository;
     private final TeamInputValidator teamValidator = new TeamInputValidator();
     private final BarcodeRepository barcodeRepository;
+    private final TeamLogoRepository teamLogoRepository;
 
-    public TeamService(TeamRepository teamRepository, BarcodeRepository barcodeRepository) {
+    public TeamService(TeamRepository teamRepository, TeamLogoRepository teamLogoRepository, BarcodeRepository barcodeRepository) {
         this.teamRepository = teamRepository;
         this.barcodeRepository = barcodeRepository;
+        this.teamLogoRepository = teamLogoRepository;
     }
 
     @Override
-    public ValidatorResponse verifyAndSaveTeam(String teamName, String fee) {
+    public ValidatorResponse verifyAndSaveTeam(String teamName, String fee, byte[] pictureData) throws IOException {
         Map<String, String> errors = new HashMap<>();
         if (!teamValidator.isTeamNameValid(teamName)) {
             errors.put(TeamEntity.TEAM_NAME, TEAM_NAME_NOT_VALID);
@@ -45,18 +53,25 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
             return new ValidatorResponse(errors);
         }
 
-        save(teamName, new BigDecimal(fee));
+        save(teamName, new BigDecimal(fee), pictureData);
         return new ValidatorResponse(Messages.TEAM_IS_CREATED(teamName));
     }
 
     @Override
-    public TeamEntity save(String teamName, BigDecimal membershipFee) {
+    public TeamEntity save(String teamName, BigDecimal membershipFee, byte[] pictureData) throws IOException {
         TeamEntity en = new TeamEntity(teamName, TeamEntity.Status.ACTIVE, membershipFee);
-        return teamRepository.save(en);
+
+        TeamEntity team = teamRepository.save(en);
+        if (pictureData != null) {
+            ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 400);
+            TeamLogoEntity picture = teamLogoRepository.save(new TeamLogoEntity(byteArrayInputStream.readAllBytes(), team.getTeamId()));
+        }
+
+        return team;
     }
 
     @Override
-    public ValidatorResponse verifyAndUpdateTeam(Long teamId, String teamName, String fee) {
+    public ValidatorResponse verifyAndUpdateTeam(Long teamId, String teamName, String fee, byte[] pictureData) {
         Optional<TeamEntity> byId = findById(teamId);
         TeamEntity team = byId.get();
 
@@ -78,13 +93,13 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
 
         teamName = teamName.trim();
         fee = fee.trim();
-        updateTeam(teamId, teamName, new BigDecimal(fee));
+        updateTeam(teamId, teamName, new BigDecimal(fee), pictureData);
         return new ValidatorResponse(Messages.TEAM_IS_UPDATED(teamName));
 
     }
 
     @Override
-    public TeamEntity updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status) {
+    public TeamEntity updateTeam(Long teamId, String teamName, BigDecimal membershipFee, TeamEntity.Status status, byte[] pictureData) {
         Optional<TeamEntity> byId = teamRepository.findById(teamId);
         if (byId.isPresent()) {
             TeamEntity en = byId.get();
@@ -101,6 +116,12 @@ public class TeamService implements TeamLoadPort, TeamSavePort, TeamUpdatePort, 
             if (status != null) {
                 en.setStatus(status);
             }
+
+            if (pictureData != null) {
+                teamLogoRepository.saveOrUpdatePictureData(teamId, pictureData);
+            }
+
+
             return teamRepository.save(en);
         }
         throw new RuntimeException("No such team with id:" + teamId);

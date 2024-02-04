@@ -264,9 +264,9 @@ public class PanelBarcodeController implements PanelHeader {
     }
 
     @FXML
-    void onAddTeams(MouseEvent event) {
+    void onAddTeams(MouseEvent event) throws IOException {
         System.out.println("Kreiranje novog tima");
-        teamSavePort.save(getTeamName(), getDecimal());
+        teamSavePort.save(getTeamName(), getDecimal(), createBlackImageByteArray());
     }
 
     @FXML
@@ -298,7 +298,7 @@ public class PanelBarcodeController implements PanelHeader {
 
     @FXML
     void onSaveScenarioUsers(ActionEvent event) throws IOException {
-        teamSavePort.verifyAndSaveTeam("Delete", "123");
+        teamSavePort.verifyAndSaveTeam("Delete", "123", null);
 
         userSavePort.save("Null","Null", PersonEntity.Gender.MALE, "123", null);
         userSavePort.save("Bez slike","Bez Slike", PersonEntity.Gender.MALE, "123", null);

@@ -21,10 +21,8 @@ import com.example.gambarucmsui.ui.dto.admin.SubscriptStatus;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
-import com.example.gambarucmsui.util.FormatUtil;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
 import com.example.gambarucmsui.util.generators.BarcodeView;
-import com.example.gambarucmsui.util.generators.PDFGenerator;
 import com.google.zxing.WriterException;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Font;
@@ -34,40 +32,25 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import javafx.fxml.FXML;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import static com.example.gambarucmsui.ui.dto.admin.SubscriptStatus.GREEN_CHECKMARK;
-import static com.example.gambarucmsui.ui.dto.admin.SubscriptStatus.ORANGE_EXCLAMATION;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.*;
@@ -86,6 +69,7 @@ public class PanelAdminTeamController implements PanelHeader {
     private final Stage primaryStage;
     private final UserSavePort userSavePort;
     private final TeamDeletePort teamDeletePort;
+    private final TeamLogoLoadPort teamLogoLoadPort;
     private final UserUpdatePort userUpdatePort;
     private final AddSubscriptionPort addSubscriptionPort;
     private final TeamSavePort teamSavePort;
@@ -111,6 +95,7 @@ public class PanelAdminTeamController implements PanelHeader {
         teamIfExists = Container.getBean(TeamIfExists.class);
         attendanceAddForUserPort = Container.getBean(AttendanceAddForUserPort.class);
         addSubscriptionPort = Container.getBean(AddSubscriptionPort.class);
+        teamLogoLoadPort = Container.getBean(TeamLogoLoadPort.class);
     }
 
     @FXML
@@ -292,17 +277,22 @@ public class PanelAdminTeamController implements PanelHeader {
             return;
         }
 
+
         String firstName = selectedItem.getFirstName();
         String lastName = selectedItem.getLastName();
         String fullName = String.format("%s %s", firstName, lastName);
         String formattedBarcode = selectedItem.getBarcodeId();
 
-        BarcodeView barcodeView = BarcodeGenerator.generateBarcodeImage(selectedItem.getUserId(), 300, 100);
+        Long teamId = teamLoadPort.findByName(selectedItem.getTeam()).getTeamId();
+        BufferedImage imageView = teamLogoLoadPort.loadTeamLogoByTeamId(teamId);
 
-        byte[] bytes = generatePDF(fullName, formattedBarcode, selectedItem.getTeam(), barcodeView);
+        BarcodeView barcodeView = BarcodeGenerator.generateBarcodeImage(selectedItem.getUserId(), 300, 65);
+
+        byte[] bytes = generatePDF(fullName, formattedBarcode, selectedItem.getTeam(), barcodeView, imageView);
 
         try {
             PDDocument document = PDDocument.load(new ByteArrayInputStream(bytes));
+            document.save("test.pdf");
 
             // Create a PDFRenderer object
             PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -324,9 +314,9 @@ public class PanelAdminTeamController implements PanelHeader {
 
     }
     public static final String FONT = "resources/com/example/gambarucmsui/font/arial-unicode-ms.ttf";
-    public static final Font serbianFont = FontFactory.getFont(BaseFont.HELVETICA, BaseFont.CP1250, 40, Font.NORMAL);
-    private byte[] generatePDF(String fullName, String barcodeId, String team, BarcodeView barcodeView) {
-        Document document = new Document();
+    public static final Font serbianFont = FontFactory.getFont(BaseFont.HELVETICA, BaseFont.CP1250, 25, Font.NORMAL);
+    private byte[] generatePDF(String fullName, String barcodeId, String team, BarcodeView barcodeView, BufferedImage logoView) {
+        Document document = new Document(new RectangleReadOnly(420.0F, 650.0F)); // new Rectangle(250, 600)
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -338,28 +328,43 @@ public class PanelAdminTeamController implements PanelHeader {
             PdfPTable mainTable = new PdfPTable(numColumns);
             mainTable.setWidthPercentage(100);
 
+            PdfPCell teamLogoCell = new PdfPCell(mainTable);
+            teamLogoCell.setBorder(PdfPCell.NO_BORDER);
+            teamLogoCell.addElement(Image.getInstance(logoView, null));
+            teamLogoCell.setPaddingBottom(10f);
+            mainTable.completeRow();
+
             PdfPCell cellBarcode = new PdfPCell(mainTable);
             cellBarcode.setBorder(PdfPCell.NO_BORDER);
             cellBarcode.addElement(Image.getInstance(barcodeView.getBufferedImage(), null));
+            cellBarcode.setPadding(0f);
+            mainTable.completeRow();
 
             PdfPCell barcodeIdCell = new PdfPCell();
             Paragraph barcodeIdText = new Paragraph(String.format("%s", barcodeId), serbianFont);
             barcodeIdText.setAlignment(Paragraph.ALIGN_CENTER);
             barcodeIdCell.addElement(barcodeIdText);
             barcodeIdCell.setBorder(PdfPCell.NO_BORDER);
+            mainTable.completeRow();
 
             PdfPCell textCell = new PdfPCell();
             Paragraph pName = new Paragraph(String.format("%s", fullName), serbianFont);
             pName.setAlignment(Paragraph.ALIGN_CENTER);
+            textCell.setPadding(0f);
+            textCell.setPaddingTop(0);
             textCell.addElement(pName);
             textCell.setBorder(PdfPCell.NO_BORDER);
+            mainTable.completeRow();
 
             PdfPCell teamCell = new PdfPCell();
             Paragraph tName = new Paragraph(String.format("%s", team), serbianFont);
             tName.setAlignment(Paragraph.ALIGN_CENTER);
+            teamCell.setPadding(0f);
             teamCell.addElement(tName);
             teamCell.setBorder(PdfPCell.NO_BORDER);
+            mainTable.completeRow();
 
+            mainTable.addCell(teamLogoCell);
             mainTable.addCell(cellBarcode);
             mainTable.addCell(barcodeIdCell);
             mainTable.addCell(textCell);

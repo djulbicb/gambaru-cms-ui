@@ -11,6 +11,7 @@
         <class>com.example.gambarucmsui.database.entity.PersonAttendanceEntity</class>
         <class>com.example.gambarucmsui.database.entity.SubscriptionEntity</class>
         <class>com.example.gambarucmsui.database.entity.PersonPictureEntity</class>
+        <class>com.example.gambarucmsui.database.entity.TeamLogoEntity</class>
 
         <properties>
 <!--            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />-->
@@ -36,6 +37,7 @@
         <class>com.example.gambarucmsui.database.entity.SubscriptionEntity</class>
         <class>com.example.gambarucmsui.database.entity.PersonAttendanceEntity</class>
         <class>com.example.gambarucmsui.database.entity.PersonPictureEntity</class>
+        <class>com.example.gambarucmsui.database.entity.TeamLogoEntity</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />

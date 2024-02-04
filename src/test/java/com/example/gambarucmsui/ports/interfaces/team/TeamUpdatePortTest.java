@@ -15,10 +15,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class TeamUpdatePortTest extends H2DatabaseConfig {
     @Test
     public void shouldVerifyAndUpdateTeam() throws IOException {
-        teamSavePort.verifyAndSaveTeam("Lowe", "123");
+        teamSavePort.verifyAndSaveTeam("Lowe", "123", null);
 
         TeamEntity team = teamLoad.findByName("Lowe");
-        ValidatorResponse res = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "Changed", "234");
+        ValidatorResponse res = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "Changed", "234", null);
         assertTrue(res.isOk());
 
         TeamEntity changed = teamLoad.findByName("Changed");
@@ -31,13 +31,13 @@ class TeamUpdatePortTest extends H2DatabaseConfig {
 
     @Test
     public void shouldFailVerifyAndNotUpdateTeam() throws IOException {
-        teamSavePort.verifyAndSaveTeam("Lowe", "123");
+        teamSavePort.verifyAndSaveTeam("Lowe", "123", null);
         TeamEntity en = teamLoad.findByName("Lowe");
 
-        ValidatorResponse res1 = teamUpdatePort.verifyAndUpdateTeam(en.getTeamId(), "", "");
-        ValidatorResponse res2 = teamUpdatePort.verifyAndUpdateTeam(en.getTeamId()," ", " ");
-        ValidatorResponse res3 = teamUpdatePort.verifyAndUpdateTeam(en.getTeamId()," ", "abc");
-        ValidatorResponse res4 = teamUpdatePort.verifyAndUpdateTeam(en.getTeamId(),null, null);
+        ValidatorResponse res1 = teamUpdatePort.verifyAndUpdateTeam(en.getTeamId(), "", "", null);
+        ValidatorResponse res2 = teamUpdatePort.verifyAndUpdateTeam(en.getTeamId()," ", " ", null);
+        ValidatorResponse res3 = teamUpdatePort.verifyAndUpdateTeam(en.getTeamId()," ", "abc", null);
+        ValidatorResponse res4 = teamUpdatePort.verifyAndUpdateTeam(en.getTeamId(),null, null, null);
 
         List<ValidatorResponse> responses = List.of(res1, res2, res3, res4);
         for (ValidatorResponse res : responses) {
@@ -50,27 +50,27 @@ class TeamUpdatePortTest extends H2DatabaseConfig {
     @Test
     public void shouldFailTestWhenTeamWithThanNameExists() throws IOException {
         // save
-        teamSavePort.verifyAndSaveTeam("First", "123");
-        teamSavePort.verifyAndSaveTeam("Second", "123");
+        teamSavePort.verifyAndSaveTeam("First", "123", null);
+        teamSavePort.verifyAndSaveTeam("Second", "123", null);
         TeamEntity team = teamLoad.findByName("First");
 
         // update
-        ValidatorResponse res1 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "Update", "234");
+        ValidatorResponse res1 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "Update", "234", null);
         assertTrue(res1.isOk());
         assertEquals(Messages.TEAM_IS_UPDATED("Update"), res1.getMessage());
 
         // try to save again but fail
-        ValidatorResponse res2 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "Second", "234");
+        ValidatorResponse res2 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "Second", "234", null);
         assertTrue(res2.hasErrors());
         assertEquals(Messages.TEAM_NAME_ALREADY_EXISTS, res2.getErrorOrEmpty(TeamEntity.TEAM_NAME));
     }
 
     @Test
     public void shouldSuccessWhenUpdatingTeamWithSameName() throws IOException {
-        teamSavePort.verifyAndSaveTeam("This", "123");
+        teamSavePort.verifyAndSaveTeam("This", "123", null);
         TeamEntity team = teamLoad.findByName("This");
 
-        ValidatorResponse res1 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "This", "234");
+        ValidatorResponse res1 = teamUpdatePort.verifyAndUpdateTeam(team.getTeamId(), "This", "234", null);
         assertTrue(res1.isOk());
         assertEquals(Messages.TEAM_IS_UPDATED("This"), res1.getMessage());
 

@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #34495e;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox prefWidth="400.0">
@@ -41,6 +40,25 @@
             <HBox>
                <children>
                   <Label fx:id="lblErrMembershipFee" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox layoutX="15.0" layoutY="67.0" prefWidth="400.0">
+         <children>
+            <Label maxHeight="1.7976931348623157E308" text="LOGO TIMA:" textFill="#fcfcfc">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddLogo" text="DODAJ LOGO" />
+            <HBox>
+               <children>
+                  <Label fx:id="lblErrLogo" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
                      <font>
                         <Font size="10.0" />
                      </font>

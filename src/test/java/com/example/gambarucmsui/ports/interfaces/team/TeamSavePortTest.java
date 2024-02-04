@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TeamSavePortTest extends H2DatabaseConfig {
     @Test
     public void shouldVerifyAndCreateTeam() throws IOException {
-        ValidatorResponse res = teamSavePort.verifyAndSaveTeam("Lowe", "123");
+        ValidatorResponse res = teamSavePort.verifyAndSaveTeam("Lowe", "123", null);
         assertTrue(res.isOk());
 
         TeamEntity team = teamLoad.findByName("Lowe");
@@ -28,10 +28,10 @@ class TeamSavePortTest extends H2DatabaseConfig {
 
     @Test
     public void shouldFailVerifyAndNotCreateTeam() throws IOException {
-        ValidatorResponse res1 = teamSavePort.verifyAndSaveTeam("", "");
-        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam(" ", " ");
-        ValidatorResponse res3 = teamSavePort.verifyAndSaveTeam(" ", "abc");
-        ValidatorResponse res4 = teamSavePort.verifyAndSaveTeam(null, null);
+        ValidatorResponse res1 = teamSavePort.verifyAndSaveTeam("", "", null);
+        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam(" ", " ", null);
+        ValidatorResponse res3 = teamSavePort.verifyAndSaveTeam(" ", "abc", null);
+        ValidatorResponse res4 = teamSavePort.verifyAndSaveTeam(null, null, null);
 
         List<ValidatorResponse> responses = List.of(res1, res2, res3, res4);
         for (ValidatorResponse res : responses) {
@@ -43,8 +43,8 @@ class TeamSavePortTest extends H2DatabaseConfig {
 
     @Test
     public void shouldFailTestWhenTeamWithThanNameExists() throws IOException {
-        ValidatorResponse res1 = teamSavePort.verifyAndSaveTeam("Lowe", "123");
-        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam("Lowe", "234");
+        ValidatorResponse res1 = teamSavePort.verifyAndSaveTeam("Lowe", "123", null);
+        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam("Lowe", "234", null);
 
         assertTrue(res1.isOk());
         assertTrue(res2.hasErrors());
@@ -55,17 +55,17 @@ class TeamSavePortTest extends H2DatabaseConfig {
 
     @Test
     public void shouldSuccesTestWhenTeamWithThanNameExistsButWasDeleted() throws IOException {
-        teamSavePort.verifyAndSaveTeam("Lowe", "123");
+        teamSavePort.verifyAndSaveTeam("Lowe", "123", null);
         TeamEntity team = teamLoad.findByName("Lowe");
         teamDeletePort.validateAndDeleteTeam(team.getTeamId());
 
-        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam("Lowe", "234");
+        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam("Lowe", "234", null);
         assertTrue(res2.isOk());
         assertEquals(Messages.TEAM_IS_CREATED("Lowe"), res2.getMessage());
 
         // Edgecase: After deletion team is renamed with sufix (Obrisan) and its deactivated
         // Technically, you can create an ACTIVE team with that name
-        ValidatorResponse res3 = teamSavePort.verifyAndSaveTeam("Lowe(Obrisan)", "234");
+        ValidatorResponse res3 = teamSavePort.verifyAndSaveTeam("Lowe(Obrisan)", "234", null);
         assertTrue(res3.isOk());
         assertEquals(Messages.TEAM_IS_CREATED("Lowe(Obrisan)"), res3.getMessage());
 

@@ -7,6 +7,7 @@ import com.example.gambarucmsui.ports.interfaces.team.TeamSavePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,18 +25,18 @@ class IfTeamNameExistsTest extends H2DatabaseConfig {
     }
 
     @Test
-    void shouldCheckIfTeamNameExists() {
+    void shouldCheckIfTeamNameExists() throws IOException {
         // given
-        teamSavePort.save("Team 1", BigDecimal.ONE);
+        teamSavePort.save("Team 1", BigDecimal.ONE, null);
 
         // then
         assertTrue(teamIfExists.ifTeamNameExists("Team 1"));
         assertFalse(teamIfExists.ifTeamNameExists("Team 2"));
     }
     @Test
-    void shouldCheckIfTeamDoesntExist() {
+    void shouldCheckIfTeamDoesntExist() throws IOException {
         // given
-        teamSavePort.save("Team 1", BigDecimal.ONE);
+        teamSavePort.save("Team 1", BigDecimal.ONE, null);
 
         // then
         assertFalse(teamIfExists.ifTeamNameExists("Team 2"));

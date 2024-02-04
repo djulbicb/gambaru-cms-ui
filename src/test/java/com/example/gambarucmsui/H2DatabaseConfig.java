@@ -33,8 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.gambarucmsui.TestData.FEBRUARY_END_DATE;
-import static com.example.gambarucmsui.TestData.FEBRUARY_START_DATE;
+import static com.example.gambarucmsui.TestData.*;
 
 public class H2DatabaseConfig {
     private static Server server;
@@ -126,8 +125,8 @@ public class H2DatabaseConfig {
 
     protected BarcodeEntity scenario_AssignPersonToTeamAndReturnAssignedBarcode(String firstName, String lastName, String teamName, LocalDate start, LocalDate end) throws IOException {
         BarcodeEntity barcode = barcodeFetchOrGenerate.fetchOneOrGenerate(BarcodeEntity.Status.NOT_USED);
-        PersonEntity user = userSavePort.save(firstName, lastName, PersonEntity.Gender.MALE, "123", null);
-        TeamEntity team = teamSavePort.save(teamName, BigDecimal.valueOf(123));
+        PersonEntity user = userSavePort.save(firstName, lastName, PersonEntity.Gender.MALE, "123", createBlackImageByteArray());
+        TeamEntity team = teamSavePort.save(teamName, BigDecimal.valueOf(123), null);
 
         userAddToTeam.verifyAndAddUserToPort(user.getPersonId(), String.valueOf(barcode.getBarcodeId()), teamName, false, start, end);
 
@@ -165,7 +164,7 @@ public class H2DatabaseConfig {
     @NotNull
     protected List<BarcodeEntity> scenario_AssignMultiplePersonsToTeamAndReturnBarcodes(List<ScenarioUser> usersToAdd, String teamName) throws IOException {
         List<BarcodeEntity> barcodes = barcodeFetchOrGenerate.fetchOrGenerateBarcodes(usersToAdd.size(), BarcodeEntity.Status.NOT_USED);
-        TeamEntity team = teamSavePort.save(teamName, BigDecimal.valueOf(123));
+        TeamEntity team = teamSavePort.save(teamName, BigDecimal.valueOf(123), createBlackImageByteArray());
 
         for (int i = 0; i < usersToAdd.size(); i++) {
             ScenarioUser u = usersToAdd.get(i);

@@ -29,8 +29,8 @@ class TeamDeletePortTest extends H2DatabaseConfig {
     @Test
     public void shouldDeleteTeamAndIgnoreItWhenSearchingAllActiveTeams() throws IOException {
         // given
-        ValidatorResponse res1 = teamSavePort.verifyAndSaveTeam("Team1", "123");
-        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam("Team2", "123");
+        ValidatorResponse res1 = teamSavePort.verifyAndSaveTeam("Team1", "123", null);
+        ValidatorResponse res2 = teamSavePort.verifyAndSaveTeam("Team2", "123", null);
 
         // when delete team
         TeamEntity team1 = teamLoad.findByName("Team1");

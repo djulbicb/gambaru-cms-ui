@@ -10,7 +10,7 @@ services:
     ports:
       - "3306:3306"
 #    volumes:
-#      - dbdata:/var/lib/mysql
+#      - dbdata:/var/lib/sql
     volumes:
       - ./data:/var/lib/mysql
   phpmyadmin:

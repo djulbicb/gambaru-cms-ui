@@ -48,6 +48,25 @@
             </HBox>
          </children>
       </VBox>
+      <VBox prefWidth="400.0">
+         <children>
+            <Label maxHeight="1.7976931348623157E308" text="LOGO TIMA:" textFill="#fcfcfc">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddLogo" text="DODAJ LOGO" />
+            <HBox>
+               <children>
+                  <Label fx:id="lblErrLogo" maxHeight="1.7976931348623157E308" textFill="#fcfcfc">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
       <HBox alignment="TOP_RIGHT" spacing="5.0">
          <children>
             <Button mnemonicParsing="false" onMouseClicked="#onUpdate" text="PROMENI" />
