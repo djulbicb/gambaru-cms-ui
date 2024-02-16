@@ -286,7 +286,7 @@ public class PanelAdminTeamController implements PanelHeader {
         Long teamId = teamLoadPort.findByName(selectedItem.getTeam()).getTeamId();
         BufferedImage imageView = teamLogoLoadPort.loadTeamLogoByTeamId(teamId);
 
-        BarcodeView barcodeView = BarcodeGenerator.generateBarcodeImage(selectedItem.getUserId(), 300, 65);
+        BarcodeView barcodeView = BarcodeGenerator.generateBarcodeImage(selectedItem.getBarcodeIdNum(), 300, 65);
 
         byte[] bytes = generatePDF(fullName, formattedBarcode, selectedItem.getTeam(), barcodeView, imageView);
 

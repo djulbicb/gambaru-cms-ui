@@ -15,6 +15,7 @@ import static com.example.gambarucmsui.util.FormatUtil.*;
 public class UserDetail {
     private Long userId;
     private String barcodeId;
+    private Long barcodeIdNum;
     private String firstName;
     private String lastName;
     private String phone;
@@ -23,9 +24,10 @@ public class UserDetail {
     private String createdAt;
     private String subscriptionStart;
     private String subscriptionEnd;
-    public UserDetail(Long userId, String barcodeId, String firstName, String lastName, String phone, String gender, String team, String createdAt, String subscriptionStart, String subscriptionEnd) {
+    public UserDetail(Long userId, String barcodeId, Long barcodeIdNum, String firstName, String lastName, String phone, String gender, String team, String createdAt, String subscriptionStart, String subscriptionEnd) {
         this.userId = userId;
         this.barcodeId = barcodeId;
+        this.barcodeIdNum = barcodeIdNum;
         this.firstName = firstName;
         this.phone = phone;
         this.lastName = lastName;
@@ -45,6 +47,7 @@ public class UserDetail {
         return new UserDetail(
                 user.getPersonId(),
                 String.format("%s %s", status.getEmoji(), formatBarcode(b.getBarcodeId())),
+                b.getBarcodeId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getPhone(),
@@ -75,28 +78,13 @@ public class UserDetail {
         return toDateFormat(subscription.getEndDate().atStartOfDay());
     }
 
-    public static UserDetail fromEntityToFull(PersonEntity user) {
-        StringJoiner barcodeCsv = new StringJoiner(",");
-        StringJoiner teamCsv = new StringJoiner(",");
-
-        for (BarcodeEntity barcode : user.getBarcodes()) {
-            barcodeCsv.add(barcode.getBarcodeId().toString());
-        }
-
-
-        return new UserDetail(
-                user.getPersonId(),
-                "barcode",
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPhone(),
-                genderToSerbianAbbr(user.getGender()),
-                teamCsv.toString(),
-                toDateFormat(user.getCreatedAt()),
-                "what",
-                "ever");
+    public Long getBarcodeIdNum() {
+        return barcodeIdNum;
     }
 
+    public void setBarcodeIdNum(Long barcodeIdNum) {
+        this.barcodeIdNum = barcodeIdNum;
+    }
     public Long getUserId() {
         return userId;
     }
