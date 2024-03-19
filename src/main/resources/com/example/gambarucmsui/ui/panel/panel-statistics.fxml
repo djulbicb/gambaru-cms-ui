@@ -44,7 +44,7 @@
             </VBox>
             <HBox VBox.vgrow="ALWAYS">
                <children>
-                  <VBox fx:id="content" HBox.hgrow="ALWAYS">
+                  <VBox fx:id="content" prefWidth="100.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label maxHeight="1.7976931348623157E308" text="DOLAZNOST U MESECU:" textFill="#fcfcfc">
                            <font>
@@ -54,7 +54,7 @@
                         <AnchorPane fx:id="graphAttendancePane" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
-                  <VBox>
+                  <VBox prefWidth="220.0">
                      <children>
                         <Label maxHeight="1.7976931348623157E308" text="DOLAZNOST POLAZNIKA" textFill="#fcfcfc">
                            <font>
@@ -63,12 +63,12 @@
                         </Label>
                         <TableView fx:id="tblUserStats" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                           <columns>
-                              <TableColumn text="Polaznik">
+                              <TableColumn prefWidth="150.0" text="Polaznik">
                                  <cellValueFactory>
                                     <PropertyValueFactory property="fullName" />
                                  </cellValueFactory>
                               </TableColumn>
-                              <TableColumn text="Broj dolazaka">
+                              <TableColumn text="Dolasci">
                                  <cellValueFactory>
                                     <PropertyValueFactory property="count" />
                                  </cellValueFactory>

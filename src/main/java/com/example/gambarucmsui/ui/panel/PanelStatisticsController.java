@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static com.example.gambarucmsui.util.LayoutUtil.stretchColumnsToEqualSize;
 import static com.example.gambarucmsui.util.LayoutUtil.stretchInsideAnchorPance;
 
 public class PanelStatisticsController implements PanelHeader{
@@ -91,9 +92,12 @@ public class PanelStatisticsController implements PanelHeader{
 
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
-        yAxis.setTickUnit(1);
+        yAxis.setTickUnit(2);
+        yAxis.setAutoRanging(false); // Disable auto-ranging for Y-axis
+        yAxis.setLowerBound(0); // Set lower bound of Y-axis
+        yAxis.setUpperBound(20);
 
-        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        LineChart<String, Number> lineChart = new LineChart(xAxis, yAxis);
         lineChart.setAnimated(false);
 
         stretchInsideAnchorPance(lineChart);

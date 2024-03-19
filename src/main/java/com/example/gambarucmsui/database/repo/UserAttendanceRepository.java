@@ -44,8 +44,8 @@ public class UserAttendanceRepository extends Repository<PersonAttendanceEntity>
 
     public List<AttendanceCount> getAttendanceCount(LocalDate forDate) {
 
-        LocalDateTime firstDayOfMonth = forDate.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime lastDayOfMonth = YearMonth.from(forDate).atEndOfMonth().atStartOfDay();
+        LocalDateTime firstDayOfMonth = YearMonth.from(forDate).atDay(1).atStartOfDay();
+        LocalDateTime lastDayOfMonth = YearMonth.from(forDate).atEndOfMonth().atTime(23, 59, 59);
 
         String queryString = """
         SELECT CAST(a.timestamp AS DATE), COUNT(a)
@@ -84,15 +84,14 @@ public class UserAttendanceRepository extends Repository<PersonAttendanceEntity>
     }
 
     public List<AttendanceUserCount> getAttendancesByUsers(LocalDate monthDate) {
-        LocalDateTime firstDayOfMonth = monthDate.atStartOfDay();
+        LocalDateTime firstDayOfMonth = YearMonth.from(monthDate).atDay(1).atStartOfDay();
         LocalDateTime lastDayOfMonth = YearMonth.from(monthDate).atEndOfMonth().atTime(23, 59, 59);
 
         String queryString = """
-            SELECT b.person.firstName, b.person.lastName, COUNT(ua)
+            SELECT ua.barcode.person.firstName, ua.barcode.person.lastName, COUNT(ua)
             FROM PersonAttendanceEntity ua
-            JOIN ua.barcode b
-            WHERE ua.timestamp BETWEEN :dateStart AND :dateEnd
-            GROUP BY b.id
+            WHERE ua.timestamp >= :dateStart AND ua.timestamp < :dateEnd
+            GROUP BY ua.barcode.id
             """;
 
         List<Object[]> resultList = entityManager.createQuery(queryString, Object[].class)
@@ -107,7 +106,7 @@ public class UserAttendanceRepository extends Repository<PersonAttendanceEntity>
             Long attendanceCount = (Long) result[2];
             attendance.add(new AttendanceUserCount(String.format("%s %s", userName, lastName), attendanceCount));
         }
-
+        System.out.println(resultList.size());
         attendance.sort(Comparator.comparingLong(AttendanceUserCount::getCount).reversed());
 
         return attendance;
