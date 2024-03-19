@@ -9,6 +9,7 @@ public class PathUtil {
     public static final String PANEL_ADMIN_USER = RESOURCE + "ui/panel/panel-admin-user.fxml";
     public static final String PANEL_ADMIN_TEAM = RESOURCE + "ui/panel/panel-admin-team.fxml";
     public static final String PANEL_BARCODE = RESOURCE + "ui/panel/panel-barcode.fxml";
+    public static final String PANEL_STATISTICS = RESOURCE + "ui/panel/panel-statistics.fxml";
 
     // FORM
     public static final String FORM_TEAM_ADD = RESOURCE + "ui/form/form-team-add.fxml";

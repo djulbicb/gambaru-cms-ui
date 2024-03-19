@@ -57,6 +57,8 @@ public class GambaruSwitchController implements FxmlViewHandler {
     private PanelAdminTeamController panelAdminTeamController;
     private Pane panelBarcode;
     private PanelBarcodeController panelBarcodeController;
+    private Pane panelStatistics;
+    private PanelStatisticsController panelStatisticsController;
 
     public GambaruSwitchController(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -77,6 +79,10 @@ public class GambaruSwitchController implements FxmlViewHandler {
 
         panelBarcodeController = new PanelBarcodeController(primaryStage);
         panelBarcode = loadFxml(PathUtil.PANEL_BARCODE, panelBarcodeController);
+
+        panelStatisticsController = new PanelStatisticsController(primaryStage);
+        panelStatistics = loadFxml(PathUtil.PANEL_STATISTICS, panelStatisticsController);
+
 
         setPanelHeaderToggleButtonsToIgnoreAction();
         switchToAttendance();
@@ -150,6 +156,13 @@ public class GambaruSwitchController implements FxmlViewHandler {
         panelBarcodeController.viewSwitched();
     }
 
+    private void switchToStatistic() {
+        panelContent.getChildren().setAll(panelStatistics);
+        currentSelected = panelStatistics;
+        stretchInsideAnchorPance(panelStatistics);
+        panelStatisticsController.viewSwitched();
+    }
+
     @FXML
     private void switchView() throws IOException {
         if (headerToggleBtns == null || headerToggleBtns.getSelectedToggle() == null) {
@@ -164,6 +177,8 @@ public class GambaruSwitchController implements FxmlViewHandler {
             switchToAdminTeam();
         } else if (selectedButton.equals(headerBtnBarcode)) {
             switchToBarcode();
+        } else if (selectedButton.equals(headerBtnStatistics)) {
+            switchToStatistic();
         }
     }
 

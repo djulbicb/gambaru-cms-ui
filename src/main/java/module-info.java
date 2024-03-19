@@ -37,4 +37,6 @@ module com.example.gambarucmsui {
     opens com.example.gambarucmsui.ports.interfaces.team to org.hibernate.orm.core;
     opens com.example.gambarucmsui.ports.interfaces.barcode to org.hibernate.orm.core;
     opens com.example.gambarucmsui.ports.interfaces.attendance to org.hibernate.orm.core;
+    exports com.example.gambarucmsui.ui.dto.statistics;
+    opens com.example.gambarucmsui.ui.dto.statistics to javafx.fxml;
 }

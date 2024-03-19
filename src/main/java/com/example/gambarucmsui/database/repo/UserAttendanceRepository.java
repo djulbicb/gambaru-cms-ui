@@ -2,12 +2,17 @@ package com.example.gambarucmsui.database.repo;
 
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
 import com.example.gambarucmsui.database.entity.PersonAttendanceEntity;
+import com.example.gambarucmsui.ui.dto.statistics.AttendanceCount;
+import com.example.gambarucmsui.ui.dto.statistics.AttendanceUserCount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.Month;
+import java.time.YearMonth;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserAttendanceRepository extends Repository<PersonAttendanceEntity> {
     public UserAttendanceRepository(EntityManager entityManager) {
@@ -35,6 +40,77 @@ public class UserAttendanceRepository extends Repository<PersonAttendanceEntity>
         subquery.setParameter("endOfDay", endOfDay);
 
         return subquery.getResultList();
+    }
+
+    public List<AttendanceCount> getAttendanceCount(LocalDate forDate) {
+
+        LocalDateTime firstDayOfMonth = forDate.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime lastDayOfMonth = YearMonth.from(forDate).atEndOfMonth().atStartOfDay();
+
+        String queryString = """
+        SELECT CAST(a.timestamp AS DATE), COUNT(a)
+        FROM PersonAttendanceEntity a
+        WHERE a.timestamp BETWEEN :dateStart AND :dateNow
+        GROUP BY CAST(a.timestamp AS DATE)
+        ORDER BY CAST(a.timestamp AS DATE)
+        """;
+        TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
+        query.setParameter("dateStart", firstDayOfMonth );
+        query.setParameter("dateNow", lastDayOfMonth);
+
+        List<AttendanceCount> resultList = query.getResultList().stream()
+                .map(row -> new AttendanceCount(LocalDate.parse(row[0] + ""), (Long) row[1]))
+                .collect(Collectors.toList());
+
+        return fillMissingDates(resultList, forDate);
+    }
+
+    private List<AttendanceCount> fillMissingDates(List<AttendanceCount> resultList, LocalDate forDate) {
+        Map<LocalDate, Long> attendanceMap = resultList.stream()
+                .collect(Collectors.toMap(AttendanceCount::getDate, AttendanceCount::getCount));
+
+        List<AttendanceCount> filledList = new ArrayList<>();
+        YearMonth yearMonth = YearMonth.from(forDate);
+        int daysInMonth = yearMonth.lengthOfMonth();
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atDay(daysInMonth);
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            Long count = attendanceMap.getOrDefault(date, 0L);
+            filledList.add(new AttendanceCount(date, count));
+        }
+
+        return filledList;
+    }
+
+    public List<AttendanceUserCount> getAttendancesByUsers(LocalDate monthDate) {
+        LocalDateTime firstDayOfMonth = monthDate.atStartOfDay();
+        LocalDateTime lastDayOfMonth = YearMonth.from(monthDate).atEndOfMonth().atTime(23, 59, 59);
+
+        String queryString = """
+            SELECT b.person.firstName, b.person.lastName, COUNT(ua)
+            FROM PersonAttendanceEntity ua
+            JOIN ua.barcode b
+            WHERE ua.timestamp BETWEEN :dateStart AND :dateEnd
+            GROUP BY b.id
+            """;
+
+        List<Object[]> resultList = entityManager.createQuery(queryString, Object[].class)
+                .setParameter("dateStart", firstDayOfMonth)
+                .setParameter("dateEnd", lastDayOfMonth)
+                .getResultList();
+
+        List<AttendanceUserCount> attendance = new ArrayList<>();
+        for (Object[] result : resultList) {
+            String userName = (String) result[0];
+            String lastName = (String) result[1];
+            Long attendanceCount = (Long) result[2];
+            attendance.add(new AttendanceUserCount(String.format("%s %s", userName, lastName), attendanceCount));
+        }
+
+        attendance.sort(Comparator.comparingLong(AttendanceUserCount::getCount).reversed());
+
+        return attendance;
     }
 
 

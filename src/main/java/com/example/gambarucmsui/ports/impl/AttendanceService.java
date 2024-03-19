@@ -4,9 +4,9 @@ import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
 import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
-import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
-import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
-import com.example.gambarucmsui.ports.interfaces.attendance.AttendancePurgePort;
+import com.example.gambarucmsui.ports.interfaces.attendance.*;
+import com.example.gambarucmsui.ui.dto.statistics.AttendanceCount;
+import com.example.gambarucmsui.ui.dto.statistics.AttendanceUserCount;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
 import static com.example.gambarucmsui.util.FormatUtil.isLong;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
-public class AttendanceService implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort {
+public class AttendanceService implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort, GetAttendancesByUser, GetAttendanceCountForMonth {
 
     private final UserAttendanceRepository attendanceRepo;
     private final BarcodeRepository barcodeRepo;
@@ -101,5 +101,15 @@ public class AttendanceService implements AttendanceAddForUserPort, AttendanceLo
     @Override
     public void purge() {
         attendanceRepo.deleteAll();
+    }
+
+    @Override
+    public List<AttendanceCount> getAttendanceCount(LocalDate forDate) {
+        return attendanceRepo.getAttendanceCount(forDate);
+    }
+
+    @Override
+    public List<AttendanceUserCount> getAttendancesByUsers(LocalDate forDate) {
+        return attendanceRepo.getAttendancesByUsers(forDate);
     }
 }
