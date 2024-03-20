@@ -62,7 +62,7 @@ public class UserAttendanceRepository extends Repository<PersonAttendanceEntity>
                 .map(row -> new AttendanceCount(LocalDate.parse(row[0] + ""), (Long) row[1]))
                 .collect(Collectors.toList());
 
-        return fillMissingDates(resultList, forDate);
+        return resultList;
     }
 
     private List<AttendanceCount> fillMissingDates(List<AttendanceCount> resultList, LocalDate forDate) {

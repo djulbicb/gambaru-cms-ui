@@ -95,7 +95,7 @@ public class PanelStatisticsController implements PanelHeader{
         yAxis.setTickUnit(2);
         yAxis.setAutoRanging(false); // Disable auto-ranging for Y-axis
         yAxis.setLowerBound(0); // Set lower bound of Y-axis
-        yAxis.setUpperBound(20);
+        yAxis.setUpperBound(40);
 
         LineChart<String, Number> lineChart = new LineChart(xAxis, yAxis);
         lineChart.setAnimated(false);
