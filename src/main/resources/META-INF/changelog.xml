@@ -11,4 +11,7 @@
     <changeSet id="2" author="bo">
         <sqlFile path="META-INF/sql/002_create_team_logo_table.sql"/>
     </changeSet>
+    <changeSet id="3" author="bo">
+        <sqlFile path="META-INF/sql/003_create_membership_table_and_add_discounts.sql"/>
+    </changeSet>
 </databaseChangeLog>

@@ -13,7 +13,6 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox fx:id="root" prefWidth="600.0" style="-fx-background-color: #34495e;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
@@ -72,7 +71,7 @@
                         </Label>
                      </children>
                   </HBox>
-                  <HBox spacing="10.0">
+                  <HBox spacing="10.0" visible="false">
                      <children>
                         <Label maxHeight="1.7976931348623157E308" text="Prošla uplata:" textFill="#fcfcfc">
                            <font>

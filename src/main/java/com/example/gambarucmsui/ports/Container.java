@@ -1,5 +1,6 @@
 package com.example.gambarucmsui.ports;
 
+import com.example.gambarucmsui.database.entity.PersonMembershipEntity;
 import com.example.gambarucmsui.database.repo.*;
 import com.example.gambarucmsui.ports.impl.*;
 import jakarta.persistence.EntityManager;
@@ -24,22 +25,28 @@ public class Container {
     }
 
     public static Set<Object> initBeans(EntityManager entityManager) {
-        UserRepo userRepo = new UserRepo(entityManager);
+        PersonRepository personRepository = new PersonRepository(entityManager);
         BarcodeRepository barcodeRepository = new BarcodeRepository(entityManager);
-        UserAttendanceRepository userAttendanceRepository = new UserAttendanceRepository(entityManager);
+        PersonAttendanceRepository personAttendanceRepository = new PersonAttendanceRepository(entityManager);
         TeamRepository teamRepository = new TeamRepository(entityManager);
         UserPictureRepository userPictureRepository = new UserPictureRepository(entityManager);
         TeamLogoRepository teamLogoRepository = new TeamLogoRepository(entityManager);
         PersonPictureRepository personPictureRepository = new PersonPictureRepository(entityManager);
+        PersonMembershipRepository personMembershipRepository = new PersonMembershipRepository(entityManager);
         SubscriptionRepository subscriptionRepository = new SubscriptionRepository(entityManager);
-        SubscriptionService subscriptionService = new SubscriptionService(subscriptionRepository, barcodeRepository);
 
-        Container.addBean(new ImageService(personPictureRepository, userRepo, teamLogoRepository));
+
+        SubscriptionService subscriptionService = new SubscriptionService(subscriptionRepository, barcodeRepository);
+        MembershipService membershipService = new MembershipService(barcodeRepository, personMembershipRepository);
+
+        Container.addBean(new ImageService(personPictureRepository, personRepository, teamLogoRepository));
         Container.addBean(subscriptionService);
-        Container.addBean(new UserService(barcodeRepository, teamRepository, userRepo, userAttendanceRepository, userPictureRepository, subscriptionService));
+        Container.addBean(new UserService(barcodeRepository, teamRepository, personRepository, personAttendanceRepository, userPictureRepository, subscriptionService));
         Container.addBean(new TeamService(teamRepository, teamLogoRepository, barcodeRepository));
-        Container.addBean(new AttendanceService(barcodeRepository, userAttendanceRepository));
+        Container.addBean(new AttendanceService(barcodeRepository, personAttendanceRepository));
         Container.addBean(new BarcodeService(barcodeRepository));
+        Container.addBean(subscriptionService);
+        Container.addBean(membershipService);
 
         return beans;
     }

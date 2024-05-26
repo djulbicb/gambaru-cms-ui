@@ -17,6 +17,7 @@ public class PathUtil {
     public static final String FORM_USER_ADD = RESOURCE + "ui/form/form-user-add.fxml";
     public static final String FORM_USER_ADD_USER_TO_TEAM = RESOURCE + "ui/form/form-user-add-user-to-team.fxml";
     public static final String FORM_BARCODE_GET_VALID = RESOURCE + "ui/form/form-barcode-get-valid.fxml";
+    public static final String FORM_BARCODE_GET_DISCOUNT = RESOURCE + "ui/form/form-barcode-get-discount.fxml";
     // ALERT
     public static final String ALERT_SHOW_ATTENDANCE = RESOURCE + "ui/alert/alert-show-attendance.fxml";
     public static final String ALERT_SHOW_MEMBERSHIP = RESOURCE + "ui/alert/alert-show-membership.fxml";
@@ -25,3 +26,4 @@ public class PathUtil {
     public static final String USER_NOT_FOUND = RESOURCE + "images/user-not-found.png";
 }
 // ui/form/form-user-remove-user-from-team.fxml
+

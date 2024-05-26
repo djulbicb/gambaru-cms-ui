@@ -7,10 +7,11 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="650.0" style="-fx-background-color: #34495e;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: #34495e;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -42,26 +43,26 @@
                   </HBox>
                </children>
             </VBox>
-            <HBox VBox.vgrow="ALWAYS">
+            <HBox spacing="5.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox fx:id="content" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                  <VBox fx:id="content" prefWidth="500.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label maxHeight="1.7976931348623157E308" text="DOLAZNOST U MESECU:" textFill="#fcfcfc">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Label>
-                        <AnchorPane fx:id="graphAttendancePane" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                        <AnchorPane fx:id="graphAttendancePane" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
-                  <VBox prefWidth="220.0">
+                  <VBox prefWidth="250.0">
                      <children>
                         <Label maxHeight="1.7976931348623157E308" text="DOLAZNOST POLAZNIKA" textFill="#fcfcfc">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Label>
-                        <TableView fx:id="tblUserStats" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="tblUserStats" VBox.vgrow="ALWAYS">
                           <columns>
                               <TableColumn prefWidth="150.0" text="Polaznik">
                                  <cellValueFactory>
@@ -75,6 +76,39 @@
                               </TableColumn>
                           </columns>
                         </TableView>
+                     </children>
+                  </VBox>
+                  <VBox prefWidth="400.0">
+                     <children>
+                        <Label maxHeight="1.7976931348623157E308" text="UPLATE:" textFill="#fcfcfc">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="tblMembershipTbl" VBox.vgrow="ALWAYS">
+                           <columns>
+                              <TableColumn prefWidth="150.0" text="Polaznik">
+                                 <cellValueFactory>
+                                    <PropertyValueFactory property="fullName" />
+                                 </cellValueFactory>
+                              </TableColumn>
+                              <TableColumn text="Uplata">
+                                 <cellValueFactory>
+                                    <PropertyValueFactory property="membershipFee" />
+                                 </cellValueFactory>
+                              </TableColumn>
+                              <TableColumn text="Datum">
+                                 <cellValueFactory>
+                                    <PropertyValueFactory property="date" />
+                                 </cellValueFactory>
+                              </TableColumn>
+                           </columns>
+                        </TableView>
+                        <StackPane prefHeight="100.0" prefWidth="100.0">
+                           <children>
+                              <Label fx:id="lblMembershipFeeTotal" text="Ukupno: 5000 RSD" textFill="WHITE" />
+                           </children>
+                        </StackPane>
                      </children>
                   </VBox>
                </children>

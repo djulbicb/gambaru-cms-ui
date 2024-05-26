@@ -112,14 +112,17 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
 
             LocalDate start = subscription.getStartDate();
             LocalDate end = subscription.getEndDate();
+            LocalDate now = LocalDate.now();
 
             if (start == null) {
                 start = LocalDate.now();
             }
             if (end == null) {
                 end = start.plusMonths(1);
-            } else {
+            } else if (end.isAfter(now)) {
                 end = end.plusMonths(1);
+            } else {
+                end = now.plusMonths(1);
             }
 
             updateSubsscription(barcode.getBarcodeId(),subscription.isFreeOfCharge(), start, end);

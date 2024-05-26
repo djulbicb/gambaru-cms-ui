@@ -19,23 +19,23 @@ import static com.example.gambarucmsui.util.FormatUtil.*;
 import static com.example.gambarucmsui.util.ImageUtil.resizeAndOptimizeImage;
 
 public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, UserAddToTeamPort, IsUserAlreadyInThisTeamPort, UserPurgePort {
-    private final UserRepo userRepo;
+    private final PersonRepository personRepository;
     private final UserPictureRepository userPictureRepo;
     private final BarcodeRepository barcodeRepo;
     private final TeamRepository teamRepo;
     private final UserInputValidator userVal = new UserInputValidator();
     private final TeamInputValidator teamVal = new TeamInputValidator();
-    private final UserAttendanceRepository userAttendanceRepo;
+    private final PersonAttendanceRepository userAttendanceRepo;
     private final SubscriptionService subscriptionService;
 
     public UserService(
             BarcodeRepository barcodeRepo,
             TeamRepository teamRepo,
-            UserRepo userRepo,
-            UserAttendanceRepository userAttendanceRepo,
+            PersonRepository personRepository,
+            PersonAttendanceRepository userAttendanceRepo,
             UserPictureRepository userPictureRepo,
             SubscriptionService subscriptionService) {
-        this.userRepo = userRepo;
+        this.personRepository = personRepository;
         this.barcodeRepo = barcodeRepo;
         this.teamRepo = teamRepo;
         this.userPictureRepo = userPictureRepo;
@@ -64,7 +64,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
     @Override
     public PersonEntity save(String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
         Map<String, String > errors = new HashMap<>();
-        PersonEntity user = userRepo.save(new PersonEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
+        PersonEntity user = personRepository.save(new PersonEntity(firstName, lastName, gender, phone, LocalDateTime.now()));
         if (pictureData != null) {
             ByteArrayInputStream byteArrayInputStream = resizeAndOptimizeImage(pictureData, 400);
             PersonPictureEntity picture = userPictureRepo.save(new PersonPictureEntity(byteArrayInputStream.readAllBytes(), user));
@@ -81,13 +81,13 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
 
     @Override
     public void executeBulkSave() {
-        userRepo.saveAll(userEntities);
+        personRepository.saveAll(userEntities);
         userEntities.clear();
     }
 
     @Override
     public boolean update(Long userId, String firstName, String lastName, PersonEntity.Gender gender, String phone, byte[] pictureData) throws IOException {
-        Optional<PersonEntity> byId = userRepo.findById(userId);
+        Optional<PersonEntity> byId = personRepository.findById(userId);
         if (byId.isPresent()) {
             PersonEntity user = byId.get();
             user.setFirstName(firstName);
@@ -112,7 +112,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
 //            if (pictureData != null) {
 //                user.getPicture().setPictureData(pictureData);
 //            }
-            userRepo.update(user);
+            personRepository.update(user);
             return true;
         }
         return false;
@@ -121,7 +121,7 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
 
     protected void addUserToTeam(Long userId, Long barcodeId, Long teamId, boolean isFreeOfCharge, LocalDate start, LocalDate end) {
         Optional<BarcodeEntity> barcodeOpt = barcodeRepo.findById(barcodeId);
-        Optional<PersonEntity> userOpt = userRepo.findById(userId);
+        Optional<PersonEntity> userOpt = personRepository.findById(userId);
         Optional<TeamEntity> teamOpt = teamRepo.findById(teamId);
 
         if (barcodeOpt.isPresent() && userOpt.isPresent() && teamOpt.isPresent()) {
@@ -209,41 +209,41 @@ public class UserService implements UserSavePort, UserUpdatePort, UserLoadPort, 
 
     @Override
     public Optional<PersonEntity> loadUserByUserId(Long userId) {
-        return userRepo.findById(userId);
+        return personRepository.findById(userId);
     }
 
     @Override
     public Optional<PersonEntity> findUserByBarcodeId(Long barcodeId) {
-        return userRepo.findUserByBarcodeId(barcodeId);
+        return personRepository.findUserByBarcodeId(barcodeId);
     }
 
     @Override
     public List<PersonEntity> findAll() {
-        return userRepo.findAll();
+        return personRepository.findAll();
     }
 
     @Override
     public List<PersonEntity> findAll(int page, int pageSize, String sortColumn, String teamName, String firstName, String lastName, String barcode, boolean isOnlyActive) {
-        return userRepo.findAll(page, pageSize, sortColumn, teamName, firstName, lastName, barcode, isOnlyActive);
+        return personRepository.findAll(page, pageSize, sortColumn, teamName, firstName, lastName, barcode, isOnlyActive);
     }
 
     @Override
     public List<BarcodeEntity> findActiveUsersByTeamId(Long teamId) {
-        return userRepo.findAllActiveUsersInTeam(teamId);
+        return personRepository.findAllActiveUsersInTeam(teamId);
     }
 
 
     @Override
     public boolean isUserAlreadyInThisTeam(Long userId, Long teamId) {
-        return userRepo.isUserAlreadyInThisTeam(userId, teamId);
+        return personRepository.isUserAlreadyInThisTeam(userId, teamId);
     }
     @Override
     public boolean isUserAlreadyInThisTeam(Long userId, String teamName) {
-        return userRepo.isUserAlreadyInThisTeam(userId, teamName);
+        return personRepository.isUserAlreadyInThisTeam(userId, teamName);
     }
 
     @Override
     public void purge() {
-        userRepo.deleteAll();
+        personRepository.deleteAll();
     }
 }

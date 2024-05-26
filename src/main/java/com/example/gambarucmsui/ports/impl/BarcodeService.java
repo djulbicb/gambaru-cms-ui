@@ -122,6 +122,19 @@ public class BarcodeService implements BarcodeLoadPort, BarcodeFetchOrGeneratePo
     }
 
     @Override
+    public Optional<BarcodeEntity> updateDiscount(Long barcodeId, int discount) {
+        Optional<BarcodeEntity> byId = findById(barcodeId);
+
+        if (byId.isEmpty()) {
+            return Optional.empty();
+        }
+        BarcodeEntity barcodeEntity = byId.get();
+        barcodeEntity.setDiscount(discount);
+        barcodeRepo.update(barcodeEntity);
+        return Optional.of(barcodeEntity);
+    }
+
+    @Override
     public void purge() {
         barcodeRepo.deleteAll();
     }

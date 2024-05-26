@@ -34,7 +34,7 @@ public class BarcodeEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "assigned_timestamp")
     private LocalDateTime assignedTimestamp;
-
+    private int discount;
 
     // Constructors, getters, setters, and other fields/methods ...
 
@@ -90,6 +90,14 @@ public class BarcodeEntity {
         this.subscription = subscription;
     }
 
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
     @Override
     public String toString() {
         return "BarcodeEntity{" +
@@ -97,6 +105,7 @@ public class BarcodeEntity {
                 ", status=" + status +
                 ", person=" + person +
                 ", team=" + team +
+                ", discount=" + discount +
                 ", subscription=" + subscription.getSubscriptionId() +
                 ", assignedTimestamp=" + assignedTimestamp +
                 '}';
@@ -115,5 +124,6 @@ public class BarcodeEntity {
         return Objects.hash(barcodeId, status, person, team, subscription, assignedTimestamp);
     }
 }
+
 
 

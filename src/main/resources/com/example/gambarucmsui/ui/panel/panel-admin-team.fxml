@@ -5,6 +5,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -60,8 +62,22 @@
                         <HBox spacing="5.0">
                            <children>
                               <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onAddAttendance" text="DODAJ DOLAZNOST" HBox.hgrow="ALWAYS" />
-                              <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPayNextMonth" text="PLATI NAREDNI MESEC" HBox.hgrow="ALWAYS" />
-                              <Button layoutX="157.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onShowSubscriptionDetails" text="ČLANARINA DETALJNO" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="btnPayNextMonth" layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPayNextMonth" text="PLATI NAREDNI MESEC" HBox.hgrow="ALWAYS">
+                                 <graphic>
+                                    <ImageView fitHeight="16.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/icons8-coin-100.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic></Button>
+                              <Button layoutX="157.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onShowSubscriptionDetails" text="ČLANARINA DETALJNO" HBox.hgrow="ALWAYS">
+                                 <graphic>
+                                    <ImageView fitHeight="16.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../images/icons8-coin-100.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic></Button>
                               <Button layoutX="406.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#onPrintBarcodeAsPic" text="BARKOD SLIKA" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
@@ -92,6 +108,11 @@
                         <TableColumn text="Preplata kraj">
                            <cellValueFactory>
                               <PropertyValueFactory property="subscriptionEnd" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Popust">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="discount" />
                            </cellValueFactory>
                         </TableColumn>
                      </columns>

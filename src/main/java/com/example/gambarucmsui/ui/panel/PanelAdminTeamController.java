@@ -9,6 +9,8 @@ import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
+import com.example.gambarucmsui.ports.interfaces.membership.AddMembershipForBarcode;
+import com.example.gambarucmsui.ports.interfaces.membership.LoadPersonMembership;
 import com.example.gambarucmsui.ports.interfaces.subscription.AddSubscriptionPort;
 import com.example.gambarucmsui.ports.interfaces.team.*;
 import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
@@ -19,8 +21,11 @@ import com.example.gambarucmsui.ui.alert.AlertShowAttendanceController;
 import com.example.gambarucmsui.ui.alert.AlertShowMembershipController;
 import com.example.gambarucmsui.ui.dto.admin.SubscriptStatus;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
+import com.example.gambarucmsui.ui.dto.core.MembershipFeeDetail;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
+import com.example.gambarucmsui.ui.text.Labels;
+import com.example.gambarucmsui.util.DataUtil;
 import com.example.gambarucmsui.util.generators.BarcodeGenerator;
 import com.example.gambarucmsui.util.generators.BarcodeView;
 import com.google.zxing.WriterException;
@@ -33,7 +38,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -65,6 +69,8 @@ public class PanelAdminTeamController implements PanelHeader {
     private TableView<TeamDetail> tableTeam;
     @FXML
     private TableView<UserDetail> tableUser;
+    @FXML
+    private Button btnPayNextMonth;
 
     private final Stage primaryStage;
     private final UserSavePort userSavePort;
@@ -80,6 +86,7 @@ public class PanelAdminTeamController implements PanelHeader {
     private final BarcodeLoadPort barcodeLoadPort;
     private final BarcodeUpdatePort barcodeUpdatePort;
     private final AttendanceAddForUserPort attendanceAddForUserPort;
+    private final AddMembershipForBarcode addMembershipForBarcode;
 
     public PanelAdminTeamController(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -96,6 +103,7 @@ public class PanelAdminTeamController implements PanelHeader {
         attendanceAddForUserPort = Container.getBean(AttendanceAddForUserPort.class);
         addSubscriptionPort = Container.getBean(AddSubscriptionPort.class);
         teamLogoLoadPort = Container.getBean(TeamLogoLoadPort.class);
+        addMembershipForBarcode = Container.getBean(AddMembershipForBarcode.class);
     }
 
     @FXML
@@ -108,6 +116,8 @@ public class PanelAdminTeamController implements PanelHeader {
         System.out.println("Switched to panel Admin.");
         loadTableTeam();
     }
+
+
 
     private void configureTabTeam() {
         tableTeam.setRowFactory(tv -> {
@@ -124,6 +134,23 @@ public class PanelAdminTeamController implements PanelHeader {
 
         tableUser.getColumns().get(0).setCellFactory(createBarcodeCellFactory());
 
+
+        tableUser.setRowFactory(tv -> {
+            TableRow<UserDetail> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                UserDetail u = row.getItem();
+                if (u == null) {
+                    return;
+                }
+                String feeStr = Labels.payNextMonth(u.getMembershipFee());
+                btnPayNextMonth.setText(feeStr);
+
+            });
+            return row;
+        });
+
+
+
         stretchColumnsToEqualSize(tableTeam);
         stretchColumnsToEqualSize(tableUser);
     }
@@ -137,6 +164,7 @@ public class PanelAdminTeamController implements PanelHeader {
             }).collect(Collectors.toList());
             tableUser.getItems().setAll(collect);
         }
+        btnPayNextMonth.setText(Labels.payNextMonth());
     }
 
 
@@ -224,10 +252,8 @@ public class PanelAdminTeamController implements PanelHeader {
         Long barcode = parseBarcodeStr(selectedItem.getBarcodeId());
         ValidatorResponse res = attendanceAddForUserPort.validateAndAddAttendance(barcode, LocalDateTime.now());
         if (res.isOk()) {
-            BarcodeEntity en = barcodeLoadPort.findById(barcode).get();
-            attendanceAddForUserPort.validateAndAddAttendance(en.getBarcodeId(), LocalDateTime.now());
-
-            AlertShowAttendanceController alertCtrl = new AlertShowAttendanceController(en, LocalDate.now());
+            BarcodeEntity b = barcodeLoadPort.findById(barcode).get();
+            AlertShowAttendanceController alertCtrl = new AlertShowAttendanceController(b, LocalDate.now());
             Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, alertCtrl);
             ToastView.showModal(pane, 4000, 200);
         } else {
@@ -245,10 +271,38 @@ public class PanelAdminTeamController implements PanelHeader {
 
         ValidatorResponse res = addSubscriptionPort.addNextMonthSubscription(selectedItem.getBarcodeId());
         if (res.isOk()) {
+            BarcodeEntity barcode = barcodeLoadPort.findById(selectedItem.getBarcodeIdNum()).get();
+            int fee = DataUtil.deductFee(barcode.getTeam().getMembershipPayment(), barcode.getDiscount());
+            addMembershipForBarcode.addMembership(barcode.getBarcodeId(), LocalDateTime.now(), fee);
             ToastView.showModal(res.getMessage());
             loadUserTeam();
         } else {
             ToastView.showModal(Messages.ERROR_ADDING_SUBSCRIPTION);
+        }
+    }
+
+
+    @FXML
+    protected void addBarcodeDiscount() throws IOException {
+        UserDetail selectedItem = tableUser.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            ToastView.showModal("Izaberi korisnika iz tabele pa onda klikni.");
+            return;
+        }
+
+        FormBarcodeGetDiscount controller = new FormBarcodeGetDiscount();
+
+        Pane root = loadFxml(FORM_BARCODE_GET_DISCOUNT, controller);
+        createStage("Popust na članarinu", root, primaryStage).showAndWait();
+
+        if (controller.isReady()) {
+            int discount = controller.getDiscount();
+            BarcodeEntity barcode = barcodeLoadPort.findById(parseBarcodeStr(selectedItem.getBarcodeId())).get();
+            barcode.setDiscount(discount);
+            barcodeUpdatePort.updateDiscount(barcode.getBarcodeId(), discount);
+
+            ToastView.showModal(String.format("Popust od %s dodat.", discount));
+            loadUserTeam();
         }
     }
 

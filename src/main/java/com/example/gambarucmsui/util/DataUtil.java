@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -13,6 +14,30 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class DataUtil {
     private static final Random random = new Random();
+
+    public static int getCompactDate(LocalDateTime dateTime) {
+        return getCompactDate(dateTime.toLocalDate());
+    }
+
+    public static int deductFee (BigDecimal teamFee, int discount) {
+        BigDecimal fee = teamFee.subtract(BigDecimal.valueOf(discount));
+        return fee.intValue();
+    }
+
+    /**
+     * Converts a LocalDate to a compact integer in the format YYYYMMDD.
+     * Input: 2024-05-25 as LocalDate
+     * Output: 20240525
+     * @param localDate
+     * @return
+     */
+    public static int getCompactDate(LocalDate localDate) {
+        int year = localDate.getYear();
+        int month = localDate.getMonthValue();
+        int day = localDate.getDayOfMonth();
+
+        return year * 10000 + month * 100 + day;
+    }
 
     public static <T> T pickRandom(List<T> collection) {
         if (collection == null || collection.isEmpty()) {

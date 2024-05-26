@@ -16,10 +16,9 @@ import com.example.gambarucmsui.ui.alert.AlertShowAttendanceController;
 import com.example.gambarucmsui.ui.alert.AlertShowMembershipController;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.FormBarcodeGetValid;
+import com.example.gambarucmsui.ui.text.Labels;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -42,6 +41,7 @@ public class PanelAttendanceController implements PanelHeader {
     private final Stage primaryStage;
     @FXML TableView<UserDetail> table;
     @FXML Label paginationLabel;
+    @FXML Button btnPayNextMonth;
 
 
     //  INIT
@@ -75,6 +75,20 @@ public class PanelAttendanceController implements PanelHeader {
     private void configureTable() {
         table.getColumns().get(0).setCellFactory(createBarcodeCellFactory());
         stretchColumnsToEqualSize(table);
+
+        table.setRowFactory(tv -> {
+            TableRow<UserDetail> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                UserDetail u = row.getItem();
+                if (u == null) {
+                    return;
+                }
+                String feeStr = Labels.payNextMonth(u.getMembershipFee());
+                btnPayNextMonth.setText(feeStr);
+
+            });
+            return row;
+        });
 
     }
 
@@ -117,6 +131,7 @@ public class PanelAttendanceController implements PanelHeader {
                     return UserDetail.fromEntityToFull(o.getBarcode(), paginationDate);
                 }).collect(Collectors.toList());
         table.getItems().setAll(collect);
+        btnPayNextMonth.setText(Labels.payNextMonth());
     }
     @FXML
     protected void addAttendanceManually() throws IOException {

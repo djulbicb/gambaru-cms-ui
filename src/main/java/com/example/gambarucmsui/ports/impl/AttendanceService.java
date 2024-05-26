@@ -2,7 +2,7 @@ package com.example.gambarucmsui.ports.impl;
 
 import com.example.gambarucmsui.database.entity.*;
 import com.example.gambarucmsui.database.repo.BarcodeRepository;
-import com.example.gambarucmsui.database.repo.UserAttendanceRepository;
+import com.example.gambarucmsui.database.repo.PersonAttendanceRepository;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.*;
 import com.example.gambarucmsui.ui.dto.statistics.AttendanceCount;
@@ -19,12 +19,12 @@ import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 
 public class AttendanceService implements AttendanceAddForUserPort, AttendanceLoadForUserPort, AttendancePurgePort, GetAttendancesByUser, GetAttendanceCountForMonth {
 
-    private final UserAttendanceRepository attendanceRepo;
+    private final PersonAttendanceRepository attendanceRepo;
     private final BarcodeRepository barcodeRepo;
 
     public AttendanceService(
             BarcodeRepository barcodeRepo,
-            UserAttendanceRepository attendanceRepo) {
+            PersonAttendanceRepository attendanceRepo) {
         this.barcodeRepo = barcodeRepo;
         this.attendanceRepo = attendanceRepo;
     }

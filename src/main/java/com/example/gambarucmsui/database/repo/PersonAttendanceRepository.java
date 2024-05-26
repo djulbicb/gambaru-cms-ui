@@ -9,13 +9,12 @@ import jakarta.persistence.TypedQuery;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class UserAttendanceRepository extends Repository<PersonAttendanceEntity> {
-    public UserAttendanceRepository(EntityManager entityManager) {
+public class PersonAttendanceRepository extends Repository<PersonAttendanceEntity> {
+    public PersonAttendanceRepository(EntityManager entityManager) {
         super(entityManager, PersonAttendanceEntity.class);
     }
 
@@ -106,7 +105,6 @@ public class UserAttendanceRepository extends Repository<PersonAttendanceEntity>
             Long attendanceCount = (Long) result[2];
             attendance.add(new AttendanceUserCount(String.format("%s %s", userName, lastName), attendanceCount));
         }
-        System.out.println(resultList.size());
         attendance.sort(Comparator.comparingLong(AttendanceUserCount::getCount).reversed());
 
         return attendance;

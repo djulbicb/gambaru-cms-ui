@@ -3,7 +3,7 @@ package com.example.gambarucmsui.ports.impl;
 import com.example.gambarucmsui.database.entity.TeamLogoEntity;
 import com.example.gambarucmsui.database.repo.PersonPictureRepository;
 import com.example.gambarucmsui.database.repo.TeamLogoRepository;
-import com.example.gambarucmsui.database.repo.UserRepo;
+import com.example.gambarucmsui.database.repo.PersonRepository;
 import com.example.gambarucmsui.ports.interfaces.team.TeamLogoLoadPort;
 import com.example.gambarucmsui.ports.interfaces.user.PersonPictureBarcodePurgePort;
 import com.example.gambarucmsui.ports.interfaces.user.UserPictureLoad;
@@ -14,18 +14,16 @@ import javafx.scene.image.ImageView;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 public class ImageService implements PersonPictureBarcodePurgePort, UserPictureLoad, TeamLogoLoadPort {
     private final PersonPictureRepository personPictureRepo;
     private final TeamLogoRepository teamLogoRepository;
-    private final UserRepo userService;
+    private final PersonRepository userService;
 
-    public ImageService(PersonPictureRepository personPictureRepo, UserRepo personRepo, TeamLogoRepository teamLogoRepository) {
+    public ImageService(PersonPictureRepository personPictureRepo, PersonRepository personRepo, TeamLogoRepository teamLogoRepository) {
         this.personPictureRepo = personPictureRepo;
         this.userService = personRepo;
         this.teamLogoRepository = teamLogoRepository;
