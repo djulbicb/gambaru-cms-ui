@@ -269,9 +269,14 @@ public class PanelAdminTeamController implements PanelHeader {
             return;
         }
 
+        BarcodeEntity barcode = barcodeLoadPort.findById(selectedItem.getBarcodeIdNum()).get();
+        if (barcode.getSubscription().isFreeOfCharge()) {
+            ToastView.showModal("Korisnik besplatno trenira..");
+            return;
+        }
+
         ValidatorResponse res = addSubscriptionPort.addNextMonthSubscription(selectedItem.getBarcodeId());
         if (res.isOk()) {
-            BarcodeEntity barcode = barcodeLoadPort.findById(selectedItem.getBarcodeIdNum()).get();
             int fee = DataUtil.deductFee(barcode.getTeam().getMembershipPayment(), barcode.getDiscount());
             addMembershipForBarcode.addMembership(barcode.getBarcodeId(), LocalDateTime.now(), fee);
             ToastView.showModal(res.getMessage());

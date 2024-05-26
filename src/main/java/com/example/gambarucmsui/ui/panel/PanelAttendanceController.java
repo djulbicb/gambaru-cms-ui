@@ -175,6 +175,12 @@ public class PanelAttendanceController implements PanelHeader {
             return;
         }
 
+        BarcodeEntity barcode = barcodeLoadPort.findById(selectedItem.getBarcodeIdNum()).get();
+        if (barcode.getSubscription().isFreeOfCharge()) {
+            ToastView.showModal("Korisnik besplatno trenira..");
+            return;
+        }
+
         ValidatorResponse res = addSubscriptionPort.addNextMonthSubscription(selectedItem.getBarcodeId());
         if (res.isOk()) {
             ToastView.showModal(res.getMessage());
