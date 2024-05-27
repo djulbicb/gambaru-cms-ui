@@ -106,7 +106,7 @@
                         </TableView>
                         <StackPane prefHeight="100.0" prefWidth="100.0">
                            <children>
-                              <Label fx:id="lblMembershipFeeTotal" text="Ukupno: 5000 RSD" textFill="WHITE" />
+                              <Label fx:id="lblMembershipFeeTotal" text="Ukupno: nema unosa" textFill="WHITE" />
                            </children>
                         </StackPane>
                      </children>

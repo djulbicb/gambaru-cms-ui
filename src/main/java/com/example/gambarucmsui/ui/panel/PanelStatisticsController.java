@@ -97,6 +97,7 @@ public class PanelStatisticsController implements PanelHeader{
 
         List<PersonMembershipEntity> membershipsEn = loadPersonMembership.getAllMembershipForMonth(forDate);
         if (membershipsEn.isEmpty()) {
+            lblMembershipFeeTotal.setText(String.format("Nema uplata za ovaj mesec."));
             return;
         }
 
@@ -121,7 +122,7 @@ public class PanelStatisticsController implements PanelHeader{
                 totalFee += m.getFee();
             }
 
-            details.add(new MembershipFeeDetail("ukupno:", detailsForDate.size() + "", totalFeeForDate, detailsForDate.get(0).getDate()));
+            details.add(new MembershipFeeDetail("Ukupno:", detailsForDate.size() + "", totalFeeForDate, detailsForDate.get(0).getDate()));
             detailsForDate.add(MembershipFeeDetail.empty());
             details.addAll(detailsForDate);
         }
