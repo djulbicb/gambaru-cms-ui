@@ -55,7 +55,7 @@
                         </Label>
                      </children>
                   </HBox>
-                  <HBox spacing="10.0">
+                  <HBox spacing="10.0" visible="false">
                      <children>
                         <Label maxHeight="1.7976931348623157E308" text="Prošla uplata:" textFill="#fcfcfc">
                            <font>
