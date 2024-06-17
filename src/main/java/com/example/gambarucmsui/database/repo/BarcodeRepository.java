@@ -107,4 +107,5 @@ public class BarcodeRepository extends Repository<BarcodeEntity> {
 
         return false;
     }
+
 }

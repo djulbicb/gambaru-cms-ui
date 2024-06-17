@@ -46,6 +46,10 @@ public class AttendanceService implements AttendanceAddForUserPort, AttendanceLo
             errors.put(BARCODE_ID, BARCODE_NOT_REGISTERED);
             return new ValidatorResponse(errors);
         }
+        if (attendanceRepo.userAlreadyLoggedInToday(barcode)) {
+            errors.put(BARCODE_ID, ATTENDANCE_ALREADY_ADDED_TODAY);
+            return new ValidatorResponse(errors);
+        }
         BarcodeEntity b = barcodeEntityOptional.get();
         if (b.getStatus() == BarcodeEntity.Status.DELETED)  {
             errors.put(BARCODE_ID, BARCODE_IS_DELETED);
@@ -59,6 +63,7 @@ public class AttendanceService implements AttendanceAddForUserPort, AttendanceLo
             errors.put(BARCODE_ID, BARCODE_IS_DEACTIVATED);
             return new ValidatorResponse(errors);
         }
+
         PersonEntity user = b.getPerson();
         return new ValidatorResponse(ATTENDANCE_MANUALLY_FOUND_USER(user.getFirstName(), user.getLastName()));
     }

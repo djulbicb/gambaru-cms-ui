@@ -47,14 +47,14 @@ public class PersonAttendanceRepository extends Repository<PersonAttendanceEntit
         LocalDateTime lastDayOfMonth = YearMonth.from(forDate).atEndOfMonth().atTime(23, 59, 59);
 
         String queryString = """
-        SELECT CAST(a.timestamp AS DATE), COUNT(a)
-        FROM PersonAttendanceEntity a
-        WHERE a.timestamp BETWEEN :dateStart AND :dateNow
-        GROUP BY CAST(a.timestamp AS DATE)
-        ORDER BY CAST(a.timestamp AS DATE)
-        """;
+                SELECT CAST(a.timestamp AS DATE), COUNT(a)
+                FROM PersonAttendanceEntity a
+                WHERE a.timestamp BETWEEN :dateStart AND :dateNow
+                GROUP BY CAST(a.timestamp AS DATE)
+                ORDER BY CAST(a.timestamp AS DATE)
+                """;
         TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
-        query.setParameter("dateStart", firstDayOfMonth );
+        query.setParameter("dateStart", firstDayOfMonth);
         query.setParameter("dateNow", lastDayOfMonth);
 
         List<AttendanceCount> resultList = query.getResultList().stream()
@@ -87,11 +87,11 @@ public class PersonAttendanceRepository extends Repository<PersonAttendanceEntit
         LocalDateTime lastDayOfMonth = YearMonth.from(monthDate).atEndOfMonth().atTime(23, 59, 59);
 
         String queryString = """
-            SELECT ua.barcode.person.firstName, ua.barcode.person.lastName, COUNT(ua)
-            FROM PersonAttendanceEntity ua
-            WHERE ua.timestamp >= :dateStart AND ua.timestamp < :dateEnd
-            GROUP BY ua.barcode.id
-            """;
+                SELECT ua.barcode.person.firstName, ua.barcode.person.lastName, COUNT(ua)
+                FROM PersonAttendanceEntity ua
+                WHERE ua.timestamp >= :dateStart AND ua.timestamp < :dateEnd
+                GROUP BY ua.barcode.id
+                """;
 
         List<Object[]> resultList = entityManager.createQuery(queryString, Object[].class)
                 .setParameter("dateStart", firstDayOfMonth)
@@ -110,6 +110,24 @@ public class PersonAttendanceRepository extends Repository<PersonAttendanceEntit
         return attendance;
     }
 
+    public boolean userAlreadyLoggedInToday(Long barcode) {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+        String query = """
+                SELECT COUNT(ua) 
+                FROM PersonAttendanceEntity ua 
+                WHERE ua.barcode.id = :barcodeId AND ua.timestamp >= :startOfDay AND ua.timestamp < :endOfDay
+                """;
+
+        Long count = entityManager.createQuery(query, Long.class)
+                .setParameter("barcodeId", barcode)
+                .setParameter("startOfDay", startOfDay)
+                .setParameter("endOfDay", endOfDay)
+                .getSingleResult();
+
+        return count > 0;
+
 
 //    public List<PersonAttendanceEntity> findAllForAttendanceDate(LocalDate forDate) {
 //        String fetchBarcodesFromAttendanceQuery = "SELECT ua FROM PersonAttendanceEntity ua WHERE DATE(ua.timestamp) = :date ORDER BY ua.timestamp DESC";
@@ -123,4 +141,5 @@ public class PersonAttendanceRepository extends Repository<PersonAttendanceEntit
 //
 //        return subquery.getResultList();
 //    }
+    }
 }

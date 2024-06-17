@@ -8,6 +8,7 @@ import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUse
 import com.example.gambarucmsui.ports.Container;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUserPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
+import com.example.gambarucmsui.ports.interfaces.membership.AddMembershipForBarcode;
 import com.example.gambarucmsui.ports.interfaces.subscription.AddSubscriptionPort;
 import com.example.gambarucmsui.ports.interfaces.subscription.UpdateSubscriptionPort;
 import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
@@ -17,6 +18,7 @@ import com.example.gambarucmsui.ui.alert.AlertShowMembershipController;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.FormBarcodeGetValid;
 import com.example.gambarucmsui.ui.text.Labels;
+import com.example.gambarucmsui.util.DataUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
@@ -52,6 +54,7 @@ public class PanelAttendanceController implements PanelHeader {
     private final BarcodeLoadPort barcodeLoadPort;
     private final AddSubscriptionPort addSubscriptionPort;
     private final UpdateSubscriptionPort updateSubscriptionPort;
+    private final AddMembershipForBarcode addMembershipForBarcode;
 
     public PanelAttendanceController(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -61,6 +64,7 @@ public class PanelAttendanceController implements PanelHeader {
         barcodeLoadPort = Container.getBean(BarcodeLoadPort.class);
         this.addSubscriptionPort = Container.getBean(AddSubscriptionPort.class);
         this.updateSubscriptionPort = Container.getBean(UpdateSubscriptionPort.class);
+        this.addMembershipForBarcode = Container.getBean(AddMembershipForBarcode.class);
     }
 
     @FXML
@@ -142,11 +146,15 @@ public class PanelAttendanceController implements PanelHeader {
 
         if (controller.isReady()) {
             BarcodeEntity barcode = barcodeLoadPort.findById(controller.getBarcodeId()).get();
-            attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), LocalDateTime.now());
+            ValidatorResponse response = attendanceAddForUserPort.validateAndAddAttendance(barcode.getBarcodeId(), LocalDateTime.now());
 
-            AlertShowAttendanceController alertCtrl = new AlertShowAttendanceController(barcode, LocalDate.now());
-            Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, alertCtrl);
-            ToastView.showModal(pane, 4000, 200);
+            if (response.hasErrors()) {
+                ToastView.showModal(response.getMessage());
+            } else {
+                AlertShowAttendanceController alertCtrl = new AlertShowAttendanceController(barcode, LocalDate.now());
+                Pane pane = loadFxml(ALERT_SHOW_ATTENDANCE, alertCtrl);
+                ToastView.showModal(pane, 4000, 200);
+            }
 
             listPageForDate();
         }
@@ -183,6 +191,8 @@ public class PanelAttendanceController implements PanelHeader {
 
         ValidatorResponse res = addSubscriptionPort.addNextMonthSubscription(selectedItem.getBarcodeId());
         if (res.isOk()) {
+            int fee = DataUtil.deductFee(barcode.getTeam().getMembershipPayment(), barcode.getDiscount());
+            addMembershipForBarcode.addMembership(barcode.getBarcodeId(), LocalDateTime.now(), fee);
             ToastView.showModal(res.getMessage());
             listPageForDate();
         } else {

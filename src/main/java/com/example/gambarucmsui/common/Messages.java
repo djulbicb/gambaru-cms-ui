@@ -51,6 +51,7 @@ public class Messages {
     }    public static String MEMBERSHIP_MANUALLY_FOUND_USER(String firstName, String lastName) {
         return String.format("Polaznik: %s %s", firstName, lastName);
     }
+    public static String ATTENDANCE_ALREADY_ADDED_TODAY = "Dolaznost za danas je vec registrovana";
 
     public static String BARCODE_IS_VALID(String firstName, String lastName) {
         return String.format("Polaznik: %s %s", firstName, lastName);
