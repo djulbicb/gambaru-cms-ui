@@ -10,5 +10,5 @@ public interface AddSubscriptionPort {
     public void addFreeSubscription(Long barcodeId, Long teamId);
     public Optional<SubscriptionEntity> addSubscription(Long barcodeId, Long teamId, LocalDate now, LocalDate end);
 
-    ValidatorResponse addNextMonthSubscription(String barcodeId);
+    ValidatorResponse validateAndAddNextMonthSubscription(String barcodeId);
 }

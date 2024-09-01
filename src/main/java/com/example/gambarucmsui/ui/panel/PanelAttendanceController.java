@@ -2,7 +2,6 @@ package com.example.gambarucmsui.ui.panel;
 
 import com.example.gambarucmsui.common.Messages;
 import com.example.gambarucmsui.database.entity.BarcodeEntity;
-import com.example.gambarucmsui.database.entity.SubscriptionEntity;
 import com.example.gambarucmsui.ports.ValidatorResponse;
 import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceLoadForUserPort;
 import com.example.gambarucmsui.ports.Container;
@@ -28,11 +27,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.gambarucmsui.database.entity.BarcodeEntity.BARCODE_ID;
-import static com.example.gambarucmsui.ui.dto.admin.SubscriptStatus.*;
 import static com.example.gambarucmsui.util.FormatUtil.parseBarcodeStr;
 import static com.example.gambarucmsui.util.LayoutUtil.*;
 import static com.example.gambarucmsui.util.PathUtil.*;
@@ -189,7 +186,7 @@ public class PanelAttendanceController implements PanelHeader {
             return;
         }
 
-        ValidatorResponse res = addSubscriptionPort.addNextMonthSubscription(selectedItem.getBarcodeId());
+        ValidatorResponse res = addSubscriptionPort.validateAndAddNextMonthSubscription(selectedItem.getBarcodeId());
         if (res.isOk()) {
             int fee = DataUtil.deductFee(barcode.getTeam().getMembershipPayment(), barcode.getDiscount());
             addMembershipForBarcode.addMembership(barcode.getBarcodeId(), LocalDateTime.now(), fee);

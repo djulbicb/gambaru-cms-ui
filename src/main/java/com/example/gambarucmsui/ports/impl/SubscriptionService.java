@@ -104,7 +104,7 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
     }
 
     @Override
-    public ValidatorResponse addNextMonthSubscription(String barcodeId) {
+    public ValidatorResponse validateAndAddNextMonthSubscription(String barcodeId) {
         Optional<BarcodeEntity> byId = barcodeRepo.findById(parseBarcodeStr(barcodeId));
         if (byId.isPresent()) {
             BarcodeEntity barcode = byId.get();
@@ -112,17 +112,14 @@ public class SubscriptionService implements AddSubscriptionPort, UpdateSubscript
 
             LocalDate start = subscription.getStartDate();
             LocalDate end = subscription.getEndDate();
-            LocalDate now = LocalDate.now();
 
             if (start == null) {
                 start = LocalDate.now();
             }
             if (end == null) {
                 end = start.plusMonths(1);
-            } else if (end.isAfter(now)) {
-                end = end.plusMonths(1);
             } else {
-                end = now.plusMonths(1);
+                end = end.plusMonths(1);
             }
 
             updateSubsscription(barcode.getBarcodeId(),subscription.isFreeOfCharge(), start, end);

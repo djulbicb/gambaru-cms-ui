@@ -10,7 +10,6 @@ import com.example.gambarucmsui.ports.interfaces.attendance.AttendanceAddForUser
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeLoadPort;
 import com.example.gambarucmsui.ports.interfaces.barcode.BarcodeUpdatePort;
 import com.example.gambarucmsui.ports.interfaces.membership.AddMembershipForBarcode;
-import com.example.gambarucmsui.ports.interfaces.membership.LoadPersonMembership;
 import com.example.gambarucmsui.ports.interfaces.subscription.AddSubscriptionPort;
 import com.example.gambarucmsui.ports.interfaces.team.*;
 import com.example.gambarucmsui.ports.interfaces.user.UserLoadPort;
@@ -21,7 +20,6 @@ import com.example.gambarucmsui.ui.alert.AlertShowAttendanceController;
 import com.example.gambarucmsui.ui.alert.AlertShowMembershipController;
 import com.example.gambarucmsui.ui.dto.admin.SubscriptStatus;
 import com.example.gambarucmsui.ui.dto.admin.TeamDetail;
-import com.example.gambarucmsui.ui.dto.core.MembershipFeeDetail;
 import com.example.gambarucmsui.ui.dto.core.UserDetail;
 import com.example.gambarucmsui.ui.form.*;
 import com.example.gambarucmsui.ui.text.Labels;
@@ -275,7 +273,7 @@ public class PanelAdminTeamController implements PanelHeader {
             return;
         }
 
-        ValidatorResponse res = addSubscriptionPort.addNextMonthSubscription(selectedItem.getBarcodeId());
+        ValidatorResponse res = addSubscriptionPort.validateAndAddNextMonthSubscription(selectedItem.getBarcodeId());
         if (res.isOk()) {
             int fee = DataUtil.deductFee(barcode.getTeam().getMembershipPayment(), barcode.getDiscount());
             addMembershipForBarcode.addMembership(barcode.getBarcodeId(), LocalDateTime.now(), fee);
